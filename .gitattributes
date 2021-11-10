@@ -1,0 +1,2 @@
+leaf_root/data/raw/list_attr_celeba.txt filter=lfs diff=lfs merge=lfs -text
+leaf_root/data/raw/identity_CelebA.txt filter=lfs diff=lfs merge=lfs -text
