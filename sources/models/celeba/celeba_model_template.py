@@ -1,15 +1,17 @@
-from typing import Union
 import tensorflow as tf
 
 from global_parameters import CELEBA_IMAGE_SIZE, CELEBA_CLASSES
-from sources.models.model import Model
+from sources.models.model_template import ModelTemplate
 
 
-class CelebaClientModel(Model):
+class CelebaModelTemplate(ModelTemplate):
 
-    def __init__(self, seed, num_classes=CELEBA_CLASSES):
+    def __init__(self, seed, num_classes=CELEBA_CLASSES,
+                 optimizer=tf.keras.optimizers.SGD(),
+                 loss=tf.keras.losses.SparseCategoricalCrossentropy()):
+
         self.num_classes = num_classes
-        super(CelebaClientModel, self).__init__(seed)
+        super(CelebaModelTemplate, self).__init__(seed, optimizer, loss)
 
     def get_model(self) -> tf.keras.Model:
         model = tf.keras.Sequential()
@@ -33,12 +35,3 @@ class CelebaClientModel(Model):
         model.add(tf.keras.layers.Softmax())
 
         return model
-
-    def get_default_optimizer(self, lr: Union[None, float] = None) -> tf.keras.optimizers.Optimizer:
-        if lr is not None:
-            return tf.keras.optimizers.SGD(lr=lr)
-        else:
-            return tf.keras.optimizers.SGD()
-
-    def get_default_loss_function(self) -> tf.keras.losses.Loss:
-        return tf.keras.losses.SparseCategoricalCrossentropy()

@@ -1,27 +1,28 @@
-from typing import Union
 import tensorflow as tf
 
-from sources.models.model import Model
+from sources.models.model_template import ModelTemplate
 
 LEAF_CHARACTERS = (
     "\n !\"&'(),-.0123456789:;>?ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz}"
 )
 
 
-class ShakespeareClientModel(Model):
+class ShakespeareModelTemplate(ModelTemplate):
 
     def __init__(self, seed,
                  alphabet=LEAF_CHARACTERS,
                  seq_len=80,
                  n_hidden=256,
-                 embedding_dim=8
+                 embedding_dim=8,
+                 optimizer=tf.keras.optimizers.SGD(),
+                 loss=tf.keras.losses.CategoricalCrossentropy()
                  ):
         self.seq_length = seq_len
         self.n_hidden = n_hidden
         self.embedding_dim = embedding_dim
         self.alphabet = alphabet
 
-        super(ShakespeareClientModel, self).__init__(seed)
+        super(ShakespeareModelTemplate, self).__init__(seed, optimizer, loss)
 
     def get_model(self) -> tf.keras.Model:
         inputs = tf.keras.Input(shape=self.seq_length, dtype=tf.int32)
@@ -36,12 +37,3 @@ class ShakespeareClientModel(Model):
         softmax = tf.keras.layers.Softmax()(dense)
 
         return tf.keras.Model(inputs=inputs, outputs=softmax)
-
-    def get_default_optimizer(self, lr: Union[None, float] = None) -> tf.keras.optimizers.Optimizer:
-        if lr is not None:
-            return tf.keras.optimizers.SGD(lr=lr)
-        else:
-            return tf.keras.optimizers.SGD()
-
-    def get_default_loss_function(self) -> tf.keras.losses.Loss:
-        return tf.keras.losses.CategoricalCrossentropy()

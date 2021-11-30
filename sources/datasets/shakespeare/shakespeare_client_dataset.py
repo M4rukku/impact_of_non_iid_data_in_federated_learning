@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 
 from sources.datasets.client_dataset import ClientDataset
-from sources.models.shakespeare.shakespeare_client_model import LEAF_CHARACTERS
+from sources.models.shakespeare.shakespeare_model_template import LEAF_CHARACTERS
 
 
 class ShakespeareClientDataset(ClientDataset):
