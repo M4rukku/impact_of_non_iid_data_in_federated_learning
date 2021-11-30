@@ -1,6 +1,4 @@
 from typing import Union
-
-import numpy as np
 import tensorflow as tf
 
 from global_parameters import CELEBA_IMAGE_SIZE, CELEBA_CLASSES
@@ -44,11 +42,3 @@ class CelebaClientModel(Model):
 
     def get_default_loss_function(self) -> tf.keras.losses.Loss:
         return tf.keras.losses.SparseCategoricalCrossentropy()
-
-    def process_x(self, raw_x_batch):
-        x_batch = [np.array(img) for img in raw_x_batch]
-        x_batch = np.array(x_batch)
-        return x_batch
-
-    def process_y(self, raw_y_batch):
-        return np.array(raw_y_batch)

@@ -1,6 +1,4 @@
 from typing import Union
-
-import numpy as np
 import tensorflow as tf
 
 from global_parameters import FEMNIST_IMAGE_SIZE, FEMNIST_CLASSES
@@ -42,9 +40,3 @@ class FemnistClientModel(Model):
 
     def get_default_loss_function(self) -> tf.keras.losses.Loss:
         return tf.keras.losses.SparseCategoricalCrossentropy()
-
-    def process_x(self, raw_x_batch):
-        return np.array([np.array(img) for img in raw_x_batch])
-
-    def process_y(self, raw_y_batch):
-        return np.array(raw_y_batch)

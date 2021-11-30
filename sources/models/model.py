@@ -20,13 +20,3 @@ class Model(ABC):
     @abstractmethod
     def get_default_loss_function(self) -> tf.keras.losses.Loss:
         pass
-
-    @abstractmethod
-    def process_x(self, raw_x_batch):
-        """Pre-processes each batch of features before being fed to the model."""
-        pass
-
-    @abstractmethod
-    def process_y(self, raw_y_batch):
-        """Pre-processes each batch of labels before being fed to the model."""
-        pass
