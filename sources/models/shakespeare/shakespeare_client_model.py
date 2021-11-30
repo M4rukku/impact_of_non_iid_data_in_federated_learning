@@ -3,7 +3,7 @@ from typing import Union, List
 import numpy as np
 import tensorflow as tf
 
-from models.model import Model
+from sources.models.model import Model
 
 LEAF_CHARACTERS = (
     "\n !\"&'(),-.0123456789:;>?ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz}"

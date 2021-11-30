@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 
 from global_parameters import CELEBA_IMAGE_SIZE, CELEBA_CLASSES
-from models.model import Model
+from sources.models.model import Model
 
 
 class CelebaClientModel(Model):
