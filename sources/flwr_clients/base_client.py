@@ -1,3 +1,4 @@
+import random
 import typing
 import flwr as fl
 import numpy as np
@@ -51,21 +52,18 @@ class BaseClient(fl.client.NumPyClient):
             batch_size,
             epochs,
             validation_data=self.dataset.validation_data,
-            callbacks=self.fitting_callbacks
+            callbacks=self.fitting_callbacks,
+            verbose=1
         )
 
         # Return updated model parameters and results
         parameters_prime = self.model.get_weights()
         num_examples_train = len(self.dataset.test_data_x)
-        results = {
-            "loss": history.history["loss"][0],
-            "accuracy": history.history["accuracy"][0],
-            "val_loss": history.history["val_loss"][0],
-            "val_accuracy": history.history["val_accuracy"][0],
-        }
-        return parameters_prime, num_examples_train, results
+
+        return parameters_prime, num_examples_train, {key: entry[0] for key, entry in history.history.items()}
 
     def evaluate(self, parameters, config: FederatedEvaluationParameters):
+        rand = random.randint(1, 100)
         # Get hyperparameters for this round
         batch_size: int = config["batch_size"]
         val_steps: int = config["val_steps"]
@@ -75,6 +73,7 @@ class BaseClient(fl.client.NumPyClient):
         result_dict = self.model.evaluate(self.dataset.validation_data_x, self.dataset.validation_data_y,
                                           batch_size=batch_size, steps=val_steps, return_dict=True,
                                           callbacks=self.evaluation_callbacks)
+
         data_len = len(self.dataset.validation_data_x)
         return (result_dict["loss"], min(data_len, batch_size * (val_steps if val_steps is not None
                                                                  else data_len / batch_size)), result_dict)

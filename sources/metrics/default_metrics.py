@@ -1,1 +1,3 @@
-DEFAULT_METRICS = ["acc", "recall", "precision"]
+import tensorflow as tf
+
+DEFAULT_METRICS = ["acc"]

@@ -1,0 +1,1 @@
+DEFAULT_SEED: int = 0
