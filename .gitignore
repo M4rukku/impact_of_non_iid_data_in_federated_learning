@@ -134,3 +134,5 @@ dmypy.json
 /leaf_root/data/celeba/data/raw/img_align_celeba.zip
 /leaf_root/data/celeba/data/raw/img_align_celeba/
 /data/
+/logging/
+/checkpoints/
