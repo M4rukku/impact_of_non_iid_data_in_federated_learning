@@ -1,6 +1,7 @@
-#cd ${LEAF_ROOT}/data/celeba
-#echo 'Creating new LEAF dataset split.'
-#./preprocess.sh -s niid --sf 1.0 -k 5 -t sample --tf 0.8
+#!/bin/bash
+cd ${LEAF_ROOT}/data/celeba
+echo 'Creating new LEAF dataset split.'
+./preprocess.sh -s niid --sf 1.0 -k 5 -t sample --tf 0.8
 
 # Format for Flower experiments. Val/train fraction set to 0.25 so validation/total=0.20
 cd ${LOADER_ROOT}/celeba

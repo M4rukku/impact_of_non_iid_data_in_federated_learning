@@ -21,6 +21,8 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from PIL import Image
 
+import sys
+sys.path.append(str(Path(__file__).resolve().parents[2]))
 from global_parameters import CELEBA_IMAGE_SIZE
 
 
@@ -144,6 +146,7 @@ if __name__ == "__main__":
 
     # Split train dataset into train and validation
     # then save files for each client
+    print("Processing training data ")
     original_train_datasets = sorted(
         list(Path(args.leaf_train_jsons_root).glob("**/*.json"))
     )
@@ -156,6 +159,7 @@ if __name__ == "__main__":
         image_dir=Path(args.leaf_celeba_image_dir)
     )
 
+    print("Processing test data ")
     # Split and save the test files
     original_test_datasets = sorted(
         list(Path(args.leaf_test_jsons_root).glob("**/*.json"))
