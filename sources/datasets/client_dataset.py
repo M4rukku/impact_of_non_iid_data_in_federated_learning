@@ -7,7 +7,7 @@ import pandas as pd
 class ClientDataset(ABC):
 
     def __init__(self,
-                 root_data_dir: PathLike[str],
+                 root_data_dir: PathLike,
                  subfolder_identifier: str,
                  client_identifier: str,
                  train_data_filename: str = "train.pickle",

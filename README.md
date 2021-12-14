@@ -14,7 +14,7 @@ The following Readme will contain notes on setup, information about the
 ### Package Management
 To initialise the project, first initialse a new virtual environment. The git
 repository contains a requirements.txt file which contains all necessary
- packages.
+ packages. The minimum version of Python required is **Python 3.8**.
 
 ```
 $ virtualenv <env_name> 

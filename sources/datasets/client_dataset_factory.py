@@ -5,7 +5,7 @@ from pathlib import Path
 
 class ClientDatasetFactory(ABC):
 
-    def __init__(self, root_data_dir: PathLike[str]):
+    def __init__(self, root_data_dir: PathLike):
         self.root_data_dir = root_data_dir
 
     @abstractmethod
@@ -17,7 +17,7 @@ class ClientDatasetFactory(ABC):
         pass
 
     @staticmethod
-    def _number_of_files_in_dir(dir_name: PathLike[str]):
+    def _number_of_files_in_dir(dir_name: PathLike):
         dir_path = Path(dir_name)
         assert dir_path.is_dir()
         return len(list(dir_path.iterdir()))

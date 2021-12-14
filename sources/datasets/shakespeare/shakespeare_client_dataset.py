@@ -9,7 +9,7 @@ from sources.models.shakespeare.shakespeare_model_template import LEAF_CHARACTER
 
 class ShakespeareClientDataset(ClientDataset):
 
-    def __init__(self, root_data_dir: PathLike[str], client_identifier: str, alphabet=LEAF_CHARACTERS):
+    def __init__(self, root_data_dir: PathLike, client_identifier: str, alphabet=LEAF_CHARACTERS):
 
         super().__init__(root_data_dir=root_data_dir,
                          subfolder_identifier="shakespeare",
