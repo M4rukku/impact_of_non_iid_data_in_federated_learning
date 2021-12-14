@@ -5,7 +5,8 @@ import numpy as np
 import tensorflow as tf
 
 from sources.datasets.client_dataset import ClientDataset
-from sources.flwr_parameters.client_parameters import FederatedEvaluationParameters, FittingParameters
+from sources.flwr_parameters.client_parameters import \
+    FederatedEvaluationParameters, FittingParameters
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 
@@ -20,9 +21,11 @@ class BaseClient(fl.client.NumPyClient):
                  evaluation_callbacks: list[tf.keras.callbacks.Callback] = None
                  ):
         self.model: tf.keras.Model = model_template.get_model()
-        self.optimizer: tf.keras.optimizers.Optimizer = model_template.get_optimizer()
+        self.optimizer: tf.keras.optimizers.Optimizer = \
+            model_template.get_optimizer()
         self.loss: tf.keras.losses.Loss = model_template.get_loss()
-        self.metrics: typing.List[typing.Union[tf.keras.metrics.Metric, str]] = metrics
+        self.metrics: typing.List[typing.Union[tf.keras.metrics.Metric, str]] \
+            = metrics
 
         self.model.compile(self.optimizer, self.loss, self.metrics)
         self.dataset = dataset
@@ -60,7 +63,9 @@ class BaseClient(fl.client.NumPyClient):
         parameters_prime = self.model.get_weights()
         num_examples_train = len(self.dataset.test_data_x)
 
-        return parameters_prime, num_examples_train, {key: entry[0] for key, entry in history.history.items()}
+        return (parameters_prime,
+                num_examples_train,
+                {key: entry[0] for key, entry in history.history.items()})
 
     def evaluate(self, parameters, config: FederatedEvaluationParameters):
         rand = random.randint(1, 100)
@@ -70,10 +75,15 @@ class BaseClient(fl.client.NumPyClient):
 
         """Evaluate using provided parameters."""
         self.model.set_weights(parameters)
-        result_dict = self.model.evaluate(self.dataset.validation_data_x, self.dataset.validation_data_y,
-                                          batch_size=batch_size, steps=val_steps, return_dict=True,
+        result_dict = self.model.evaluate(self.dataset.validation_data_x,
+                                          self.dataset.validation_data_y,
+                                          batch_size=batch_size,
+                                          steps=val_steps,
+                                          return_dict=True,
                                           callbacks=self.evaluation_callbacks)
 
         data_len = len(self.dataset.validation_data_x)
-        return (result_dict["loss"], min(data_len, batch_size * (val_steps if val_steps is not None
-                                                                 else data_len / batch_size)), result_dict)
+        return (result_dict["loss"],
+                min(data_len, batch_size *
+                    (val_steps if val_steps is not None
+                     else data_len / batch_size)), result_dict)

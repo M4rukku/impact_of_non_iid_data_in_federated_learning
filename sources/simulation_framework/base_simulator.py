@@ -7,33 +7,15 @@ import numpy as np
 import tensorflow as tf
 
 from sources.datasets.client_dataset_factory import ClientDatasetFactory
-from sources.flwr_clients.base_client import BaseClient
 from sources.flwr_parameters.default_parameters import DEFAULT_SEED
-from sources.flwr_parameters.simulation_parameters import SimulationParameters, \
-    DEFAULT_SERVER_ADDRESS
+from sources.flwr_parameters.simulation_parameters import SimulationParameters
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.make_keras_pickleable import make_keras_pickleable
 from sources.models.model_template import ModelTemplate
+from sources.simulation_framework.start_client import start_client
+from sources.simulation_framework.start_server import start_server
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-
-
-def start_client(model_template, dataset_factory, client_identifier, metrics,
-                 fitting_callbacks, evaluation_callbacks):
-
-    client = BaseClient(model_template,
-                        dataset_factory.create_dataset(str(client_identifier)),
-                        metrics, fitting_callbacks, evaluation_callbacks)
-    fl.client.start_numpy_client(server_address=DEFAULT_SERVER_ADDRESS,
-                                 client=client)
-
-
-def start_server(strategy: fl.server.strategy.Strategy,
-                 simulation_parameters: SimulationParameters):
-    fl.server.start_server(server_address=DEFAULT_SERVER_ADDRESS,
-                           strategy=strategy,
-                           config={"num_rounds": simulation_parameters[
-                               "num_rounds"]})
 
 
 class BaseSimulator:

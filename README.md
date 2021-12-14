@@ -137,7 +137,9 @@ $ find leaf_root data_loaders -maxdepth 4 -type f -regex ".*/.*\.\(\(py\)\|\(sh\
 
 ## Experiments
 
-###TODO 
+### Notes on Execution
+
+Note that executing a
 
 ## Acknowledgements
 

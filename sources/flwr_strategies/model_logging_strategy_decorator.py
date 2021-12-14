@@ -29,8 +29,10 @@ class ModelLoggingStrategyDecorator(BaseStrategyDecorator):
                 Optional[Weights],  # Deprecated
             ]:
         aggregated_weights = self.strategy.aggregate_fit(rnd, results, failures)
-        npz_parameters_to_file(create_round_based_model_saving_filename(rnd,
-                                                                        self.model_saving_folder,
-                                                                        self.experiment_identifier),
+        filename = \
+            create_round_based_model_saving_filename(rnd,
+                                                     self.model_saving_folder,
+                                                     self.experiment_identifier)
+        npz_parameters_to_file(filename,
                                aggregated_weights)
         return aggregated_weights
