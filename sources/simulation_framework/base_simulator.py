@@ -12,6 +12,7 @@ from sources.flwr_parameters.default_parameters import DEFAULT_SEED
 from sources.flwr_parameters.simulation_parameters import SimulationParameters, \
     DEFAULT_SERVER_ADDRESS
 from sources.metrics.default_metrics import DEFAULT_METRICS
+from sources.models.make_keras_pickleable import make_keras_pickleable
 from sources.models.model_template import ModelTemplate
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -46,6 +47,8 @@ class BaseSimulator:
                  evaluation_callbacks: list[tf.keras.callbacks.Callback] = None,
                  metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
                  seed: int = DEFAULT_SEED):
+
+        make_keras_pickleable()
 
         self.simulation_parameters: SimulationParameters = simulation_parameters
         self.strategy: fl.server.strategy.Strategy = strategy

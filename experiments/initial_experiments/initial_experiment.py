@@ -46,10 +46,12 @@ if __name__ == "__main__":
         return config
 
 
-    simulation_parameters = {"num_rounds": 2, "num_clients": 100}
+    simulation_parameters = {"num_rounds": 2, "num_clients": 2}
+    strategy = fl.server.strategy.FedAvg(on_fit_config_fn=fit_config,
+                                         on_evaluate_config_fn=eval_config)
 
     strategy = EvaluationMetricsLoggingStrategyDecorator(
-        strategy=fl.server.strategy.FedAvg(on_fit_config_fn=fit_config, on_evaluate_config_fn=eval_config),
+        strategy=strategy,
         metrics_logging_folder=metrics_saving_dir,
         experiment_identifier=experiment_name
     )
