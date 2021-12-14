@@ -41,48 +41,48 @@ class BaseClient(fl.client.NumPyClient):
         """Fit model and return new weights as well as number of training
         examples."""
 
-        # Load model parameters
         self.model.set_weights(parameters)
 
-        # Get hyperparameters for this round
         batch_size: int = config["batch_size"]
         epochs: int = config["local_epochs"]
 
         # Train the model using hyperparameters from config
-        history = self.model.fit(
-            self.dataset.test_data_x,
-            self.dataset.test_data_y,
-            batch_size,
-            epochs,
-            validation_data=self.dataset.validation_data,
-            callbacks=self.fitting_callbacks,
-            verbose=1
-        )
+        with self.dataset:
+            history = self.model.fit(
+                self.dataset.test_data_x,
+                self.dataset.test_data_y,
+                batch_size,
+                epochs,
+                validation_data=self.dataset.validation_data,
+                callbacks=self.fitting_callbacks,
+                verbose=1
+            )
+
+            num_examples_train = len(self.dataset.test_data_x)
 
         # Return updated model parameters and results
         parameters_prime = self.model.get_weights()
-        num_examples_train = len(self.dataset.test_data_x)
 
         return (parameters_prime,
                 num_examples_train,
                 {key: entry[0] for key, entry in history.history.items()})
 
     def evaluate(self, parameters, config: FederatedEvaluationParameters):
-        rand = random.randint(1, 100)
-        # Get hyperparameters for this round
         batch_size: int = config["batch_size"]
         val_steps: int = config["val_steps"]
 
-        """Evaluate using provided parameters."""
         self.model.set_weights(parameters)
-        result_dict = self.model.evaluate(self.dataset.validation_data_x,
-                                          self.dataset.validation_data_y,
-                                          batch_size=batch_size,
-                                          steps=val_steps,
-                                          return_dict=True,
-                                          callbacks=self.evaluation_callbacks)
+        with self.dataset:
+            result_dict = \
+                self.model.evaluate(self.dataset.validation_data_x,
+                                    self.dataset.validation_data_y,
+                                    batch_size=batch_size,
+                                    steps=val_steps,
+                                    return_dict=True,
+                                    callbacks=self.evaluation_callbacks)
 
-        data_len = len(self.dataset.validation_data_x)
+            data_len = len(self.dataset.validation_data_x)
+
         return (result_dict["loss"],
                 min(data_len, batch_size *
                     (val_steps if val_steps is not None

@@ -1,7 +1,7 @@
 import os
 import flwr as fl
 from pathlib import Path
-#Add
+# Add
 import sys
 sys.path.append(str(Path(__file__).parent.parent.parent.resolve()))
 
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     model_saving_dir = str(checkpoint_dir / experiment_name / "models")
     metrics_saving_dir = str(checkpoint_dir / experiment_name / "metrics")
 
-    simulation_parameters = {"num_rounds": 100, "num_clients": 50}
+    simulation_parameters = {"num_rounds": 300, "num_clients": 100}
     strategy = \
         fl.server.strategy.FedAvg(on_fit_config_fn=femnist_fit_config,
                                   on_evaluate_config_fn=femnist_eval_config)

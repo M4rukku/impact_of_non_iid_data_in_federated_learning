@@ -138,8 +138,25 @@ $ find leaf_root data_loaders -maxdepth 4 -type f -regex ".*/.*\.\(\(py\)\|\(sh\
 ## Experiments
 
 ### Notes on Execution
+In particular the Femnist Dataset will take a lot of resources to process. In
+ particular, the process is very demanding on RAM and virtual memory. On my
+  machine I have tested the use case of 100 clients and needed to increase my
+   virtual memory to 80-100GB while having 32GB of RAM.
 
-Note that executing a
+### Notes on Execution (Windows)
+
+Note that executing an experiment might take a lot of system resource. In
+ Windows, in particular I had issues with large number of clients crashing
+  on load-up. To allow a process to start with more resources, please make
+   use of the Windows [`start`](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/start) 
+   command.
+   
+First, activate the virtual environment we set up before.
+Then, move towards the root of the project and execute i.e. 
+
+```
+start "" /d "." /higher python "path/to/experiment.py"
+```
 
 ## Acknowledgements
 

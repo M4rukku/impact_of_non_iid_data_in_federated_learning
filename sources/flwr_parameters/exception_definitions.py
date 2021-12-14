@@ -1,0 +1,2 @@
+class OutsideOfContextError(BaseException):
+    pass
