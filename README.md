@@ -138,10 +138,11 @@ $ find leaf_root data_loaders -maxdepth 4 -type f -regex ".*/.*\.\(\(py\)\|\(sh\
 ## Experiments
 
 ### Notes on Execution
-In particular the Femnist Dataset will take a lot of resources to process. In
- particular, the process is very demanding on RAM and virtual memory. On my
-  machine I have tested the use case of 100 clients and needed to increase my
-   virtual memory to 80-100GB while having 32GB of RAM.
+Depending on the use-case and simulator, the program will take a lot of System Resources. Ensure
+ that you have enough RAM, Processors and Virtual Memory allocated on your PC. Note that
+  simulations executed with Ray will be vastly more efficient than those executed with
+   Multiprocessing. If you see your system struggling with the load, try to increase those
+    parameters.
 
 ### Notes on Execution (Windows)
 

@@ -1,14 +1,35 @@
-import random
+import functools
 import typing
 import flwr as fl
 import numpy as np
 import tensorflow as tf
+from flwr.common import Config, Properties
 
 from sources.datasets.client_dataset import ClientDataset
 from sources.flwr_parameters.client_parameters import \
     FederatedEvaluationParameters, FittingParameters
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
+
+
+def lazy_client_initializer(func):
+    @functools.wraps(func)
+    def wrapper_decorator(self, *args, **kwargs):
+        if not self.model_initialised:
+            self.model = self.model_template.get_model()
+            self.optimizer = self.model_template.get_optimizer()
+            self.loss = self.model_template.get_loss()
+            self.model.compile(self.optimizer, self.loss, self.metrics)
+            self.model_initialised = True
+
+        value = func(self, *args, **kwargs)
+        return value
+
+    return wrapper_decorator
+
+
+class ConfigContainsUnknownPropertyError(BaseException):
+    pass
 
 
 class BaseClient(fl.client.NumPyClient):
@@ -20,23 +41,34 @@ class BaseClient(fl.client.NumPyClient):
                  fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
                  evaluation_callbacks: list[tf.keras.callbacks.Callback] = None
                  ):
-        self.model: tf.keras.Model = model_template.get_model()
-        self.optimizer: tf.keras.optimizers.Optimizer = \
-            model_template.get_optimizer()
-        self.loss: tf.keras.losses.Loss = model_template.get_loss()
-        self.metrics: typing.List[typing.Union[tf.keras.metrics.Metric, str]] \
-            = metrics
-
-        self.model.compile(self.optimizer, self.loss, self.metrics)
+        self.model_template: ModelTemplate = model_template
         self.dataset = dataset
-
         self.fitting_callbacks = fitting_callbacks
         self.evaluation_callbacks = evaluation_callbacks
 
+        self.model_initialised = False
+        self.model: tf.keras.Model = None
+        self.optimizer: tf.keras.optimizers.Optimizer = None
+        self.loss: tf.keras.losses.Loss = None
+        self.metrics: typing.List[typing.Union[tf.keras.metrics.Metric, str]] \
+            = metrics
+
+    @lazy_client_initializer
     def get_parameters(self):
         """Return current weights."""
         return self.model.get_weights()
 
+    @lazy_client_initializer
+    def get_properties(self, config: Config) -> Properties:
+        if len(config.items()) > 0:
+            raise ConfigContainsUnknownPropertyError(f"""
+            The configuration in BaseClient wants information about the 
+            following keys {config.keys()} which are not all supported. Please 
+            add support for unimplemented property data.
+            """)
+        return config
+
+    @lazy_client_initializer
     def fit(self, parameters: np.array, config: FittingParameters):
         """Fit model and return new weights as well as number of training
         examples."""
@@ -67,6 +99,7 @@ class BaseClient(fl.client.NumPyClient):
                 num_examples_train,
                 {key: entry[0] for key, entry in history.history.items()})
 
+    @lazy_client_initializer
     def evaluate(self, parameters, config: FederatedEvaluationParameters):
         batch_size: int = config["batch_size"]
         val_steps: int = config["val_steps"]
