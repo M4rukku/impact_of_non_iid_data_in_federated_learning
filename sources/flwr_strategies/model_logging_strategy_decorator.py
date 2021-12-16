@@ -18,7 +18,7 @@ def log_every_tenth_round(rnd: int):
 class ModelLoggingStrategyDecorator(BaseStrategyDecorator):
 
     def __init__(self, strategy: flwr.server.strategy.Strategy,
-                 model_saving_folder: PathLike,
+                 model_saving_folder: Union[PathLike, str],
                  experiment_identifier: str,
                  round_predicate=log_every_tenth_round
                  ):

@@ -1,4 +1,5 @@
 import typing
+from types import MappingProxyType
 
 
 class SimulationParameters(typing.TypedDict):
@@ -16,10 +17,10 @@ class ClientResources(typing.TypedDict):
     num_gpus: int
 
 
-DEFAULT_RAY_INIT_ARGS: RayInitArgs = {
+DEFAULT_RAY_INIT_ARGS: typing.Union[RayInitArgs, MappingProxyType[str, bool]] = MappingProxyType({
     "ignore_reinit_error": True,
     "include_dashboard": True
-}
+})
 
 DEFAULT_SERVER_HOST = "127.0.0.1"
 DEFAULT_SERVER_PORT = "23000"

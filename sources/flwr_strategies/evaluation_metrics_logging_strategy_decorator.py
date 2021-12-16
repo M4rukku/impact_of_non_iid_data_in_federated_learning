@@ -14,8 +14,9 @@ from sources.flwr_strategies.base_strategy_decorator import \
 
 class EvaluationMetricsLoggingStrategyDecorator(BaseStrategyDecorator):
 
-    def __init__(self, strategy: flwr.server.strategy.Strategy,
-                 metrics_logging_folder: PathLike,
+    def __init__(self,
+                 strategy: flwr.server.strategy.Strategy,
+                 metrics_logging_folder: Union[PathLike, str],
                  experiment_identifier: str):
         super().__init__(strategy)
         self.metrics_logging_folder = metrics_logging_folder

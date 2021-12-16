@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from os import PathLike
 from pathlib import Path
+from typing import Union
 
 
 class ClientDatasetFactory(ABC):
 
-    def __init__(self, root_data_dir: PathLike):
+    def __init__(self, root_data_dir: Union[PathLike, str]):
         self.root_data_dir = root_data_dir
 
     @abstractmethod

@@ -18,18 +18,22 @@ class BaseStrategyDecorator(flwr.server.strategy.Strategy):
             -> List[Tuple[ClientProxy, FitIns]]:
         return self.strategy.configure_fit(rnd, parameters, client_manager)
 
-    def aggregate_fit(self, rnd: int, results: List[Tuple[ClientProxy, FitRes]], failures: List[BaseException]) -> \
+    def aggregate_fit(self, rnd: int,
+                      results: List[Tuple[ClientProxy, FitRes]],
+                      failures: List[BaseException]) -> \
             Union[
                 Tuple[Optional[Parameters], Dict[str, Scalar]],
                 Optional[Weights],  # Deprecated
             ]:
         return self.strategy.aggregate_fit(rnd, results, failures)
 
-    def configure_evaluate(self, rnd: int, parameters: Parameters, client_manager: ClientManager) -> List[
-        Tuple[ClientProxy, EvaluateIns]]:
+    def configure_evaluate(self, rnd: int, parameters: Parameters, client_manager: ClientManager) \
+            -> List[Tuple[ClientProxy, EvaluateIns]]:
         return self.strategy.configure_evaluate(rnd, parameters, client_manager)
 
-    def aggregate_evaluate(self, rnd: int, results: List[Tuple[ClientProxy, EvaluateRes]],
+    def aggregate_evaluate(self,
+                           rnd: int,
+                           results: List[Tuple[ClientProxy, EvaluateRes]],
                            failures: List[BaseException]) -> Union[
         Tuple[Optional[float], Dict[str, Scalar]],
         Optional[float],  # Deprecated
