@@ -20,3 +20,6 @@ class ModelTemplate(ABC):
 
     def get_loss(self) -> tf.keras.losses.Loss:
         return self.loss
+
+    def set_optimizer(self, optimizer: tf.keras.optimizers.Optimizer):
+        self.optimizer = optimizer
