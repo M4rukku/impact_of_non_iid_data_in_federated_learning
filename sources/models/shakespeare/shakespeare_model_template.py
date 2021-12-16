@@ -1,19 +1,19 @@
 import tensorflow as tf
 
+from global_data_properties import LEAF_CHARACTERS
 from sources.models.model_template import ModelTemplate
 
-LEAF_CHARACTERS = (
-    "\n !\"&'(),-.0123456789:;>?ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz}"
-)
-
+SHAKESPEARE_SEQ_LEN: int = 80
+SHAKESPEARE_HIDDEN_SIZE: int = 256
+SHAKESPEARE_EMBEDDING_DIM: int = 8
 
 class ShakespeareModelTemplate(ModelTemplate):
 
     def __init__(self, seed,
                  alphabet=LEAF_CHARACTERS,
-                 seq_len=80,
-                 n_hidden=256,
-                 embedding_dim=8,
+                 seq_len=SHAKESPEARE_SEQ_LEN,
+                 n_hidden=SHAKESPEARE_HIDDEN_SIZE,
+                 embedding_dim=SHAKESPEARE_EMBEDDING_DIM,
                  optimizer=tf.keras.optimizers.SGD(),
                  loss=tf.keras.losses.CategoricalCrossentropy()
                  ):

@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from global_parameters import FEMNIST_IMAGE_SIZE, FEMNIST_CLASSES
+from global_data_properties import FEMNIST_IMAGE_SIZE, FEMNIST_CLASSES
 from sources.models.model_template import ModelTemplate
 
 
