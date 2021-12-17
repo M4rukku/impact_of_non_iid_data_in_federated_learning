@@ -8,7 +8,7 @@ sys.path.append(str(Path(__file__).parent.parent.parent.resolve()))
 
 from sources.datasets.femnist.femnist_client_dataset_factory import \
     FemnistClientDatasetFactory
-from sources.flwr_parameters.default_parameters import DEFAULT_SEED
+from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.flwr_parameters.default_strategy_configs import \
     femnist_eval_config, femnist_fit_config
 from sources.flwr_strategies.evaluation_metrics_logging_strategy_decorator \

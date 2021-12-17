@@ -19,9 +19,11 @@ class ClientResources(typing.TypedDict):
 
 DEFAULT_RAY_INIT_ARGS: typing.Union[RayInitArgs, MappingProxyType[str, bool]] = MappingProxyType({
     "ignore_reinit_error": True,
-    "include_dashboard": True
+    "include_dashboard": False
 })
 
 DEFAULT_SERVER_HOST = "127.0.0.1"
 DEFAULT_SERVER_PORT = "23000"
 DEFAULT_SERVER_ADDRESS = DEFAULT_SERVER_HOST + ":" + DEFAULT_SERVER_PORT
+
+DEFAULT_RUNS_PER_EXPERIMENT: int = 5

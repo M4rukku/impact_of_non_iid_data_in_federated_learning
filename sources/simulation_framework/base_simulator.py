@@ -5,7 +5,7 @@ import flwr as fl
 import tensorflow as tf
 
 from sources.datasets.client_dataset_factory import ClientDatasetFactory
-from sources.flwr_parameters.default_parameters import DEFAULT_SEED
+from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.flwr_parameters.simulation_parameters import SimulationParameters
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.make_keras_pickleable import make_keras_pickleable

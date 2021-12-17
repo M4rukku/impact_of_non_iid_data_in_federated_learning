@@ -56,12 +56,6 @@ First, ensure that you have both python3 and pip3 installed on the
  WSL. (On Ubuntu 20.04+ python3 is preinstalled. You can check if python3/pip3
   is preinstalled by typing `python3 -v`.)
  
-```
-$ sudo apt update
-$ sudo apt upgrade
-$ sudo apt install python3-pip
-```
-
 Should you need to install python beforehand; use the deadsnakes ppa: 
 
 ```
@@ -71,7 +65,15 @@ $ sudo apt-get update
 $ sudo apt-get install python3.8
 ```
 
-Check that the installation succeeded by executing `python3 -v` and `pip3 -v`
+Check that the installation succeeded by executing `python3 -v` and `pip3 -v`. In general, I
+ recommend to at least execute `sudo apt update` and `sudo apt upgrade`before proceeding.
+
+If you don't have pip3 installed, please execute the following.
+
+```
+$ sudo apt update
+$ sudo apt install python3-pip
+```
 
 Now install virtualenv on the environment:
 
@@ -156,7 +158,7 @@ First, activate the virtual environment we set up before.
 Then, move towards the root of the project and execute i.e. 
 
 ```
-start "" /d "." /higher python "path/to/experiment.py"
+start "" /d "." /high /wait /b python "path/to/experiment.py"
 ```
 
 ## Acknowledgements

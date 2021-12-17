@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 import tensorflow as tf
-from typing import Union
+from sources.flwr_parameters.set_random_seeds import set_seeds
 
 
 class ModelTemplate(ABC):
@@ -10,6 +10,7 @@ class ModelTemplate(ABC):
         self.seed = seed
         self.optimizer: tf.keras.optimizers.Optimizer = optimizer
         self.loss: tf.keras.losses.Loss = loss
+        set_seeds(self.seed)
 
     @abstractmethod
     def get_model(self) -> tf.keras.Model:

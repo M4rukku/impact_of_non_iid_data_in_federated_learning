@@ -1,10 +1,15 @@
+import logging
+import time
+import traceback
+
 import flwr as fl
 import numpy as np
+import ray
 import tensorflow as tf
 
 from sources.datasets.client_dataset_factory import ClientDatasetFactory
 from sources.flwr_clients.base_client import BaseClient
-from sources.flwr_parameters.default_parameters import DEFAULT_SEED
+from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.flwr_parameters.simulation_parameters import SimulationParameters, \
     RayInitArgs, ClientResources, DEFAULT_RAY_INIT_ARGS
 from sources.metrics.default_metrics import DEFAULT_METRICS
@@ -62,3 +67,16 @@ class RayBasedSimulator(BaseSimulator):
                                        num_rounds=num_rounds,
                                        strategy=self.strategy,
                                        ray_init_args=self.ray_init_args)
+
+        time.sleep(2)
+        logging.info(f"Attempting to shut down ray...")
+        try:
+            if ray.is_initialized():
+                logging.info(f"Shutting Down Ray...")
+                ray.shutdown()
+            else:
+                logging.info(f"Ray has not yet been initialized...")
+        except Exception as e:
+            logging.error("An error occurred while shutting down ray.")
+            logging.error("".join(traceback.format_tb(e.__traceback__)))
+        time.sleep(5)

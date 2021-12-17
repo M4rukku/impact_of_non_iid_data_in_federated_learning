@@ -1,6 +1,10 @@
-class OutsideOfContextError(BaseException):
+class OutsideOfContextError(Exception):
     pass
 
 
-class ExperimentParameterListsHaveUnequalLengths(BaseException):
+class ExperimentParameterListsHaveUnequalLengths(Exception):
+    pass
+
+
+class ConfigContainsUnknownPropertyError(Exception):
     pass

@@ -1,4 +1,5 @@
 import functools
+import logging
 import typing
 import flwr as fl
 import numpy as np
@@ -8,6 +9,8 @@ from flwr.common import Config, Properties
 from sources.datasets.client_dataset import ClientDataset
 from sources.flwr_parameters.client_parameters import \
     FederatedEvaluationParameters, FittingParameters
+from sources.flwr_parameters.exception_definitions import ConfigContainsUnknownPropertyError
+from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED, set_global_determinism
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 
@@ -28,10 +31,6 @@ def lazy_client_initializer(func):
     return wrapper_decorator
 
 
-class ConfigContainsUnknownPropertyError(BaseException):
-    pass
-
-
 class BaseClient(fl.client.NumPyClient):
 
     def __init__(self,
@@ -41,6 +40,9 @@ class BaseClient(fl.client.NumPyClient):
                  fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
                  evaluation_callbacks: list[tf.keras.callbacks.Callback] = None
                  ):
+        set_global_determinism(DEFAULT_SEED)
+        tf.keras.backend.clear_session()
+
         self.model_template: ModelTemplate = model_template
         self.dataset = dataset
         self.fitting_callbacks = fitting_callbacks
@@ -50,8 +52,7 @@ class BaseClient(fl.client.NumPyClient):
         self.model: tf.keras.Model = None
         self.optimizer: tf.keras.optimizers.Optimizer = None
         self.loss: tf.keras.losses.Loss = None
-        self.metrics: typing.List[typing.Union[tf.keras.metrics.Metric, str]] \
-            = metrics
+        self.metrics: typing.List[typing.Union[tf.keras.metrics.Metric, str]] = metrics
 
     @lazy_client_initializer
     def get_parameters(self):
@@ -116,7 +117,10 @@ class BaseClient(fl.client.NumPyClient):
 
             data_len = len(self.dataset.validation_data_x)
 
-        return (result_dict["loss"],
-                min(data_len, batch_size *
+        result = (result_dict["loss"],
+                int(min(data_len, batch_size *
                     (val_steps if val_steps is not None
-                     else data_len / batch_size)), result_dict)
+                     else data_len / batch_size))), result_dict)
+        logging.warning("Evaluating Client")
+        logging.warning(str(result))
+        return result

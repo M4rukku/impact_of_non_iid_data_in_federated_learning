@@ -1,3 +1,4 @@
+import logging
 from typing import Optional, Tuple, Dict, List, Union
 
 import flwr.server.strategy

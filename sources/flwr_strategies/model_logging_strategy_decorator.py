@@ -35,7 +35,7 @@ class ModelLoggingStrategyDecorator(BaseStrategyDecorator):
                 Tuple[Optional[Parameters], Dict[str, Scalar]],
                 Optional[Weights],  # Deprecated
             ]:
-        aggregated_weights = \
+        aggregated_weights, metrics = \
             self.strategy.aggregate_fit(rnd, results, failures)
 
         if self.round_predicate(rnd):
@@ -46,4 +46,4 @@ class ModelLoggingStrategyDecorator(BaseStrategyDecorator):
 
             npz_parameters_to_file(filename, aggregated_weights)
 
-        return aggregated_weights
+        return aggregated_weights, metrics
