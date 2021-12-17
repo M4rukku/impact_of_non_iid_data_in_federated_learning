@@ -2,7 +2,7 @@ from pathlib import Path
 
 from sources.datasets.client_dataset_factory import ClientDatasetFactory
 from sources.datasets.shakespeare.shakespeare_client_dataset import ShakespeareClientDataset
-from global_data_properties import LEAF_CHARACTERS
+from sources.global_data_properties import LEAF_CHARACTERS
 
 
 class ShakespeareClientDatasetFactory(ClientDatasetFactory):

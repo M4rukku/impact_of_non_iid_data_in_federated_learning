@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from global_data_properties import CELEBA_IMAGE_SIZE, CELEBA_CLASSES
+from sources.global_data_properties import CELEBA_IMAGE_SIZE, CELEBA_CLASSES
 from sources.models.model_template import ModelTemplate
 
 

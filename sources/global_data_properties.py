@@ -7,3 +7,5 @@ FEMNIST_CLASSES = 62
 LEAF_CHARACTERS = (
     "\n !\"&'(),-.0123456789:;>?ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz}"
 )
+
+DATASET_NAME_LIST = ["femnist", "celeba", "shakespeare"]

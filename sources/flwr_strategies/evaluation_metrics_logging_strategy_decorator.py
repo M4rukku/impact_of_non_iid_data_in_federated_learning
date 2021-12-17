@@ -1,5 +1,6 @@
 from collections import defaultdict
 from os import PathLike
+import numpy as np
 from typing import Optional, Tuple, Dict, List, Union
 
 import flwr.server.strategy
@@ -44,12 +45,15 @@ class EvaluationMetricsLoggingStrategyDecorator(BaseStrategyDecorator):
                            ) -> Union[
         Tuple[Optional[float], Dict[str, Scalar]], Optional[float]]:
 
-        first_evaluate_res = results[0][1]
+        all_failures = results is None or len(results)==0
         accuracies = None
-        if "acc" in first_evaluate_res.metrics:
-            accuracies = [r.metrics["acc"] * r.num_examples for _, r in results]
-        elif "accuracy" in first_evaluate_res.metrics:
-            accuracies = [r.metrics["accuracy"] * r.num_examples for _, r in results]
+
+        if not all_failures:
+            first_evaluate_res = results[0][1]
+            if "acc" in first_evaluate_res.metrics:
+                accuracies = [r.metrics["acc"] * r.num_examples for _, r in results]
+            elif "accuracy" in first_evaluate_res.metrics:
+                accuracies = [r.metrics["accuracy"] * r.num_examples for _, r in results]
 
         if accuracies is not None:
             examples = [r.num_examples for _, r in results]
@@ -58,15 +62,21 @@ class EvaluationMetricsLoggingStrategyDecorator(BaseStrategyDecorator):
                 create_evaluation_metrics_filename(self.metrics_logging_folder,
                                                    self.experiment_identifier),
                 str(accuracy_aggregated))
+        else:
+            append_data_to_file(
+                create_evaluation_metrics_filename(self.metrics_logging_folder,
+                                                   self.experiment_identifier),
+                str(np.nan))
 
-        metric_list = list(map(lambda p: p[1].metrics, results))
-        num_examples_list = list(map(lambda p: p[1].num_examples, results))
-        averaged_metrics = reduce_average_metrics(num_examples_list, metric_list)
+        if not all_failures:
+            metric_list = list(map(lambda p: p[1].metrics, results))
+            num_examples_list = list(map(lambda p: p[1].num_examples, results))
+            averaged_metrics = reduce_average_metrics(num_examples_list, metric_list)
 
-        pickle_parameters_to_file(
-            create_round_based_evaluation_metrics_filename(rnd,
-                                                           self.metrics_logging_folder,
-                                                           self.experiment_identifier),
-            averaged_metrics)
+            pickle_parameters_to_file(
+                create_round_based_evaluation_metrics_filename(rnd,
+                                                               self.metrics_logging_folder,
+                                                               self.experiment_identifier),
+                averaged_metrics)
 
         return self.strategy.aggregate_evaluate(rnd, results, failures)

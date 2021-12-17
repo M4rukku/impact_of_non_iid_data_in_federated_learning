@@ -18,12 +18,12 @@ import json
 import pickle
 from os import PathLike
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List, Tuple
 from PIL import Image
 
 import sys
 sys.path.append(str(Path(__file__).resolve().parents[2]))
-from global_data_properties import CELEBA_IMAGE_SIZE
+from sources.global_data_properties import CELEBA_IMAGE_SIZE
 
 
 def check_between_zero_and_one(value: str):

@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from global_data_properties import LEAF_CHARACTERS
+from sources.global_data_properties import LEAF_CHARACTERS
 from sources.models.model_template import ModelTemplate
 
 SHAKESPEARE_SEQ_LEN: int = 80

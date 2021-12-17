@@ -38,4 +38,4 @@ if __name__ == "__main__":
         strategy_provider,
         experiment_metadata_list,
         base_dir,
-        runs_per_experiment=3)
+        runs_per_experiment=1)

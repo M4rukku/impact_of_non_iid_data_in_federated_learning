@@ -8,3 +8,7 @@ class ExperimentParameterListsHaveUnequalLengths(Exception):
 
 class ConfigContainsUnknownPropertyError(Exception):
     pass
+
+
+class DatasetNotFoundError(Exception):
+    pass
