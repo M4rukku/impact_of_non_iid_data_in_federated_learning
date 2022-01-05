@@ -53,7 +53,18 @@ This project uses Tensorflow 2.x to run the code. Therefore, ensure that you
  have installed the latest version of CUDA and the necessary NVIDIA drivers
   on your system. (https://www.tensorflow.org/install/gpu)
 
+### Recommended: Enable Long Paths on Windows
+The simulator will create very long paths during experimentation. Either be aware and choose
+ short experiment names, or enable long paths globally. You can find the instructions for that
+  [here](https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=cmd)
 
+In short, you need to execute the following script in a privileged powershell prompt on Windows
+ 10, 1607 or later and then restart the computer.
+ 
+ ```angular2
+New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
+-Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+```
 ### Execute the Dataloader Script on Windows
  
 <a id="windows_script_fix">

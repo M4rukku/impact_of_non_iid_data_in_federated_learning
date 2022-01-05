@@ -9,6 +9,8 @@ import tensorflow as tf
 from tensorflow.python.keras.layers import deserialize, serialize
 from tensorflow.python.keras.saving import saving_utils
 
+from sources.flwr_parameters.set_random_seeds import set_seeds
+
 
 def unpack_optimizer(optimizer_config, optimizer_weights):
     # Workaround for Bug (from_config
@@ -29,6 +31,7 @@ def make_keras_optimizers_pickleable():
 
 
 def unpack_model(model, training_config, weights):
+    set_seeds()
     restored_model = deserialize(model)
     if training_config is not None:
         restored_model.compile(
@@ -52,6 +55,12 @@ def make_keras_models_pickleable():
     cls.__reduce__ = __reduce__
 
 
+make_keras_pickleable_executed = False
+
+
 def make_keras_pickleable():
-    make_keras_models_pickleable()
-    make_keras_optimizers_pickleable()
+    global make_keras_pickleable_executed
+    if not make_keras_pickleable_executed:
+        make_keras_models_pickleable()
+        make_keras_optimizers_pickleable()
+        make_keras_pickleable_executed = True

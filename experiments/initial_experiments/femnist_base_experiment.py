@@ -27,8 +27,6 @@ if __name__ == "__main__":
 
     experiment_metadata_list = [
         ExperimentMetadata(600, 5, 3, 5, 1, 2),
-        ExperimentMetadata(600, 5, 3, 5, 1, 2),
-        ExperimentMetadata(600, 5, 3, 5, 1, 2),
     ]
 
     SimulationExperiment.start_experiment(

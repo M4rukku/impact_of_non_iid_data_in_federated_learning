@@ -22,6 +22,8 @@ from sources.flwr_parameters.exception_definitions import \
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED, set_global_determinism
 from sources.flwr_parameters.simulation_parameters import RayInitArgs, ClientResources, \
     DEFAULT_RAY_INIT_ARGS, DEFAULT_RUNS_PER_EXPERIMENT
+from sources.flwr_strategies.central_evaluation_logging_decorator import \
+    CentralEvaluationLoggingDecorator
 from sources.flwr_strategies.evaluation_metrics_logging_strategy_decorator import \
     EvaluationMetricsLoggingStrategyDecorator
 from sources.flwr_strategies.model_logging_strategy_decorator import \
@@ -124,8 +126,11 @@ class SimulationExperiment:
     def _ensure_strategy_implements_basic_config_funcs(
             strategy: flwr.server.strategy.Strategy,
             extended_metadata: ExtendedExperimentMetadata,
+            centralised_evaluation: bool
     ):
         # Setup fit/evaluate config functions
+        if hasattr(strategy, "strategy"):
+            strategy = strategy.strategy
 
         def on_fit_config_fn(rnd: int):
             config = {
@@ -156,20 +161,21 @@ class SimulationExperiment:
 
             strategy.on_fit_config_fn = decorated_on_fit_config_fun
 
-        if strategy.on_evaluate_config_fn is None:
-            strategy.on_evaluate_config_fn = on_evaluate_config_fn
-        else:
-            eval_fun = strategy.on_evaluate_config_fn
+        if not centralised_evaluation:
+            if strategy.on_evaluate_config_fn is None:
+                strategy.on_evaluate_config_fn = on_evaluate_config_fn
+            else:
+                eval_fun = strategy.on_evaluate_config_fn
 
-            def decorated_on_eval_config_fun(rnd: int):
-                result_dict = eval_fun(rnd)
-                result_dict["batch_size"] = result_dict.get("batch_size",
-                                                            extended_metadata.batch_size)
-                result_dict["val_steps"] = result_dict.get("val_steps",
-                                                           extended_metadata.val_steps)
-                return result_dict
+                def decorated_on_eval_config_fun(rnd: int):
+                    result_dict = eval_fun(rnd)
+                    result_dict["batch_size"] = result_dict.get("batch_size",
+                                                                extended_metadata.batch_size)
+                    result_dict["val_steps"] = result_dict.get("val_steps",
+                                                               extended_metadata.val_steps)
+                    return result_dict
 
-            strategy.on_evaluate_config_fn = decorated_on_eval_config_fun
+                strategy.on_evaluate_config_fn = decorated_on_eval_config_fun
 
     @staticmethod
     def start_experiment(
@@ -189,7 +195,8 @@ class SimulationExperiment:
             evaluation_callbacks: list[tf.keras.callbacks.Callback] = None,
             metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
             seed: int = DEFAULT_SEED,
-            runs_per_experiment: int = DEFAULT_RUNS_PER_EXPERIMENT
+            runs_per_experiment: int = DEFAULT_RUNS_PER_EXPERIMENT,
+            centralised_evaluation=False
     ):
 
         strategies_list_defined = True if strategies_list is not None else False
@@ -250,21 +257,32 @@ class SimulationExperiment:
                     json.dump(extended_metadata_dict, f)
 
                 # Setup fit/evaluate config functions
-                SimulationExperiment._ensure_strategy_implements_basic_config_funcs(strategy_,
-                                                                                    extended_metadata)
+                SimulationExperiment._ensure_strategy_implements_basic_config_funcs(
+                    strategy_,
+                    extended_metadata,
+                    centralised_evaluation
+                )
 
                 # Add decorators for logging
-                strategy_ = EvaluationMetricsLoggingStrategyDecorator(
-                    strategy=strategy_,
-                    metrics_logging_folder=metrics_saving_dir_str,
-                    experiment_identifier=experiment_name
-                )
+                if not centralised_evaluation:
+                    strategy_ = EvaluationMetricsLoggingStrategyDecorator(
+                        strategy=strategy_,
+                        metrics_logging_folder=metrics_saving_dir_str,
+                        experiment_identifier=experiment_name
+                    )
 
                 strategy_ = ModelLoggingStrategyDecorator(
                     strategy=strategy_,
                     model_saving_folder=model_saving_dir_str,
                     experiment_identifier=experiment_name
                 )
+
+                if centralised_evaluation:
+                    strategy_ = CentralEvaluationLoggingDecorator(
+                        strategy=strategy_,
+                        metrics_logging_folder=metrics_saving_dir_str,
+                        experiment_identifier=experiment_name
+                    )
 
                 # Start Simulation
                 simulator = RayBasedSimulator(

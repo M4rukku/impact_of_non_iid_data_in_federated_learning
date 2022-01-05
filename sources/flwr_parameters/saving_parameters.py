@@ -1,5 +1,3 @@
-import functools
-import os
 import pickle
 from os import PathLike
 from pathlib import Path
@@ -7,6 +5,7 @@ from pathlib import Path
 import numpy as np
 
 EVALUATION_METRICS_BASE_FILENAME = "evaluation_metrics_"
+CENTRALISED_EVALUATION_METRICS_BASE_FILENAME = "centralised_evaluation_metrics_"
 
 
 def create_evaluation_metrics_filename(saving_dir: PathLike,
@@ -22,6 +21,13 @@ def create_round_based_evaluation_metrics_filename(rnd: int,
            f"{EVALUATION_METRICS_BASE_FILENAME}{experiment_identifier}_{str(rnd)}.pkl"
 
 
+def create_round_based_centralised_evaluation_metrics_filename(rnd: int,
+                                                               saving_dir: PathLike,
+                                                               experiment_identifier: str):
+    return Path(saving_dir) / \
+           f"{CENTRALISED_EVALUATION_METRICS_BASE_FILENAME}{experiment_identifier}_{str(rnd)}.pkl"
+
+
 MODEL_SAVING_BASE_FILENAME = "model_"
 
 
@@ -29,7 +35,7 @@ def create_round_based_model_saving_filename(rnd: int,
                                              logging_dir: PathLike,
                                              experiment_identifier: str):
     return Path(logging_dir) / \
-        f"{MODEL_SAVING_BASE_FILENAME}{experiment_identifier}_{str(rnd)}.npz"
+           f"{MODEL_SAVING_BASE_FILENAME}{experiment_identifier}_{str(rnd)}.npz"
 
 
 def ensure_dir_of_file_exists(filepath: Path):

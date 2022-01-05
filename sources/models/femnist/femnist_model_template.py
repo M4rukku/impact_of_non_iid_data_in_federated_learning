@@ -1,16 +1,17 @@
 import tensorflow as tf
+from typing import List, Union
 
 from sources.global_data_properties import FEMNIST_IMAGE_SIZE, FEMNIST_CLASSES
+from sources.metrics.default_metrics import get_default_sparse_categorical_metrics
 from sources.models.model_template import ModelTemplate
 
 
 class FemnistModelTemplate(ModelTemplate):
 
     def __init__(self, seed, num_classes=FEMNIST_CLASSES,
-                 optimizer=tf.keras.optimizers.SGD(),
                  loss=tf.keras.losses.SparseCategoricalCrossentropy()):
-        self.num_classes = num_classes
-        super(FemnistModelTemplate, self).__init__(seed, optimizer, loss)
+
+        super(FemnistModelTemplate, self).__init__(seed, loss, num_classes)
 
     def get_model(self) -> tf.keras.Model:
         model = tf.keras.Sequential()
@@ -31,3 +32,12 @@ class FemnistModelTemplate(ModelTemplate):
         model.add(tf.keras.layers.Softmax())
 
         return model
+
+    def get_centralised_metrics(self) -> List[Union[str, tf.keras.metrics.Metric]]:
+        return get_default_sparse_categorical_metrics(self.num_classes)
+
+    def get_optimizer(self, lr=0.01) -> tf.keras.optimizers.Optimizer:
+        if self.optimizer is not None:
+            return self.optimizer
+        else:
+            return tf.keras.optimizers.SGD(learning_rate=lr)

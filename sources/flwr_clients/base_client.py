@@ -1,5 +1,4 @@
 import functools
-import logging
 import typing
 import flwr as fl
 import numpy as np
@@ -86,6 +85,7 @@ class BaseClient(fl.client.NumPyClient):
                 self.dataset.test_data_y,
                 batch_size,
                 epochs,
+                shuffle=True,
                 validation_data=self.dataset.validation_data,
                 callbacks=self.fitting_callbacks,
                 verbose=1
@@ -121,6 +121,4 @@ class BaseClient(fl.client.NumPyClient):
                 int(min(data_len, batch_size *
                     (val_steps if val_steps is not None
                      else data_len / batch_size))), result_dict)
-        logging.warning("Evaluating Client")
-        logging.warning(str(result))
         return result

@@ -10,14 +10,12 @@ from sources.global_data_properties import LEAF_CHARACTERS
 class ShakespeareClientDataset(ClientDataset):
 
     def __init__(self, root_data_dir: PathLike, client_identifier: str, alphabet=LEAF_CHARACTERS):
-
         super().__init__(root_data_dir=root_data_dir,
                          subfolder_identifier="shakespeare",
                          client_identifier=client_identifier)
 
         self.alphabet = alphabet
         self.character_integer_mapping = {c: i for i, c in enumerate(self.alphabet)}
-
 
     def _word_to_indices(self, word: str) -> List[int]:
         """Converts a sequence of characters into position indices in the

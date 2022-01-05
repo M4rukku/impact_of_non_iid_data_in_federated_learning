@@ -44,13 +44,11 @@ class RayBasedSimulator(BaseSimulator):
         self.ray_init_args = ray_init_args
 
     def start_simulation(self):
-        def client_fn(client_identifier: str):
-            return BaseClient(self.model_template,
-                              self.dataset_factory.
-                              create_dataset(client_identifier),
-                              self.metrics,
-                              self.fitting_callbacks,
-                              self.evaluation_callbacks)
+        client_fn = PickleableClientFunction(self.model_template,
+                                             self.dataset_factory,
+                                             self.metrics,
+                                             self.fitting_callbacks,
+                                             self.evaluation_callbacks)
 
         num_rounds = self.simulation_parameters["num_rounds"]
         num_clients = self.simulation_parameters["num_clients"]
@@ -80,3 +78,20 @@ class RayBasedSimulator(BaseSimulator):
             logging.error("An error occurred while shutting down ray.")
             logging.error("".join(traceback.format_tb(e.__traceback__)))
         time.sleep(5)
+
+
+class PickleableClientFunction:
+    def __init__(self, model_template, dataset_factory, metrics,
+                 fitting_callbacks, evaluation_callbacks):
+        self.model_template = model_template
+        self.dataset_factory = dataset_factory
+        self.metrics = metrics
+        self.fitting_callbacks = fitting_callbacks
+        self.evaluation_callbacks = evaluation_callbacks
+
+    def __call__(self, client_identifier: str):
+        return BaseClient(self.model_template,
+                          self.dataset_factory.create_dataset(client_identifier),
+                          self.metrics,
+                          self.fitting_callbacks,
+                          self.evaluation_callbacks)
