@@ -4,16 +4,15 @@ from abc import ABC, abstractmethod
 from typing import List, Union
 
 import tensorflow as tf
-from sources.flwr_parameters.set_random_seeds import set_seeds
 
 
 class ModelTemplate(ABC):
-    def __init__(self, seed,  loss, num_classes=None):
+    def __init__(self, seed, loss, num_classes=None):
         self.seed = seed
         self.num_classes = num_classes
         self.optimizer: tf.keras.optimizers.Optimizer = None
         self.loss: tf.keras.losses.Loss = loss
-        set_seeds(self.seed)
+        # set_seeds(self.seed)
 
     @abstractmethod
     def get_model(self) -> tf.keras.Model:

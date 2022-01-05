@@ -31,7 +31,7 @@ def make_keras_optimizers_pickleable():
 
 
 def unpack_model(model, training_config, weights):
-    set_seeds()
+    # set_seeds()
     restored_model = deserialize(model)
     if training_config is not None:
         restored_model.compile(

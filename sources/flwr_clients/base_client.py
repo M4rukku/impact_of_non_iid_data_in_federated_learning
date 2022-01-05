@@ -39,7 +39,7 @@ class BaseClient(fl.client.NumPyClient):
                  fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
                  evaluation_callbacks: list[tf.keras.callbacks.Callback] = None
                  ):
-        set_global_determinism(DEFAULT_SEED)
+        # set_global_determinism(DEFAULT_SEED)
         tf.keras.backend.clear_session()
 
         self.model_template: ModelTemplate = model_template

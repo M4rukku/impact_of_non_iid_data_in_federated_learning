@@ -25,7 +25,7 @@ class PickleableEvaluationFunction:
 
     def __call__(self, results: List[numpy.ndarray]) -> \
             Optional[Tuple[float, Dict[str, Union[bool, bytes, float, int, str]]]]:
-        set_global_determinism()
+        #set_global_determinism()
         logging.warning("Starting Centralised Evaluation")
 
         self.model.compile(optimizer=self.optimizer,
