@@ -11,9 +11,9 @@ from sources.datasets.femnist.femnist_client_dataset_factory import \
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.flwr_parameters.default_strategy_configs import \
     femnist_eval_config, femnist_fit_config
-from sources.flwr_strategies.evaluation_metrics_logging_strategy_decorator \
+from sources.flwr_strategies_decorators.evaluation_metrics_logging_strategy_decorator \
     import EvaluationMetricsLoggingStrategyDecorator
-from sources.flwr_strategies.model_logging_strategy_decorator import \
+from sources.flwr_strategies_decorators.model_logging_strategy_decorator import \
     ModelLoggingStrategyDecorator
 from sources.models.femnist.femnist_model_template import FemnistModelTemplate
 from sources.simulation_framework.ray_based_simulator import RayBasedSimulator

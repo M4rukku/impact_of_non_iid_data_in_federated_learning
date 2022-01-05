@@ -6,7 +6,7 @@ from flwr.common import Parameters, Scalar
 
 from sources.flwr_parameters.saving_parameters import pickle_parameters_to_file, \
     create_round_based_centralised_evaluation_metrics_filename
-from sources.flwr_strategies.base_strategy_decorator import BaseStrategyDecorator
+from sources.flwr_strategies_decorators.base_strategy_decorator import BaseStrategyDecorator
 
 
 class CentralEvaluationLoggingDecorator(BaseStrategyDecorator):
