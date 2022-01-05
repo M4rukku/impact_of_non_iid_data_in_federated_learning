@@ -2,13 +2,13 @@ import os
 import sys
 from pathlib import Path
 
+from sources.flwr_strategies.FullEvaluationFedAvg import FullEvaluationFedAvg
+
 sys.path.append(str(Path(os.getcwd()).parent.parent.resolve()))
 dllpath = Path("C:") / "Program Files" / "NVIDIA GPU Computing Toolkit" / "CUDA" / "v11.2" / "bin"
 dllstring = str(dllpath.resolve())
 os.add_dll_directory(dllstring)
 
-import flwr
-import tensorflow as tf
 from sources.dataset_utils.get_iid_dataset_utils import get_default_iid_dataset
 from sources.metrics.central_evaluation import create_central_evaluation_function_from_dataset
 
@@ -40,9 +40,9 @@ if __name__ == "__main__":
         else:
             fraction_fit = experiment_metadata.clients_per_round
 
-        strategy = flwr.server.strategy.FedAvg(eval_fn=eval_fn,
-                                               fraction_fit=fraction_fit,
-                                               fraction_eval=fraction_fit)
+        strategy = FullEvaluationFedAvg(eval_fn=eval_fn,
+                                        fraction_fit=fraction_fit,
+                                        fraction_eval=fraction_fit)
 
         return strategy
 
@@ -52,19 +52,17 @@ if __name__ == "__main__":
                            num_rounds=100,
                            clients_per_round=10,
                            batch_size=10,
-                           local_epochs=3,
+                           local_epochs=1,
                            val_steps=3),
     ]
 
-    optimizer_list = [tf.keras.optimizers.SGD(0.004)]
-
     SimulationExperiment.start_experiment(
-        "CentralisedEvaluationFemnist",
+        "FullEvaluationFemnist",
         model_template,
         dataset_factory,
         strategy_provider,
         experiment_metadata_list,
         base_dir,
-        optimizer_list=optimizer_list,
         runs_per_experiment=1,
-        centralised_evaluation=True)
+        centralised_evaluation=True,
+        aggregated_evaluation=True)
