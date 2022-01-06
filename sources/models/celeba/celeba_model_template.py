@@ -29,7 +29,6 @@ class CelebaModelTemplate(ModelTemplate):
             model.add(tf.keras.layers.MaxPooling2D(2, 2, padding='same'))
             model.add(tf.keras.layers.ReLU())
 
-        print(model.layers[-1].output_shape)
         model.add(tf.keras.layers.Flatten())
         model.add(tf.keras.layers.Dense(self.num_classes))
         model.add(tf.keras.layers.Softmax())
@@ -39,7 +38,7 @@ class CelebaModelTemplate(ModelTemplate):
     def get_centralised_metrics(self) -> List[Union[str, tf.keras.metrics.Metric]]:
         return get_default_sparse_categorical_metrics(self.num_classes)
 
-    def get_optimizer(self, lr=0.01) -> tf.keras.optimizers.Optimizer:
+    def get_optimizer(self, lr=0.001) -> tf.keras.optimizers.Optimizer:
         if self.optimizer is not None:
             return self.optimizer
         else:

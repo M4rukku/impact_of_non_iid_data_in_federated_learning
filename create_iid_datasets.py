@@ -17,6 +17,11 @@ if __name__ == '__main__':
 
     dataset_identifiers = DATASET_NAME_LIST
 
+    dataset_identifier_parser.add_argument(
+        f'--all',
+        action='store_true',
+        help=f'Create all default/full datasets.')
+
     for dataset_identifier in dataset_identifiers:
         dataset_identifier_parser.add_argument(
             f'--{dataset_identifier.lower()}',
@@ -65,7 +70,7 @@ if __name__ == '__main__':
     datasets = DATASET_NAME_LIST
 
     for dataset_identifier in datasets:
-        if args[dataset_identifier]:
+        if args[dataset_identifier] or args["all"]:
             print(f"Creating default IID Dataset for {dataset_identifier}")
             create_iid_dataset(
                 data_dir,
@@ -91,7 +96,7 @@ if __name__ == '__main__':
 
     for dataset_identifier in datasets:
         var_id = dataset_identifier + "_full"
-        if args[var_id]:
+        if args[var_id] or args["all"]:
             print(f"Creating Full IID Dataset for {dataset_identifier}")
             create_iid_dataset(
                 data_dir,

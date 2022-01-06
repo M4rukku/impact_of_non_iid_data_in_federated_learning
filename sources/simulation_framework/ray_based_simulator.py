@@ -15,6 +15,7 @@ from sources.flwr_parameters.simulation_parameters import SimulationParameters, 
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 from sources.simulation_framework.base_simulator import BaseSimulator
+from sources.simulation_framework.ray_simulator_copy import start_simulation
 
 
 class RayBasedSimulator(BaseSimulator):
@@ -59,25 +60,18 @@ class RayBasedSimulator(BaseSimulator):
             size=num_clients,
             replace=False)))
 
-        fl.simulation.start_simulation(client_fn=client_fn,
-                                       clients_ids=clients_ids,
-                                       client_resources=self.client_resources,
-                                       num_rounds=num_rounds,
-                                       strategy=self.strategy,
-                                       ray_init_args=self.ray_init_args)
-
-        time.sleep(2)
-        logging.info(f"Attempting to shut down ray...")
         try:
-            if ray.is_initialized():
-                logging.info(f"Shutting Down Ray...")
-                ray.shutdown()
-            else:
-                logging.info(f"Ray has not yet been initialized...")
+            # Temporarily use a local copy of the ray based simulator
+            start_simulation(client_fn=client_fn,
+                             clients_ids=clients_ids,
+                             client_resources=self.client_resources,
+                             num_rounds=num_rounds,
+                             strategy=self.strategy,
+                             ray_init_args=self.ray_init_args)
         except Exception as e:
-            logging.error("An error occurred while shutting down ray.")
-            logging.error("".join(traceback.format_tb(e.__traceback__)))
-        time.sleep(5)
+            logging.error(
+                "Caught Exception after finishing Simulation - Caught the following error ")
+            traceback.print_exception(type(e), e, e.__traceback__)
 
 
 class PickleableClientFunction:

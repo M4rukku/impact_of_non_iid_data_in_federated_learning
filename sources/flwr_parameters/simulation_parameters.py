@@ -1,3 +1,4 @@
+import logging
 import typing
 from types import MappingProxyType
 
@@ -19,7 +20,9 @@ class ClientResources(typing.TypedDict):
 
 DEFAULT_RAY_INIT_ARGS: typing.Union[RayInitArgs, MappingProxyType[str, bool]] = MappingProxyType({
     "ignore_reinit_error": True,
-    "include_dashboard": False
+    "include_dashboard": True,
+    "address": None,
+    "logging_level": logging.INFO,
 })
 
 DEFAULT_SERVER_HOST = "127.0.0.1"

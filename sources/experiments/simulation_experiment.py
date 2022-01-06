@@ -71,9 +71,9 @@ def average_experiment_runs(base_experiment_dir):
             data = pickle.load(f)
         return data
 
-    loaded_pkl_files = [
+    loaded_pkl_files = {Path(pkl_file).stem :
         [load_pkl(dir / "metrics" / pkl_file) for dir in experiment_rounds
-         if dir.is_dir()] for pkl_file in pkl_files]
+         if dir.is_dir()] for pkl_file in pkl_files}
 
     def avg_l_dicts(l_dict: List[Dict[str, Union[float, int]]]):
         list_of_return_dicts = []
@@ -92,7 +92,8 @@ def average_experiment_runs(base_experiment_dir):
 
         return {key: val / num_dicts for key, val in epoch_result_dict.items()}
 
-    avg_pkl_data = [avg_l_dicts(same_epoch_files) for same_epoch_files in loaded_pkl_files]
+    avg_pkl_data = {filename: avg_l_dicts(same_epoch_files) for filename, same_epoch_files in
+                    loaded_pkl_files.items()}
 
     experiment_name = base_experiment_dir.name
     avg_eval_metrics = base_experiment_dir / f"avg_evaluation_metrics_{experiment_name}.pkl"
@@ -198,7 +199,8 @@ class SimulationExperiment:
             seed: int = DEFAULT_SEED,
             runs_per_experiment: int = DEFAULT_RUNS_PER_EXPERIMENT,
             centralised_evaluation=False,
-            aggregated_evaluation=True
+            aggregated_evaluation=True,
+            rounds_between_centralised_evaluations=10
     ):
 
         strategies_list_defined = True if strategies_list is not None else False
@@ -284,7 +286,8 @@ class SimulationExperiment:
                     strategy_ = CentralEvaluationLoggingDecorator(
                         strategy=strategy_,
                         metrics_logging_folder=metrics_saving_dir_str,
-                        experiment_identifier=experiment_name
+                        experiment_identifier=experiment_name,
+                        rounds_between_evaluations=rounds_between_centralised_evaluations
                     )
 
                 # Start Simulation
