@@ -1,4 +1,5 @@
 import functools
+import logging
 import typing
 import flwr as fl
 import numpy as np
@@ -41,7 +42,6 @@ class BaseClient(fl.client.NumPyClient):
                  ):
         # set_global_determinism(DEFAULT_SEED)
         tf.keras.backend.clear_session()
-
         self.model_template: ModelTemplate = model_template
         self.dataset = dataset
         self.fitting_callbacks = fitting_callbacks

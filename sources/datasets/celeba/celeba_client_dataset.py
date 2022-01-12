@@ -6,9 +6,12 @@ from sources.datasets.client_dataset import ClientDataset
 
 class CelebaClientDataset(ClientDataset):
 
-    def __init__(self, root_data_dir: PathLike, client_identifier: str):
+    def __init__(self,
+                 root_data_dir: PathLike,
+                 client_identifier: str,
+                 subfolder_identifier: str = "celeba"):
         super().__init__(root_data_dir=root_data_dir,
-                         subfolder_identifier="celeba",
+                         subfolder_identifier=subfolder_identifier,
                          client_identifier=client_identifier)
 
     def process_x(self, raw_x_batch):
@@ -17,4 +20,4 @@ class CelebaClientDataset(ClientDataset):
         return x_batch
 
     def process_y(self, raw_y_batch):
-        return np.array(raw_y_batch)
+        return np.array(list(map(int, raw_y_batch)))

@@ -9,9 +9,13 @@ from sources.global_data_properties import LEAF_CHARACTERS
 
 class ShakespeareClientDataset(ClientDataset):
 
-    def __init__(self, root_data_dir: PathLike, client_identifier: str, alphabet=LEAF_CHARACTERS):
+    def __init__(self,
+                 root_data_dir: PathLike,
+                 client_identifier: str,
+                 alphabet=LEAF_CHARACTERS,
+                 subfolder_identifier="shakespeare"):
         super().__init__(root_data_dir=root_data_dir,
-                         subfolder_identifier="shakespeare",
+                         subfolder_identifier=subfolder_identifier,
                          client_identifier=client_identifier)
 
         self.alphabet = alphabet

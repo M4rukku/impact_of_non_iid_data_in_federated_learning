@@ -136,3 +136,4 @@ dmypy.json
 /data/
 /logging/
 /checkpoints/
+/experiments/baseline_experiments/

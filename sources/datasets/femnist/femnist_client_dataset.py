@@ -6,10 +6,13 @@ from sources.datasets.client_dataset import ClientDataset
 
 class FemnistClientDataset(ClientDataset):
 
-    def __init__(self, root_data_dir: PathLike, client_identifier: str):
+    def __init__(self,
+                 root_data_dir: PathLike,
+                 client_identifier: str,
+                 subfolder_identifier: str = "femnist_iid"):
 
         super().__init__(root_data_dir=root_data_dir,
-                         subfolder_identifier="femnist",
+                         subfolder_identifier=subfolder_identifier,
                          client_identifier=client_identifier)
 
     def process_x(self, raw_x_batch):
