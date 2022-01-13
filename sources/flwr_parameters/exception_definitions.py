@@ -12,3 +12,7 @@ class ConfigContainsUnknownPropertyError(Exception):
 
 class DatasetNotFoundError(Exception):
     pass
+
+
+class NoStrategyProviderError(Exception):
+    pass

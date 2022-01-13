@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 from pathlib import Path
-from typing import List, Callable, Dict, Union
+from typing import List, Callable, Dict, Union, Optional
 
 from flwr.server.strategy import Strategy
 
@@ -20,7 +20,7 @@ from sources.experiments.experiment_metadata import ExperimentMetadata, \
 from sources.experiments.extended_experiment_metadata import create_extended_experiment_metadata, \
     ExtendedExperimentMetadata
 from sources.flwr_parameters.exception_definitions import \
-    ExperimentParameterListsHaveUnequalLengths
+    ExperimentParameterListsHaveUnequalLengths, NoStrategyProviderError
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED, set_global_determinism
 from sources.flwr_parameters.simulation_parameters import RayInitArgs, ClientResources, \
     DEFAULT_RAY_INIT_ARGS, DEFAULT_RUNS_PER_EXPERIMENT
@@ -187,14 +187,14 @@ class SimulationExperiment:
             experiment_name: str,
             model_template: ModelTemplate,
             dataset_factory: ClientDatasetFactory,
-            strategy_provider: Callable[[ExperimentMetadata], Strategy],
+            strategy_provider: Optional[Callable[[ExperimentMetadata], Strategy]],
             experiment_metadata_list: List[ExperimentMetadata],
 
             base_dir: Path,
             ray_init_args: RayInitArgs = DEFAULT_RAY_INIT_ARGS,
             client_resources: ClientResources = None,
 
-            strategies_list: List[Callable[[ExperimentMetadata], Strategy]] = None,
+            strategy_provider_list: Optional[List[Callable[[ExperimentMetadata], Strategy]]] = None,
             optimizer_list: List[tf.keras.optimizers.Optimizer] = None,
             fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
             evaluation_callbacks: list[tf.keras.callbacks.Callback] = None,
@@ -206,12 +206,12 @@ class SimulationExperiment:
             rounds_between_centralised_evaluations=10
     ):
 
-        strategies_list_defined = True if strategies_list is not None else False
+        strategies_list_defined = True if strategy_provider_list is not None else False
         optimizer_list_defined = True if optimizer_list is not None else False
         length = len(experiment_metadata_list)
 
         # Check whether lengths are equivalent
-        if strategies_list_defined and len(strategies_list) != length:
+        if strategies_list_defined and len(strategy_provider_list) != length:
             raise ExperimentParameterListsHaveUnequalLengths()
         if optimizer_list_defined and len(optimizer_list) != length:
             raise ExperimentParameterListsHaveUnequalLengths()
@@ -232,9 +232,16 @@ class SimulationExperiment:
                     f"Executing run {run + 1}/{runs_per_experiment} of experiment {i + 1}.")
                 # Setup base experiment/strategy/optimizer data
                 experiment_metadata = experiment_metadata_list[i]
-                strategy_ = strategy_provider(experiment_metadata)
-                if strategies_list_defined:
-                    strategy_ = strategies_list[i](experiment_metadata)
+
+                if strategy_provider is not None:
+                    logging.info("Using Global Strategy for Providing Strategies")
+                    strategy_ = strategy_provider(experiment_metadata)
+                elif strategies_list_defined:
+                    logging.info("Using Strategy List for providing strategies")
+                    strategy_ = strategy_provider_list[i](experiment_metadata=experiment_metadata)
+                else:
+                    raise NoStrategyProviderError("No Strategy Provider Defined")
+
                 if optimizer_list_defined:
                     model_template.set_optimizer(optimizer_list[i])
 
