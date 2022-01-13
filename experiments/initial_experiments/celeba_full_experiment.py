@@ -3,7 +3,6 @@ import math
 import os
 import sys
 from pathlib import Path
-from typing import Callable, Any
 
 sys.path.append(str(Path(__file__).parent.parent.parent.resolve()))
 sys.path.append(str(Path(os.getcwd()).parent.parent.resolve()))
@@ -19,7 +18,7 @@ from sources.datasets.celeba.celeba_client_dataset_factory import CelebaClientDa
 from sources.models.celeba.celeba_model_template import CelebaModelTemplate
 from sources.dataset_utils.get_iid_dataset_utils import get_default_iid_dataset
 from sources.metrics.central_evaluation import create_central_evaluation_function_from_dataset
-from sources.flwr_strategies.FullEvaluationFedAvg import full_eval_fed_avg_strategy_provider
+from sources.flwr_strategies.full_evaluation_strategy_providers import full_eval_fed_avg_strategy_provider
 
 from sources.experiments.simulation_experiment import SimulationExperiment
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED

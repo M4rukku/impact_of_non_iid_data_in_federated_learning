@@ -1,4 +1,3 @@
-import logging
 from typing import Optional, Tuple, Dict, List, Union
 
 import flwr.server.strategy
@@ -7,11 +6,19 @@ from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 
 
+def get_name_of_strategy(strategy: flwr.server.strategy.Strategy):
+    if hasattr(strategy, "strategy_name"):
+        return strategy.strategy_name
+    else:
+        return type(strategy).__name__
+
+
 class BaseStrategyDecorator(flwr.server.strategy.Strategy):
 
     def __init__(self, strategy: flwr.server.strategy.Strategy):
         self.strategy = strategy
-        self.rnd=1
+        self.strategy_name = self.annotate_strategy_name(get_name_of_strategy(strategy))
+        self.rnd = 1
 
     def initialize_parameters(self, client_manager: ClientManager) -> Optional[Parameters]:
         return self.strategy.initialize_parameters(client_manager)
@@ -48,3 +55,6 @@ class BaseStrategyDecorator(flwr.server.strategy.Strategy):
 
     def evaluate(self, parameters: Parameters) -> Optional[Tuple[float, Dict[str, Scalar]]]:
         return self.strategy.evaluate(parameters)
+
+    def annotate_strategy_name(self, strategy_name: str) -> str:
+        return strategy_name

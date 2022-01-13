@@ -12,6 +12,8 @@ import tensorflow as tf
 from pathlib import Path
 from typing import List, Callable, Dict, Union
 
+from flwr.server.strategy import Strategy
+
 from sources.datasets.client_dataset_factory import ClientDatasetFactory
 from sources.experiments.experiment_metadata import ExperimentMetadata, \
     get_simulation_parameters_from_experiment_metadata
@@ -22,6 +24,7 @@ from sources.flwr_parameters.exception_definitions import \
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED, set_global_determinism
 from sources.flwr_parameters.simulation_parameters import RayInitArgs, ClientResources, \
     DEFAULT_RAY_INIT_ARGS, DEFAULT_RUNS_PER_EXPERIMENT
+from sources.flwr_strategies_decorators.base_strategy_decorator import get_name_of_strategy
 from sources.flwr_strategies_decorators.central_evaluation_logging_decorator import \
     CentralEvaluationLoggingDecorator
 from sources.flwr_strategies_decorators.evaluation_metrics_logging_strategy_decorator import \
@@ -184,14 +187,14 @@ class SimulationExperiment:
             experiment_name: str,
             model_template: ModelTemplate,
             dataset_factory: ClientDatasetFactory,
-            strategy_provider: Callable[[ExperimentMetadata], flwr.server.strategy.Strategy],
+            strategy_provider: Callable[[ExperimentMetadata], Strategy],
             experiment_metadata_list: List[ExperimentMetadata],
 
             base_dir: Path,
             ray_init_args: RayInitArgs = DEFAULT_RAY_INIT_ARGS,
             client_resources: ClientResources = None,
 
-            strategies_list: List[flwr.server.strategy.Strategy] = None,
+            strategies_list: List[Callable[[ExperimentMetadata], Strategy]] = None,
             optimizer_list: List[tf.keras.optimizers.Optimizer] = None,
             fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
             evaluation_callbacks: list[tf.keras.callbacks.Callback] = None,
@@ -231,11 +234,11 @@ class SimulationExperiment:
                 experiment_metadata = experiment_metadata_list[i]
                 strategy_ = strategy_provider(experiment_metadata)
                 if strategies_list_defined:
-                    strategy_ = strategies_list[i]
+                    strategy_ = strategies_list[i](experiment_metadata)
                 if optimizer_list_defined:
                     model_template.set_optimizer(optimizer_list[i])
 
-                strategy_name = type(strategy_).__name__
+                strategy_name = get_name_of_strategy(strategy_)
                 extended_metadata = create_extended_experiment_metadata(experiment_metadata,
                                                                         strategy_name,
                                                                         model_template.get_optimizer())
