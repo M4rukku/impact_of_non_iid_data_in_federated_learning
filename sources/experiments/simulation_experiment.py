@@ -38,6 +38,9 @@ from sources.simulation_framework.ray_based_simulator import RayBasedSimulator
 
 def create_dirname_from_extended_metadata(experiment_metadata: ExtendedExperimentMetadata,
                                           exp: int):
+    custom_suffix = experiment_metadata.custom_suffix \
+        if experiment_metadata.custom_suffix is not None else ""
+
     if "learning_rate" in experiment_metadata.optimizer_config:
         return (
                 f"{experiment_metadata.strategy_name}" +
@@ -45,7 +48,8 @@ def create_dirname_from_extended_metadata(experiment_metadata: ExtendedExperimen
                 f"_lr{experiment_metadata.optimizer_config['learning_rate']}" +
                 f"_nr{experiment_metadata.num_rounds}" +
                 f"_nc{experiment_metadata.num_clients}" +
-                f"_le{experiment_metadata.local_epochs}_i{exp}"
+                f"_le{experiment_metadata.local_epochs}_i{exp}" +
+                custom_suffix
         )
     else:
         return (
@@ -53,7 +57,8 @@ def create_dirname_from_extended_metadata(experiment_metadata: ExtendedExperimen
                 f"_{experiment_metadata.optimizer_config['name']}" +
                 f"_nr{experiment_metadata.num_rounds}" +
                 f"_nc{experiment_metadata.num_clients}" +
-                f"_le{experiment_metadata.local_epochs}_i{exp}"
+                f"_le{experiment_metadata.local_epochs}_i{exp}" +
+                custom_suffix
         )
 
 
@@ -74,9 +79,9 @@ def average_experiment_runs(base_experiment_dir):
             data = pickle.load(f)
         return data
 
-    loaded_pkl_files = {Path(pkl_file).stem :
-        [load_pkl(dir / "metrics" / pkl_file) for dir in experiment_rounds
-         if dir.is_dir()] for pkl_file in pkl_files}
+    loaded_pkl_files = {Path(pkl_file).stem:
+                            [load_pkl(dir / "metrics" / pkl_file) for dir in experiment_rounds
+                             if dir.is_dir()] for pkl_file in pkl_files}
 
     def avg_l_dicts(l_dict: List[Dict[str, Union[float, int]]]):
         list_of_return_dicts = []

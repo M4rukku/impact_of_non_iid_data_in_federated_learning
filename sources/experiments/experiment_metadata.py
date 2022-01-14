@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Union
+from typing import Union, Optional
 from sources.flwr_parameters.simulation_parameters import SimulationParameters
 
 
@@ -11,6 +11,7 @@ class ExperimentMetadata:
     batch_size: int
     local_epochs: int
     val_steps: int
+    custom_suffix: Optional[str] = None
 
 
 def get_simulation_parameters_from_experiment_metadata(experiment_metadata: ExperimentMetadata) \

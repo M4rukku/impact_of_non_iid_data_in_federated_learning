@@ -1,6 +1,6 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import Union, Dict
+from typing import Union, Dict, Optional
 import tensorflow as tf
 
 from sources.experiments.experiment_metadata import ExperimentMetadata
@@ -17,6 +17,7 @@ class ExtendedExperimentMetadata:
     local_epochs: int
     val_steps: int
     local_learning_rate: Union[float, None] = None
+    custom_suffix: Optional[str] = None
 
 
 def create_extended_experiment_metadata(
