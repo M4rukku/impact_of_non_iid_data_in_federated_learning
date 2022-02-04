@@ -11,7 +11,9 @@ if dllpath.exists():
     os.add_dll_directory(dllstring)
 
 from sources.dataset_utils.get_iid_dataset_utils import get_default_iid_dataset
-from sources.metrics.central_evaluation import create_central_evaluation_function_from_dataset
+from sources.datasets.femnist.femnist_client_dataset_processor import FemnistClientDatasetProcessor
+from sources.metrics.central_evaluation import \
+    create_central_evaluation_function_from_dataset_processor
 from experiments.varying_optimisation_methods.vom_experiment_metadata_providers import \
     vom_experiments_strategy_providers, femnist_vom_experiment_metadata_provider, \
     femnist_vom_experiment_optimizer_provider
@@ -32,10 +34,12 @@ if __name__ == "__main__":
     dataset_factory = FemnistIIDClientDatasetFactory(str(root_data_dir.resolve()))
     total_clients = dataset_factory.get_number_of_clients()
     central_dataset = get_default_iid_dataset("femnist")
-    dataset = dataset_factory.create_dataset("1")
-    eval_fn = create_central_evaluation_function_from_dataset(model_template,
-                                                              central_dataset,
-                                                              dataset)
+
+    eval_fn = create_central_evaluation_function_from_dataset_processor(
+        model_template,
+        central_dataset,
+        FemnistClientDatasetProcessor()
+    )
 
     strategy_providers = vom_experiments_strategy_providers(eval_fn, initial_parameters)
     experiment_metadata_list = femnist_vom_experiment_metadata_provider(total_clients)

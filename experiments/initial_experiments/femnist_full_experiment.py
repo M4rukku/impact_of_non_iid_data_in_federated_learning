@@ -14,13 +14,15 @@ if dllpath.exists():
 from experiments.initial_experiments.initial_experiment_metadata_providers import \
     femnist_initial_experiment_optimizer_provider, femnist_initial_experiment_metadata_provider
 from sources.dataset_utils.get_iid_dataset_utils import get_default_iid_dataset
-from sources.metrics.central_evaluation import create_central_evaluation_function_from_dataset
-
+from sources.metrics.central_evaluation import \
+    create_central_evaluation_function_from_dataset_processor
+from sources.datasets.femnist.femnist_client_dataset_processor import FemnistClientDatasetProcessor
 from sources.datasets.femnist.femnist_client_dataset_factory import FemnistClientDatasetFactory
 from sources.experiments.simulation_experiment import SimulationExperiment
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.models.femnist.femnist_model_template import FemnistModelTemplate
-from sources.flwr_strategies.full_evaluation_strategy_providers import full_eval_fed_avg_strategy_provider
+from sources.flwr_strategies.full_evaluation_strategy_providers import \
+    full_eval_fed_avg_strategy_provider
 
 if __name__ == "__main__":
     base_dir = Path(__file__).parent.parent.parent
@@ -30,10 +32,13 @@ if __name__ == "__main__":
     dataset_factory = FemnistClientDatasetFactory(str(root_data_dir.resolve()))
     total_clients = dataset_factory.get_number_of_clients()
     central_dataset = get_default_iid_dataset("femnist")
-    dataset = dataset_factory.create_dataset("1")
-    eval_fn = create_central_evaluation_function_from_dataset(model_template,
-                                                              central_dataset,
-                                                              dataset)
+
+    eval_fn = create_central_evaluation_function_from_dataset_processor(
+        model_template,
+        central_dataset,
+        FemnistClientDatasetProcessor()
+    )
+
     strategy_provider = functools.partial(
         full_eval_fed_avg_strategy_provider,
         eval_fn

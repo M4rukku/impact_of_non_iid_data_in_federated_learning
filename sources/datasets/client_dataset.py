@@ -5,6 +5,7 @@ from os import PathLike
 from pathlib import Path
 import pandas as pd
 
+from sources.datasets.client_dataset_processor import ClientDatasetProcessor
 from sources.flwr_parameters.exception_definitions import OutsideOfContextError
 
 
@@ -30,9 +31,11 @@ class ClientDataset(ABC):
                  root_data_dir: PathLike,
                  subfolder_identifier: str,
                  client_identifier: str,
+                 client_dataset_processor: ClientDatasetProcessor,
                  train_data_filename: str = "train.pickle",
                  test_data_filename: str = "test.pickle",
-                 validation_filename: str = "val.pickle"):
+                 validation_filename: str = "val.pickle"
+                 ):
 
         base_data_dir = Path(root_data_dir) / subfolder_identifier
         data_dir = base_data_dir / client_identifier
@@ -42,21 +45,20 @@ class ClientDataset(ABC):
         self._test_data_filepath = data_dir / test_data_filename
         self._validation_data_filepath = data_dir / validation_filename
 
+        self.client_dataset_processor = client_dataset_processor
         self._train_data = None
         self._test_data = None
         self._validation_data = None
         self.within_context = False
 
-    @abstractmethod
     def process_x(self, raw_x_batch):
         """Pre-processes each batch of features
          before being fed to the model."""
-        pass
+        return self.client_dataset_processor.process_x(raw_x_batch)
 
-    @abstractmethod
     def process_y(self, raw_y_batch):
         """Pre-processes each batch of labels before being fed to the model."""
-        pass
+        return self.client_dataset_processor.process_y(raw_y_batch)
 
     def _lazy_initialise_data(self, data, filepath):
         if data is None:

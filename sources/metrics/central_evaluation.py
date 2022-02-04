@@ -4,7 +4,7 @@ import numpy
 import tensorflow as tf
 
 from sources.dataset_utils.dataset import Dataset
-from sources.datasets.client_dataset import ClientDataset
+from sources.datasets.client_dataset_processor import ClientDatasetProcessor
 from sources.models.make_keras_pickleable import make_keras_pickleable
 from sources.models.model_template import ModelTemplate
 
@@ -24,7 +24,7 @@ class PickleableEvaluationFunction:
 
     def __call__(self, results: List[numpy.ndarray]) -> \
             Optional[Tuple[float, Dict[str, Union[bool, bytes, float, int, str]]]]:
-        #set_global_determinism()
+        # set_global_determinism()
         logging.warning("Starting Centralised Evaluation")
 
         self.model.compile(optimizer=self.optimizer,
@@ -52,16 +52,17 @@ def create_central_evaluation_function(model_template: ModelTemplate,
         evaluation_y_data)
 
 
-def create_central_evaluation_function_from_dataset(model_template: ModelTemplate,
-                                                    dataset: Dataset,
-                                                    client_dataset: ClientDataset,
-                                                    optimizer: Optional[
-                                                        tf.keras.optimizers.Optimizer] = None
-                                                    ) -> EvalFunType:
+def create_central_evaluation_function_from_dataset_processor(
+        model_template: ModelTemplate,
+        dataset: Dataset,
+        client_dataset_processor: ClientDatasetProcessor,
+        optimizer: Optional[
+            tf.keras.optimizers.Optimizer] = None
+) -> EvalFunType:
     return create_central_evaluation_function(
         model_template,
-        client_dataset.process_x(dataset.validation["x"]),
-        client_dataset.process_y(dataset.validation["y"]),
+        client_dataset_processor.process_x(dataset.validation["x"]),
+        client_dataset_processor.process_y(dataset.validation["y"]),
         optimizer)
 
 
@@ -72,6 +73,5 @@ def __create_central_evaluation_function(model: tf.keras.Model,
                                          evaluation_x_data: List[any],
                                          evaluation_y_data: List[any]
                                          ) -> EvalFunType:
-
     return PickleableEvaluationFunction(model, optimizer, loss, metrics, evaluation_x_data,
                                         evaluation_y_data)

@@ -15,10 +15,13 @@ if dllpath.exists():
 from experiments.initial_experiments.initial_experiment_metadata_providers import \
     celeba_initial_experiment_metadata_provider, celeba_initial_experiment_optimizer_provider
 from sources.datasets.celeba.celeba_client_dataset_factory import CelebaClientDatasetFactory
+from sources.datasets.celeba.celeba_client_dataset_processor import CelebaClientDatasetProcessor
 from sources.models.celeba.celeba_model_template import CelebaModelTemplate
 from sources.dataset_utils.get_iid_dataset_utils import get_default_iid_dataset
-from sources.metrics.central_evaluation import create_central_evaluation_function_from_dataset
-from sources.flwr_strategies.full_evaluation_strategy_providers import full_eval_fed_avg_strategy_provider
+from sources.metrics.central_evaluation import \
+    create_central_evaluation_function_from_dataset_processor
+from sources.flwr_strategies.full_evaluation_strategy_providers import \
+    full_eval_fed_avg_strategy_provider
 
 from sources.experiments.simulation_experiment import SimulationExperiment
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
@@ -31,10 +34,12 @@ if __name__ == "__main__":
     dataset_factory = CelebaClientDatasetFactory(str(root_data_dir.resolve()))
     total_clients = dataset_factory.get_number_of_clients()
     central_dataset = get_default_iid_dataset("celeba")
-    dataset = dataset_factory.create_dataset("1")
-    eval_fn = create_central_evaluation_function_from_dataset(model_template,
-                                                              central_dataset,
-                                                              dataset)
+
+    eval_fn = create_central_evaluation_function_from_dataset_processor(
+        model_template,
+        central_dataset,
+        CelebaClientDatasetProcessor())
+
     strategy_provider = functools.partial(
         full_eval_fed_avg_strategy_provider,
         eval_fn
