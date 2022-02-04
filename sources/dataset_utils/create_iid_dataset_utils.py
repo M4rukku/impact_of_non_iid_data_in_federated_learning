@@ -1,10 +1,8 @@
-import dataclasses
 import pickle
 from pathlib import Path
-from typing import Dict
-
 import numpy as np
 
+from sources.dataset_utils.dataset import Dataset
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 
 DEFAULT_FEMNIST_DATASET_FRACTION: float = 0.05
@@ -16,21 +14,6 @@ DATASET_NAME_FRACTION_DICT = {
     "femnist": DEFAULT_FEMNIST_DATASET_FRACTION,
     "shakespeare": DEFAULT_SHAKESPEARE_DATASET_FRACTION
 }
-
-
-@dataclasses.dataclass
-class Dataset:
-    train: Dict
-    test: Dict
-    validation: Dict
-
-    def __iter__(self):
-        yield self.train
-        yield self.test
-        yield self.validation
-
-    def to_tuple(self):
-        return self.train, self.test, self.validation
 
 
 def extract_data(dataset_path: Path):
@@ -62,7 +45,6 @@ def create_iid_dataset(base_data_dir: Path,
                        dataset_identifier: str,
                        fraction_to_extract: float,
                        compiled_dataset_name: str = None) -> None:
-
     dataset_dir = base_data_dir / dataset_identifier
     dataset_files = np.array(list(dataset_dir.iterdir()))
     amt_files_to_extract = int(fraction_to_extract * len(dataset_files))
@@ -76,6 +58,7 @@ def create_iid_dataset(base_data_dir: Path,
     train_test_validation_dataset = Dataset({"x": [], "y": []},
                                             {"x": [], "y": []},
                                             {"x": [], "y": []})
+
     for dataset in dataset_selection:
         extracted_data = extract_data(dataset)
         append_data(*train_test_validation_dataset, *extracted_data)

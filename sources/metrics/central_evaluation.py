@@ -3,9 +3,8 @@ from typing import Optional, Tuple, Dict, Union, List, Callable
 import numpy
 import tensorflow as tf
 
-from sources.dataset_utils.create_iid_dataset_utils import Dataset
+from sources.dataset_utils.dataset import Dataset
 from sources.datasets.client_dataset import ClientDataset
-from sources.flwr_parameters.set_random_seeds import set_global_determinism
 from sources.models.make_keras_pickleable import make_keras_pickleable
 from sources.models.model_template import ModelTemplate
 

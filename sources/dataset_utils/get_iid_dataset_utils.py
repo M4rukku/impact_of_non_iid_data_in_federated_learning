@@ -3,7 +3,8 @@ from pathlib import Path
 from sources.global_data_properties import DATASET_NAME_LIST
 from sources.dataset_utils.create_iid_dataset_utils import get_full_iid_dataset_filename, \
     get_default_iid_dataset_filename, \
-    get_fractional_iid_dataset_filename, Dataset
+    get_fractional_iid_dataset_filename
+from sources.dataset_utils.dataset import Dataset
 from sources.flwr_parameters.exception_definitions import DatasetNotFoundError
 
 
