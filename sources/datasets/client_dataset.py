@@ -36,6 +36,8 @@ class ClientDataset(ABC):
 
         base_data_dir = Path(root_data_dir) / subfolder_identifier
         data_dir = base_data_dir / client_identifier
+
+        self.subfolder_identifier = subfolder_identifier
         self._train_data_filepath = data_dir / train_data_filename
         self._test_data_filepath = data_dir / test_data_filename
         self._validation_data_filepath = data_dir / validation_filename
