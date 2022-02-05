@@ -1,13 +1,11 @@
 import logging
-import time
 import traceback
 
 import flwr as fl
 import numpy as np
-import ray
 import tensorflow as tf
 
-from sources.datasets.client_dataset_factory import ClientDatasetFactory
+from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import ClientDatasetFactory
 from sources.flwr_clients.base_client import BaseClient
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.flwr_parameters.simulation_parameters import SimulationParameters, \

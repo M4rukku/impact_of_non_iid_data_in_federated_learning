@@ -1,4 +1,4 @@
-from sources.datasets.client_dataset import ClientDataset
+from sources.datasets.client_dataset_definitions.client_dataset import ClientDataset
 
 
 class BaseClientDatasetDecorator(ClientDataset):

@@ -1,11 +1,9 @@
 import functools
 import gc
-from abc import ABC, abstractmethod
-from os import PathLike
-from pathlib import Path
-import pandas as pd
+from abc import ABC
 
-from sources.datasets.client_dataset_processor import ClientDatasetProcessor
+from sources.datasets.client_dataset_definitions.client_dataset_loaders.client_dataset_loader import ClientDatasetLoader, DatasetComponents
+from sources.datasets.client_dataset_definitions.client_dataset_processors.client_dataset_processor import ClientDatasetProcessor
 from sources.flwr_parameters.exception_definitions import OutsideOfContextError
 
 
@@ -28,24 +26,15 @@ def throw_error_outside_context(func):
 class ClientDataset(ABC):
 
     def __init__(self,
-                 root_data_dir: PathLike,
-                 subfolder_identifier: str,
                  client_identifier: str,
+                 client_dataset_loader: ClientDatasetLoader,
                  client_dataset_processor: ClientDatasetProcessor,
-                 train_data_filename: str = "train.pickle",
-                 test_data_filename: str = "test.pickle",
-                 validation_filename: str = "val.pickle"
                  ):
 
-        base_data_dir = Path(root_data_dir) / subfolder_identifier
-        data_dir = base_data_dir / client_identifier
-
-        self.subfolder_identifier = subfolder_identifier
-        self._train_data_filepath = data_dir / train_data_filename
-        self._test_data_filepath = data_dir / test_data_filename
-        self._validation_data_filepath = data_dir / validation_filename
-
+        self.client_identifier = client_identifier
+        self.client_dataset_loader = client_dataset_loader
         self.client_dataset_processor = client_dataset_processor
+
         self._train_data = None
         self._test_data = None
         self._validation_data = None
@@ -60,9 +49,10 @@ class ClientDataset(ABC):
         """Pre-processes each batch of labels before being fed to the model."""
         return self.client_dataset_processor.process_y(raw_y_batch)
 
-    def _lazy_initialise_data(self, data, filepath):
+    def _lazy_initialise_data(self, data, dataset_component: DatasetComponents):
         if data is None:
-            data = pd.read_pickle(filepath)
+            data = self.client_dataset_loader.load_dataset(self.client_identifier,
+                                                           dataset_component)
             return self.process_x(data["x"]), self.process_y(data["y"])
         else:
             return data
@@ -73,7 +63,7 @@ class ClientDataset(ABC):
         """Returns the Training Data as pair of arrays containing the samples x,
          and classification y"""
         self._train_data = self._lazy_initialise_data(self._train_data,
-                                                      self._train_data_filepath)
+                                                      DatasetComponents.TRAIN)
         return self._train_data
 
     @property
@@ -81,7 +71,7 @@ class ClientDataset(ABC):
     def training_data_x(self):
         """Returns the Training Data as an array of samples"""
         self._train_data = self._lazy_initialise_data(self._train_data,
-                                                      self._train_data_filepath)
+                                                      DatasetComponents.TRAIN)
         return self._train_data[0]
 
     @property
@@ -89,7 +79,7 @@ class ClientDataset(ABC):
     def training_data_y(self):
         """Returns the Classifications for the Training Data as array"""
         self._train_data = self._lazy_initialise_data(self._train_data,
-                                                      self._train_data_filepath)
+                                                      DatasetComponents.TRAIN)
         return self._train_data[1]
 
     @property
@@ -98,7 +88,7 @@ class ClientDataset(ABC):
         """Returns the Training Data as pair of arrays containing the samples x,
          and classification y"""
         self._test_data = self._lazy_initialise_data(self._test_data,
-                                                     self._test_data_filepath)
+                                                     DatasetComponents.TEST)
         return self._test_data
 
     @property
@@ -106,7 +96,7 @@ class ClientDataset(ABC):
     def test_data_x(self):
         """Returns the Test Data as an array of samples"""
         self._test_data = self._lazy_initialise_data(self._test_data,
-                                                     self._test_data_filepath)
+                                                     DatasetComponents.TEST)
         return self._test_data[0]
 
     @property
@@ -114,7 +104,7 @@ class ClientDataset(ABC):
     def test_data_y(self):
         """Returns the Classifications for the Test Data as array"""
         self._test_data = self._lazy_initialise_data(self._test_data,
-                                                     self._test_data_filepath)
+                                                     DatasetComponents.TEST)
         return self._test_data[1]
 
     @property
@@ -124,7 +114,7 @@ class ClientDataset(ABC):
         samples x,
          and classification y"""
         self._validation_data = self._lazy_initialise_data(
-            self._validation_data, self._validation_data_filepath)
+            self._validation_data, DatasetComponents.VALIDATION)
         return self._validation_data
 
     @property
@@ -132,7 +122,7 @@ class ClientDataset(ABC):
     def validation_data_x(self):
         """Returns the Validation Data as an array of samples"""
         self._validation_data = self._lazy_initialise_data(
-            self._validation_data, self._validation_data_filepath)
+            self._validation_data, DatasetComponents.VALIDATION)
         return self._validation_data[0]
 
     @property
@@ -140,7 +130,7 @@ class ClientDataset(ABC):
     def validation_data_y(self):
         """Returns the Classifications for the Validation Data as array"""
         self._validation_data = self._lazy_initialise_data(
-            self._validation_data, self._validation_data_filepath)
+            self._validation_data, DatasetComponents.VALIDATION)
         return self._validation_data[1]
 
     def __enter__(self):

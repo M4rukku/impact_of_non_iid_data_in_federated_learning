@@ -2,12 +2,12 @@ from typing import List
 import numpy as np
 import tensorflow as tf
 
-from sources.datasets.client_dataset_processor import ClientDatasetProcessor
+from sources.datasets.client_dataset_definitions.client_dataset_processors.client_dataset_processor import ClientDatasetProcessor
 from sources.global_data_properties import LEAF_CHARACTERS
 
 
 class ShakespeareClientDatasetProcessor(ClientDatasetProcessor):
-    def __init__(self, alphabet: List[str] = LEAF_CHARACTERS):
+    def __init__(self, alphabet: str = LEAF_CHARACTERS):
         self.alphabet = alphabet
         self.character_integer_mapping = {c: i for i, c in enumerate(self.alphabet)}
 

@@ -1,11 +1,7 @@
 from typing import Callable
-print("Y1")
 import numpy
-print("Y2")
 from flwr.common import weights_to_parameters
-print("Y3")
 from flwr.server.strategy import FedAvg, Strategy, FedYogi, FedAdagrad, FedAdam
-print("Y4")
 from sources.experiments.experiment_metadata import ExperimentMetadata
 from sources.flwr_strategies_decorators.enable_full_evaluation_decorator import \
     EnableFullEvaluationDecorator

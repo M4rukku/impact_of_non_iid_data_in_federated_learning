@@ -1,10 +1,7 @@
-from abc import ABC, abstractmethod
-from os import PathLike
-from pathlib import Path
 from typing import Type, Dict, Any
 
-from sources.datasets.base_client_dataset_decorator import BaseClientDatasetDecorator
-from sources.datasets.client_dataset_factory import ClientDatasetFactory
+from sources.datasets.client_dataset_definitions.client_dataset_decorators.base_client_dataset_decorator import BaseClientDatasetDecorator
+from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import ClientDatasetFactory
 
 
 # noinspection PyMissingConstructor

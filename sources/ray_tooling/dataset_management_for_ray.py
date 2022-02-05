@@ -2,7 +2,7 @@ from typing import Literal, get_args, Dict, Optional
 import numpy.typing as npt
 
 from sources.dataset_utils.dataset import Dataset
-from sources.datasets.client_dataset_processor import ClientDatasetProcessor
+from sources.datasets.client_dataset_definitions.client_dataset_processors.client_dataset_processor import ClientDatasetProcessor
 from sources.ray_tooling.ray_store_manager import RayObjectStoreAccessor
 
 ClientDatasetComponents = Literal["training_data_x",

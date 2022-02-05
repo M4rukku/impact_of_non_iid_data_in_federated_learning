@@ -24,7 +24,7 @@ if __name__ == "__main__":
     root_data_dir = base_dir / "data"
 
     model_template = CelebaModelTemplate(DEFAULT_SEED)
-    dataset_factory = CelebaClientDatasetFactory(str(root_data_dir.resolve()))
+    dataset_factory = CelebaClientDatasetFactory(root_data_dir)
     total_clients = dataset_factory.get_number_of_clients()
     central_dataset = get_default_iid_dataset("celeba")
 

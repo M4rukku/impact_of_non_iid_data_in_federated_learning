@@ -1,14 +1,12 @@
-import functools
 from pathlib import Path
-
 import experiments.setup_system_paths as ssp
+
 ssp.setup_system_paths()
 
+from sources.datasets.celeba.celeba_client_dataset_factory import CelebaClientDatasetFactory
 from experiments.varying_optimisation_methods.vom_experiment_metadata_providers import \
     vom_experiments_strategy_providers, celeba_vom_experiment_metadata_provider, \
     celeba_vom_experiment_optimizer_provider
-from sources.datasets.celeba_iid.celeba_iid_client_dataset_factory import \
-    CelebaIIDClientDatasetFactory
 from sources.models.celeba.celeba_model_template import CelebaModelTemplate
 from sources.dataset_utils.get_iid_dataset_utils import get_default_iid_dataset
 from sources.metrics.central_evaluation import \
@@ -25,7 +23,7 @@ if __name__ == "__main__":
     model_template = CelebaModelTemplate(DEFAULT_SEED)
     initial_parameters = model_template.get_model().get_weights()
 
-    dataset_factory = CelebaIIDClientDatasetFactory(str(root_data_dir.resolve()))
+    dataset_factory = CelebaClientDatasetFactory(root_data_dir)
     total_clients = dataset_factory.get_number_of_clients()
     central_dataset = get_default_iid_dataset("celeba")
 

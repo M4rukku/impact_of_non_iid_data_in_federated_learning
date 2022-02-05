@@ -1,6 +1,6 @@
 import numpy as np
 
-from sources.datasets.client_dataset_processor import ClientDatasetProcessor
+from sources.datasets.client_dataset_definitions.client_dataset_processors.client_dataset_processor import ClientDatasetProcessor
 
 
 class FemnistClientDatasetProcessor(ClientDatasetProcessor):

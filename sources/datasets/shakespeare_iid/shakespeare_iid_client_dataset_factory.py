@@ -1,15 +1,10 @@
 from pathlib import Path
 
-from sources.datasets.client_dataset_factory import ClientDatasetFactory
-from sources.datasets.shakespeare_iid.shakespeare_iid_client_dataset import \
-    ShakespeareIIDClientDataset
-from sources.global_data_properties import LEAF_CHARACTERS
+from sources.datasets.shakespeare.shakespeare_client_dataset_factory import \
+    ShakespeareClientDatasetFactory
 
 
-class ShakespeareIIDClientDatasetFactory(ClientDatasetFactory):
-
-    def create_dataset(self, client_identifier: str, alphabet: str = LEAF_CHARACTERS):
-        return ShakespeareIIDClientDataset(self.root_data_dir, client_identifier, alphabet)
-
-    def get_number_of_clients(self):
-        return self._number_of_files_in_dir(Path(self.root_data_dir) / "shakespeare_iid")
+class ShakespeareIIDClientDatasetFactory(ShakespeareClientDatasetFactory):
+    def __init__(self, root_data_dir: Path, path_from_data_dir_to_client_dataset="shakespeare_iid"):
+        super().__init__(root_data_dir,
+                         path_from_data_dir_to_client_dataset=path_from_data_dir_to_client_dataset)

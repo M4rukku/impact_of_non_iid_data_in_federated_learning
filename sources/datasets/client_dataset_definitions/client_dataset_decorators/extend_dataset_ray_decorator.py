@@ -1,7 +1,7 @@
 import numpy as np
 
-from sources.datasets.base_client_dataset_decorator import BaseClientDatasetDecorator
-from sources.datasets.client_dataset import ClientDataset
+from sources.datasets.client_dataset_definitions.client_dataset_decorators.base_client_dataset_decorator import BaseClientDatasetDecorator
+from sources.datasets.client_dataset_definitions.client_dataset import ClientDataset
 from sources.ray_tooling.dataset_management_for_ray import fetch_dataset_component_from_ray
 
 

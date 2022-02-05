@@ -1,8 +1,9 @@
 from pathlib import Path
-
 import experiments.setup_system_paths as ssp
+
 ssp.setup_system_paths()
 
+from sources.datasets.femnist.femnist_client_dataset_factory import FemnistClientDatasetFactory
 from sources.dataset_utils.get_iid_dataset_utils import get_default_iid_dataset
 from sources.datasets.femnist.femnist_client_dataset_processor import FemnistClientDatasetProcessor
 from sources.metrics.central_evaluation import \
@@ -10,8 +11,6 @@ from sources.metrics.central_evaluation import \
 from experiments.varying_optimisation_methods.vom_experiment_metadata_providers import \
     vom_experiments_strategy_providers, femnist_vom_experiment_metadata_provider, \
     femnist_vom_experiment_optimizer_provider
-from sources.datasets.femnist_iid.femnist_iid_client_dataset_factory import \
-    FemnistIIDClientDatasetFactory
 from sources.experiments.simulation_experiment import SimulationExperiment
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED, set_seeds
 from sources.models.femnist.femnist_model_template import FemnistModelTemplate
@@ -24,7 +23,7 @@ if __name__ == "__main__":
     model_template = FemnistModelTemplate(DEFAULT_SEED)
     initial_parameters = model_template.get_model().get_weights()
 
-    dataset_factory = FemnistIIDClientDatasetFactory(str(root_data_dir.resolve()))
+    dataset_factory = FemnistClientDatasetFactory(root_data_dir)
     total_clients = dataset_factory.get_number_of_clients()
     central_dataset = get_default_iid_dataset("femnist")
 

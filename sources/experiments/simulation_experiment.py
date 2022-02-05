@@ -14,7 +14,7 @@ from typing import List, Callable, Dict, Union, Optional
 
 from flwr.server.strategy import Strategy
 
-from sources.datasets.client_dataset_factory import ClientDatasetFactory
+from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import ClientDatasetFactory
 from sources.experiments.experiment_metadata import ExperimentMetadata, \
     get_simulation_parameters_from_experiment_metadata
 from sources.experiments.extended_experiment_metadata import create_extended_experiment_metadata, \
