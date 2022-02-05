@@ -1,15 +1,8 @@
 import functools
-import os
-import sys
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).parent.parent.parent.resolve()))
-sys.path.append(str(Path(os.getcwd()).parent.parent.resolve()))
-
-dllpath = Path("C:") / "Program Files" / "NVIDIA GPU Computing Toolkit" / "CUDA" / "v11.2" / "bin"
-if dllpath.exists():
-    dllstring = str(dllpath.resolve())
-    os.add_dll_directory(dllstring)
+import experiments.setup_system_paths as ssp
+ssp.setup_system_paths()
 
 from sources.datasets.celeba.celeba_client_dataset_processor import CelebaClientDatasetProcessor
 from experiments.iid_data_initial_experiments.initial_iid_experiment_metadata_providers import \
@@ -21,9 +14,8 @@ from sources.models.celeba.celeba_model_template import CelebaModelTemplate
 from sources.dataset_utils.get_iid_dataset_utils import get_default_iid_dataset
 from sources.metrics.central_evaluation import \
     create_central_evaluation_function_from_dataset_processor
-from sources.flwr_strategies.full_evaluation_strategy_providers import \
-    full_eval_fed_avg_strategy_provider
 
+from sources.flwr_strategies.full_evaluation_strategy_providers import full_eval_fed_avg_strategy_provider
 from sources.experiments.simulation_experiment import SimulationExperiment
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 
@@ -49,7 +41,7 @@ if __name__ == "__main__":
     optimizer_list = celeba_initial_iid_experiment_optimizer_provider()
 
     SimulationExperiment.start_experiment(
-        "InitialCelebaIIDExperiment_",
+        "InitialCelebaIIDExperiment__",
         model_template,
         dataset_factory,
         strategy_provider,

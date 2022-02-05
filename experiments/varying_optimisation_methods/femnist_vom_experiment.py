@@ -1,14 +1,7 @@
-import os
-import sys
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).parent.parent.parent.resolve()))
-sys.path.append(str(Path(os.getcwd()).parent.parent.resolve()))
-
-dllpath = Path("C:") / "Program Files" / "NVIDIA GPU Computing Toolkit" / "CUDA" / "v11.2" / "bin"
-if dllpath.exists():
-    dllstring = str(dllpath.resolve())
-    os.add_dll_directory(dllstring)
+import experiments.setup_system_paths as ssp
+ssp.setup_system_paths()
 
 from sources.dataset_utils.get_iid_dataset_utils import get_default_iid_dataset
 from sources.datasets.femnist.femnist_client_dataset_processor import FemnistClientDatasetProcessor

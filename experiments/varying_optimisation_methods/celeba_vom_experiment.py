@@ -1,14 +1,8 @@
-import os
-import sys
+import functools
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).parent.parent.parent.resolve()))
-sys.path.append(str(Path(os.getcwd()).parent.parent.resolve()))
-
-dllpath = Path("C:") / "Program Files" / "NVIDIA GPU Computing Toolkit" / "CUDA" / "v11.2" / "bin"
-if dllpath.exists():
-    dllstring = str(dllpath.resolve())
-    os.add_dll_directory(dllstring)
+import experiments.setup_system_paths as ssp
+ssp.setup_system_paths()
 
 from experiments.varying_optimisation_methods.vom_experiment_metadata_providers import \
     vom_experiments_strategy_providers, celeba_vom_experiment_metadata_provider, \

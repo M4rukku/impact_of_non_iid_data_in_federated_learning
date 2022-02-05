@@ -1,15 +1,8 @@
 import functools
-import os
-import sys
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).parent.parent.parent.resolve()))
-sys.path.append(str(Path(os.getcwd()).parent.parent.resolve()))
-
-dllpath = Path("C:") / "Program Files" / "NVIDIA GPU Computing Toolkit" / "CUDA" / "v11.2" / "bin"
-if dllpath.exists():
-    dllstring = str(dllpath.resolve())
-    os.add_dll_directory(dllstring)
+import experiments.setup_system_paths as ssp
+ssp.setup_system_paths()
 
 from experiments.initial_experiments.initial_experiment_metadata_providers import \
     femnist_initial_experiment_optimizer_provider, femnist_initial_experiment_metadata_provider
