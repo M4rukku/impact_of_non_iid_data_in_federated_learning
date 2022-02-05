@@ -1,7 +1,8 @@
-from typing import Literal, get_args, Dict
+from typing import Literal, get_args, Dict, Optional
 import numpy.typing as npt
 
 from sources.dataset_utils.dataset import Dataset
+from sources.datasets.client_dataset_processor import ClientDatasetProcessor
 from sources.ray_tooling.ray_store_manager import RayObjectStoreAccessor
 
 ClientDatasetComponents = Literal["training_data_x",
@@ -19,25 +20,43 @@ def generate_dataset_component_identifier(dataset_identifier: str,
     return f"{dataset_identifier}_{component_identifier}"
 
 
-def get_all_components_from_dataset(dataset: Dataset) -> Dict[
-    ClientDatasetComponents, npt.ArrayLike]:
-    return dict(training_data_x=dataset.train["x"],
-                training_data_y=dataset.train["y"],
-                test_data_x=dataset.test["x"],
-                test_data_y=dataset.test["y"],
-                validation_data_x=dataset.validation["x"],
-                validation_data_y=dataset.validation["y"])
+# noinspection PyTypeChecker
+def get_all_components_from_dataset(
+        dataset: Dataset,
+        client_dataset_processor: Optional[ClientDatasetProcessor] = None
+) -> Dict[ClientDatasetComponents, npt.ArrayLike]:
+    if client_dataset_processor is None:
+        return dict(training_data_x=dataset.train["x"],
+                    training_data_y=dataset.train["y"],
+                    test_data_x=dataset.test["x"],
+                    test_data_y=dataset.test["y"],
+                    validation_data_x=dataset.validation["x"],
+                    validation_data_y=dataset.validation["y"])
+    else:
+        return dict(training_data_x=client_dataset_processor.process_x(dataset.train["x"]),
+                    training_data_y=client_dataset_processor.process_y(dataset.train["y"]),
+                    test_data_x=client_dataset_processor.process_x(dataset.test["x"]),
+                    test_data_y=client_dataset_processor.process_y(dataset.test["y"]),
+                    validation_data_x=client_dataset_processor.process_x(dataset.validation["x"]),
+                    validation_data_y=client_dataset_processor.process_y(dataset.validation["y"]))
 
 
-def load_dataset_into_ray(dataset_identifier: str, dataset: Dataset) -> None:
+def load_dataset_into_ray(
+        dataset_identifier: str,
+        dataset: Dataset,
+        client_dataset_processor: Optional[ClientDatasetProcessor] = None
+) -> None:
     '''
-
     Args:
+        client_dataset_processor: Should the dataset not yet have been preprocessed, it may be
+        handled at this stage
         dataset_identifier: Identifier of the dataset i.e. celeba (used to create name)
         dataset: PREPROCESSED! IID Dataset to load into ray, it will be split into differnet
         components which you can then fetch with fetch components from ray
     '''
-    dataset_components = get_all_components_from_dataset(dataset)
+
+    dataset_components = get_all_components_from_dataset(dataset, client_dataset_processor)
+
     for component_name, component_data in dataset_components.items():
         RayObjectStoreAccessor.save_object_in_manager(
             generate_dataset_component_identifier(dataset_identifier, component_name),
