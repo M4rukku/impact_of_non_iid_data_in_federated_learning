@@ -1,7 +1,7 @@
 """Interfaces for ClientModel and ServerModel."""
 
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import List, Union, Optional
 
 import tensorflow as tf
 
@@ -23,10 +23,11 @@ class ModelTemplate(ABC):
         pass
 
     @abstractmethod
-    def get_optimizer(self, lr=0.1) -> tf.keras.optimizers.Optimizer:
+    def get_optimizer(self, lr=0.1, model: Optional[tf.keras.models.Model] = None) -> \
+            tf.keras.optimizers.Optimizer:
         pass
 
-    def get_loss(self) -> tf.keras.losses.Loss:
+    def get_loss(self, model: Optional[tf.keras.models.Model] = None) -> tf.keras.losses.Loss:
         return self.loss
 
     def set_optimizer(self, optimizer: tf.keras.optimizers.Optimizer):

@@ -18,8 +18,8 @@ def lazy_client_initializer(func):
     def wrapper_decorator(self, *args, **kwargs):
         if not self.model_initialised:
             self.model = self.model_template.get_model()
-            self.optimizer = self.model_template.get_optimizer()
-            self.loss = self.model_template.get_loss()
+            self.optimizer = self.model_template.get_optimizer(model=self.model)
+            self.loss = self.model_template.get_loss(model=self.model)
             self.model.compile(self.optimizer, self.loss, self.metrics)
             self.model_initialised = True
 

@@ -1,5 +1,5 @@
 import tensorflow as tf
-from typing import List, Union
+from typing import List, Union, Optional
 
 from sources.global_data_properties import LEAF_CHARACTERS
 from sources.metrics.default_metrics import get_default_categorical_metrics
@@ -43,7 +43,8 @@ class ShakespeareModelTemplate(ModelTemplate):
     def get_centralised_metrics(self) -> List[Union[str, tf.keras.metrics.Metric]]:
         return get_default_categorical_metrics(self.num_classes)
 
-    def get_optimizer(self, lr=0.01) -> tf.keras.optimizers.Optimizer:
+    def get_optimizer(self, lr=0.01, model: Optional[tf.keras.models.Model] = None) \
+            -> tf.keras.optimizers.Optimizer:
         if self.optimizer is not None:
             return self.optimizer
         else:

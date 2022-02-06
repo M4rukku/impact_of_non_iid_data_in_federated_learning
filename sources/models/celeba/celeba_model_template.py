@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 import tensorflow as tf
 
 from sources.global_data_properties import CELEBA_IMAGE_SIZE, CELEBA_CLASSES
@@ -38,7 +38,7 @@ class CelebaModelTemplate(ModelTemplate):
     def get_centralised_metrics(self) -> List[Union[str, tf.keras.metrics.Metric]]:
         return get_default_sparse_categorical_metrics(self.num_classes)
 
-    def get_optimizer(self, lr=0.001) -> tf.keras.optimizers.Optimizer:
+    def get_optimizer(self, lr=0.001, model: Optional[tf.keras.models.Model] = None) -> tf.keras.optimizers.Optimizer:
         if self.optimizer is not None:
             return self.optimizer
         else:

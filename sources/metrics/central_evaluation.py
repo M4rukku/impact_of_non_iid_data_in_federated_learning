@@ -43,10 +43,12 @@ def create_central_evaluation_function(model_template: ModelTemplate,
                                        evaluation_y_data: List[any],
                                        optimizer: Optional[tf.keras.optimizers.Optimizer] = None
                                        ) -> EvalFunType:
+
+    model = model_template.get_model()
     return __create_central_evaluation_function(
-        model_template.get_model(),
-        model_template.get_optimizer() if optimizer is None else optimizer,
-        model_template.get_loss(),
+        model,
+        model_template.get_optimizer(model=model) if optimizer is None else optimizer,
+        model_template.get_loss(model),
         model_template.get_centralised_metrics(),
         evaluation_x_data,
         evaluation_y_data)
