@@ -29,8 +29,9 @@ Then fetch and preprocess the datasets you are interested into with the
 $ python initialise_datasets.py [--celeba] [--femnist] [--shakespeare] 
 ```
 This might take a lot of memory (up to 35GB), so ensure that you initialise this
-repository on a drive with enough storage. This might take multiple hours since
-a lot of data needs to get in-/deflated. I recommend initialising each
+repository on a drive with enough storage. You will spend several hours when unzipping the 
+Celeba files, so keep that in mind when installing them. I 
+recommend initialising each
  dataset individually and in parallel (open a terminal for each). This will make
   the process finish far quicker since we can make use of multiple processors.
 
@@ -52,6 +53,26 @@ These may be created with the following script. Note that you have to create the
  datasets first (otherwise the script will fail).
 ```
 python create_iid_clients.py --all
+```
+
+#### Setting up the Celeba Lda Datasets
+
+The script create_lda_cifar_datasets creates custom non-iid datasets based on sampling the 
+Cifar10 dataset with a latent dirichlet distribution. 
+(see [here](https://arxiv.org/pdf/1909.06335.pdf))
+
+By pasting the --num_partitions and --concentration parameters to the script, you can create 
+custom clients for your experiments. By default, it will set num_partitions to 100 (500 images 
+per client) and the concentrations to the list [0.001, 0.5, 100.0], as described in the 
+above paper. To start the script you always need to pass --start.
+
+```
+python create_lda_cifar_datasets.py --start 
+```
+
+or for optional settings:
+```
+python create_lda_cifar_datasets.py --start  --num_partitions 200 --concentrations 10 111 2
 ```
 
 ### GPU Acceleration
