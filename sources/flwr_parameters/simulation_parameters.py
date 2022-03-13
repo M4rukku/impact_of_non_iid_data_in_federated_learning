@@ -8,6 +8,11 @@ class SimulationParameters(typing.TypedDict):
     num_rounds: int
 
 
+class EarlyStoppingSimulationParameters(SimulationParameters):
+    target_accuracy: float
+    num_rounds_above_target: int
+
+
 class RayInitArgs(typing.TypedDict):
     ignore_reinit_error: bool
     include_dashboard: bool

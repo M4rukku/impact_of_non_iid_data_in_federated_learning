@@ -12,6 +12,7 @@ import tensorflow as tf
 from pathlib import Path
 from typing import List, Callable, Dict, Union, Optional
 
+from flwr.server import SimpleClientManager
 from flwr.server.strategy import Strategy
 
 from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import ClientDatasetFactory
@@ -23,7 +24,7 @@ from sources.flwr_parameters.exception_definitions import \
     ExperimentParameterListsHaveUnequalLengths, NoStrategyProviderError
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED, set_global_determinism
 from sources.flwr_parameters.simulation_parameters import RayInitArgs, ClientResources, \
-    DEFAULT_RAY_INIT_ARGS, DEFAULT_RUNS_PER_EXPERIMENT
+    DEFAULT_RAY_INIT_ARGS, DEFAULT_RUNS_PER_EXPERIMENT, EarlyStoppingSimulationParameters
 from sources.flwr_strategies_decorators.base_strategy_decorator import get_name_of_strategy
 from sources.flwr_strategies_decorators.central_evaluation_logging_decorator import \
     CentralEvaluationLoggingDecorator
@@ -33,6 +34,7 @@ from sources.flwr_strategies_decorators.model_logging_strategy_decorator import 
     ModelLoggingStrategyDecorator
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
+from sources.simulation_framework.early_stopping_server import EarlyStoppingServer
 from sources.simulation_framework.ray_based_simulator import RayBasedSimulator
 
 
@@ -65,27 +67,21 @@ def create_dirname_from_extended_metadata(experiment_metadata: ExtendedExperimen
 def average_experiment_runs(base_experiment_dir):
     experiment_rounds = base_experiment_dir.iterdir()
     initial_experiment = next(experiment_rounds)
-    initial_metrics = initial_experiment / "metrics"
     experiment_rounds = list(base_experiment_dir.iterdir())
     experiment_rounds.sort()
 
-    pkl_files = list(
-        map(lambda p: p.name, filter(lambda p: p.suffix == ".pkl", initial_metrics.iterdir())))
-    csv_files = list(
-        map(lambda p: p.name, filter(lambda p: p.suffix == ".csv", initial_metrics.iterdir())))
+    pkl_files = list(base_experiment_dir.glob("*/metrics/*.pkl"))
 
     def load_pkl(path):
         with path.open("rb") as f:
             data = pickle.load(f)
         return data
 
-    loaded_pkl_files = {Path(pkl_file).stem:
-                            [load_pkl(dir / "metrics" / pkl_file) for dir in experiment_rounds
-                             if dir.is_dir()] for pkl_file in pkl_files}
+    loaded_pkl_files = defaultdict(list)
+    for file_path in pkl_files:
+        loaded_pkl_files[file_path.stem].append(load_pkl(file_path))
 
     def avg_l_dicts(l_dict: List[Dict[str, Union[float, int]]]):
-        list_of_return_dicts = []
-
         epoch_result_dict = defaultdict(lambda: 0.0)
 
         # Sum all dict results from that epoch
@@ -108,18 +104,26 @@ def average_experiment_runs(base_experiment_dir):
     with avg_eval_metrics.open("wb") as f:
         pickle.dump(avg_pkl_data, f)
 
+    # Avg CSV Files
+    csv_files = list(base_experiment_dir.glob("*/metrics/*.csv"))
+
     def load_csv(csv_file: Path):
         with csv_file.open(newline="") as f:
             data = list(map(float, *csv.reader(f)))
         return data
 
-    loaded_csv_files_data = [
-        [load_csv(dir / "metrics" / csv_file) for dir in experiment_rounds if dir.is_dir()]
-        for csv_file in csv_files
-    ]
-    loaded_csv_files_data = loaded_csv_files_data[0]  # There can only be one csv file
+    loaded_csv_data_arrays = []
+    for file_path in csv_files:
+        loaded_csv_data_arrays.append(load_csv(file_path))  # array of arrays
 
-    avg_accuracy_data = np.average(np.array(loaded_csv_files_data), axis=0)
+    round_datapoints_map = defaultdict(list)
+    for data_array in loaded_csv_data_arrays:
+        for i, data_point in enumerate(data_array):
+            round_datapoints_map[i].append(data_array[i])
+
+    # Note that the dict is ordered by insertion order = index order
+    avg_accuracy_data = np.array(list(map(lambda ls: np.average(np.array(ls)), round_datapoints_map.values())))
+
     avg_accuracy_file = base_experiment_dir / "avg_accuracy_metrics.csv"
     with avg_accuracy_file.open("w") as f:
         writer = csv.writer(f)
@@ -243,7 +247,7 @@ class SimulationExperiment:
                     strategy_ = strategy_provider(experiment_metadata)
                 elif strategies_list_defined:
                     logging.info("Using Strategy List for providing strategies")
-                    strategy_ = strategy_provider_list[i](experiment_metadata=experiment_metadata)
+                    strategy_ = (strategy_provider_list[i])(experiment_metadata=experiment_metadata)
                 else:
                     raise NoStrategyProviderError("No Strategy Provider Defined")
 
@@ -306,8 +310,13 @@ class SimulationExperiment:
                     )
 
                 # Start Simulation
+                simulation_parameters = get_simulation_parameters_from_experiment_metadata(experiment_metadata)
+                server = None
+                if isinstance(simulation_parameters, EarlyStoppingSimulationParameters):
+                    server = EarlyStoppingServer(SimpleClientManager(), strategy_)
+
                 simulator = RayBasedSimulator(
-                    get_simulation_parameters_from_experiment_metadata(experiment_metadata),
+                    simulation_parameters,
                     strategy_,
                     model_template,
                     dataset_factory,
@@ -315,7 +324,8 @@ class SimulationExperiment:
                     evaluation_callbacks,
                     metrics,
                     client_resources=client_resources,
-                    ray_init_args=ray_init_args)
+                    ray_init_args=ray_init_args,
+                    server=server)
 
                 simulator.start_simulation()
                 logging.info(f"Finished run {run + 1}/{runs_per_experiment} of experiment {i + 1}.")

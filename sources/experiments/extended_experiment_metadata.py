@@ -17,6 +17,8 @@ class ExtendedExperimentMetadata:
     local_epochs: int
     val_steps: int
     local_learning_rate: Union[float, None] = None
+    target_accuracy: Optional[float] = None
+    num_rounds_above_target: int = 3
     custom_suffix: Optional[str] = None
 
 

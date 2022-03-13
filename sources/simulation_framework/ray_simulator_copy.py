@@ -14,7 +14,6 @@
 # ==============================================================================
 """Flower simulation app."""
 
-
 import sys
 from logging import ERROR, INFO
 from typing import Any, Callable, Dict, List, Optional
@@ -23,9 +22,12 @@ import ray
 
 from flwr.client.client import Client
 from flwr.common.logger import log
+from flwr.server import Server
 from flwr.server.app import _fl, _init_defaults
 from flwr.server.strategy import Strategy
 from flwr.simulation.ray_transport.ray_client_proxy import RayClientProxy
+
+from sources.flwr_parameters.simulation_parameters import SimulationParameters
 
 INVALID_ARGUMENTS_START_SIMULATION = """
 INVALID ARGUMENTS ERROR
@@ -54,14 +56,15 @@ REASON:
 
 
 def start_simulation(  # pylint: disable=too-many-arguments
-    *,
-    client_fn: Callable[[str], Client],
-    num_clients: Optional[int] = None,
-    clients_ids: Optional[List[str]] = None,
-    client_resources: Optional[Dict[str, int]] = None,
-    num_rounds: int = 1,
-    strategy: Optional[Strategy] = None,
-    ray_init_args: Optional[Dict[str, Any]] = None,
+        *,
+        client_fn: Callable[[str], Client],
+        num_clients: Optional[int] = None,
+        clients_ids: Optional[List[str]] = None,
+        client_resources: Optional[Dict[str, int]] = None,
+        num_rounds: int = 1,
+        strategy: Optional[Strategy] = None,
+        ray_init_args: Optional[Dict[str, Any]] = None,
+        server: Optional[Server] = None
 ) -> None:
     """Start a Ray-based Flower simulation server.
 
@@ -146,7 +149,7 @@ def start_simulation(  # pylint: disable=too-many-arguments
 
     # Initialize server and server config
     config = {"num_rounds": num_rounds}
-    initialized_server, initialized_config = _init_defaults(None, config, strategy)
+    initialized_server, initialized_config = _init_defaults(server, config, strategy)
     log(
         INFO,
         "Starting Flower simulation running: %s",

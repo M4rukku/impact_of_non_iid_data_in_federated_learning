@@ -1,18 +1,21 @@
 import logging
 import traceback
+from typing import Optional
 
 import flwr as fl
 import numpy as np
 import tensorflow as tf
+from flwr.server import SimpleClientManager, Server
 
 from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import ClientDatasetFactory
 from sources.flwr_clients.base_client import BaseClient
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.flwr_parameters.simulation_parameters import SimulationParameters, \
-    RayInitArgs, ClientResources, DEFAULT_RAY_INIT_ARGS
+    RayInitArgs, ClientResources, DEFAULT_RAY_INIT_ARGS, EarlyStoppingSimulationParameters
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 from sources.simulation_framework.base_simulator import BaseSimulator
+from sources.simulation_framework.early_stopping_server import EarlyStoppingServer
 from sources.simulation_framework.ray_simulator_copy import start_simulation
 
 
@@ -28,7 +31,8 @@ class RayBasedSimulator(BaseSimulator):
                  metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
                  seed: int = DEFAULT_SEED,
                  client_resources: ClientResources = None,
-                 ray_init_args: RayInitArgs = DEFAULT_RAY_INIT_ARGS
+                 ray_init_args: RayInitArgs = DEFAULT_RAY_INIT_ARGS,
+                 server: Optional[Server] = None
                  ):
         super().__init__(simulation_parameters,
                          strategy,
@@ -41,6 +45,7 @@ class RayBasedSimulator(BaseSimulator):
 
         self.client_resources = client_resources
         self.ray_init_args = ray_init_args
+        self.server = server
 
     def start_simulation(self):
         client_fn = PickleableClientFunction(self.model_template,
@@ -65,7 +70,8 @@ class RayBasedSimulator(BaseSimulator):
                              client_resources=self.client_resources,
                              num_rounds=num_rounds,
                              strategy=self.strategy,
-                             ray_init_args=self.ray_init_args)
+                             ray_init_args=self.ray_init_args,
+                             server=self.server)
         except Exception as e:
             logging.error(
                 "Caught Exception after finishing Simulation - Caught the following error ")
