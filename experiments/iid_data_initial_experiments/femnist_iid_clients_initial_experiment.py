@@ -14,7 +14,7 @@ from sources.metrics.central_evaluation import \
 
 from sources.datasets.femnist_iid.femnist_iid_client_dataset_factory import \
     FemnistIIDClientDatasetFactory
-from sources.experiments.simulation_experiment import SimulationExperiment
+from sources.experiments.simulate_experiment import SimulateExperiment
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.models.femnist.femnist_model_template import FemnistModelTemplate
 from sources.flwr_strategies.full_evaluation_strategy_providers import \
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     experiment_metadata_list = femnist_initial_iid_experiment_metadata_provider(total_clients)
     optimizer_list = femnist_initial_iid_experiment_optimizer_provider()
 
-    SimulationExperiment.start_experiment(
+    SimulateExperiment.start_experiment(
         "InitialFemnistIIDExperiment",
         model_template,
         dataset_factory,

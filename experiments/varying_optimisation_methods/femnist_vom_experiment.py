@@ -11,7 +11,7 @@ from sources.metrics.central_evaluation import \
 from experiments.varying_optimisation_methods.vom_experiment_metadata_providers import \
     vom_experiments_strategy_providers, femnist_vom_experiment_metadata_provider, \
     femnist_vom_experiment_optimizer_provider
-from sources.experiments.simulation_experiment import SimulationExperiment
+from sources.experiments.simulate_experiment import SimulateExperiment
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED, set_seeds
 from sources.models.femnist.femnist_model_template import FemnistModelTemplate
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     experiment_metadata_list = femnist_vom_experiment_metadata_provider(total_clients)
     optimizer_list = femnist_vom_experiment_optimizer_provider()
 
-    SimulationExperiment.start_experiment(
+    SimulateExperiment.start_experiment(
         "Femnist_Varying_Optimisers_Experiment",
         model_template,
         dataset_factory,

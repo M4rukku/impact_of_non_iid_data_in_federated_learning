@@ -18,7 +18,7 @@ from sources.metrics.central_evaluation import \
 from sources.flwr_strategies.full_evaluation_strategy_providers import \
     full_eval_fed_avg_strategy_provider
 
-from sources.experiments.simulation_experiment import SimulationExperiment
+from sources.experiments.simulate_experiment import SimulateExperiment
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 
 if __name__ == "__main__":
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     experiment_metadata_list = shakespeare_initial_experiment_metadata_provider(total_clients)
     optimizer_list = shakespeare_initial_experiment_optimizer_provider()
 
-    SimulationExperiment.start_experiment(
+    SimulateExperiment.start_experiment(
         "InitialShakespeareExperiments_lr0.8",
         model_template,
         dataset_factory,
