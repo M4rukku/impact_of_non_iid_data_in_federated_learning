@@ -10,4 +10,4 @@ CIFAR_10_IMAGE_DIMENSIONS = 3
 
 LEAF_CHARACTERS = "\n !\"&'(),-.0123456789:;>?ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz}"
 
-DATASET_NAME_LIST = ["femnist", "celeba", "shakespeare"]
+DATASET_NAME_LIST = ["femnist", "celeba", "shakespeare", "cifar10"]

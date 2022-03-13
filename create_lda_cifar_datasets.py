@@ -19,7 +19,7 @@ fst = itemgetter(0)
 snd = itemgetter(1)
 
 # Aims to implement https://arxiv.org/pdf/1909.06335.pdf
-default_concentrations = [0.001, 0.5, 100.0]
+DEFAULT_CONCENTRATIONS = [0.001, 0.5, 100.0]
 total_images = 60000
 default_num_partitions = 100
 default_images_per_client = total_images / default_num_partitions
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         description=f'This tools creates client datasets from Cifar10 based on a latent dirichlet '
                     f'distribution. By default we will create 100 clients with 500 samples each. '
                     f'We choose the following concentration parameters for lda sampling: '
-                    f'{str(default_concentrations)}. You can change the default behaviour by '
+                    f'{str(DEFAULT_CONCENTRATIONS)}. You can change the default behaviour by '
                     f'manually entering the number of clients and/or cancentrations that will get '
                     f'assigned the total (60k) samples in Cifar10. Note that we use a 80/15/5 split'
                     f''
@@ -113,9 +113,9 @@ if __name__ == '__main__':
         action='store',
         type=float,
         nargs='+',
-        default=default_concentrations,
+        default=DEFAULT_CONCENTRATIONS,
         help=f'Define concentrations to be used in lda sampling. Can assign multiple values i.e. '
-             f'--conventrations 0.5 0.6 0.3. By default will be set to {str(default_concentrations)}')
+             f'--conventrations 0.5 0.6 0.3. By default will be set to {str(DEFAULT_CONCENTRATIONS)}')
 
     args = vars(dataset_identifier_parser.parse_args())
 

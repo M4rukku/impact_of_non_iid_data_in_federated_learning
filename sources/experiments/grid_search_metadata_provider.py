@@ -1,4 +1,3 @@
-import copy
 import dataclasses
 import itertools
 import math
@@ -8,6 +7,7 @@ from flwr.server.strategy import Strategy
 from tensorflow_addons.utils.types import Optimizer
 
 from sources.experiments.experiment_metadata import ExperimentMetadata
+from sources.experiments.experiment_metadata_provider_utils import ExperimentMetadataProvider
 
 
 @dataclasses.dataclass
@@ -31,17 +31,17 @@ class ParameterGridMetadataGenerator:
                  strategy_provider_function: Callable[[Dict[str, float]],
                                                       Callable[[ExperimentMetadata], Strategy]],
                  optimizer_provider_function: Callable[[Dict[str, float]], Optimizer],
-                 base_experiment_metadata: ExperimentMetadata,
+                 experiment_metadata_provider: ExperimentMetadataProvider,
                  custom_suffix_provider: Optional[Callable[[Dict[str, List[float]]],
                                                            str]] = None
                  ):
         self.parameter_value_map = parameter_value_map
         self.strategy_provider_function = strategy_provider_function
         self.optimizer_provider_function = optimizer_provider_function
-        self.base_experiment_metadata = base_experiment_metadata
+        self.experiment_metadata_provider = experiment_metadata_provider
         self.custom_suffix_provider = custom_suffix_provider
 
-    def generate_grid_responses(self) -> List[ParameterGridResponse]:
+    def generate_grid_responses(self) -> ParameterGridResponse:
         order = self.parameter_value_map.keys()
         pools = [self.parameter_value_map[key] for key in order]
         products = itertools.product(*pools)
@@ -50,7 +50,7 @@ class ParameterGridMetadataGenerator:
         for product in products:
             current_parameter_dict = {key: val for key, val in zip(order, product)}
             strategy = self.strategy_provider_function(current_parameter_dict)
-            experiment_metadata = copy.deepcopy(self.base_experiment_metadata)
+            experiment_metadata = self.experiment_metadata_provider(**current_parameter_dict)
 
             if self.custom_suffix_provider is not None:
                 experiment_metadata.custom_suffix = self.custom_suffix_provider(

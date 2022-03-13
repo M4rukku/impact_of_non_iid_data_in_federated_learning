@@ -239,7 +239,7 @@ class SimulateExperiment:
                 # Start Simulation
                 simulation_parameters = get_simulation_parameters_from_experiment_metadata(experiment_metadata)
                 server = None
-                if isinstance(simulation_parameters, EarlyStoppingSimulationParameters):
+                if "target_accuracy" in simulation_parameters:
                     server = EarlyStoppingServer(SimpleClientManager(), strategy_)
 
                 simulator = RayBasedSimulator(

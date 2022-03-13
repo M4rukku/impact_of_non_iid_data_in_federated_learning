@@ -1,23 +1,22 @@
 import copy
 import inspect
-from enum import IntEnum, auto
-from typing import TypedDict
+from typing import TypedDict, Optional, Union
 
 from sources.experiments.experiment_metadata import ExperimentMetadata
 
 
-class ExperimentScale(IntEnum):
-    SMALL = auto()
-    MEDIUM = auto()
-    LARGE = auto()
-
-
 class FixedExperimentMetadata(TypedDict):
+    num_clients: Union[int, None]
     num_rounds: int
     clients_per_round: int
     batch_size: int
     local_epochs: int
     val_steps: int
+
+
+class FixedExperimentMetadataEarlyStopping(FixedExperimentMetadata):
+    target_accuracy: float
+    num_rounds_above_target: int
 
 
 def get_kwargs():
@@ -30,19 +29,24 @@ def get_kwargs():
     return kwargs
 
 
-class _ExperimentMetadataProvider:
+class ExperimentMetadataProvider:
     def __init__(self, fixed_metadata: FixedExperimentMetadata):
         self.fixed_metadata = fixed_metadata
 
     def __call__(self,
-                 num_clients: int,
+                 num_clients: int = None,
                  num_rounds: int = None,
                  clients_per_round: int = None,
                  batch_size: int = None,
                  local_epochs: int = None,
-                 val_steps: int = None) -> ExperimentMetadata:
-        kwargs = get_kwargs()
+                 val_steps: int = None,
+                 target_accuracy: Optional[float] = None,
+                 num_rounds_above_target: int = None,
+                 custom_suffix=None,
+                 **kwargs
+                 ) -> ExperimentMetadata:
+        all_kwargs = get_kwargs()
         cpy = copy.deepcopy(self.fixed_metadata)
-        new_args_wo_none = {key: val for key, val in kwargs.items() if val is not None}
+        new_args_wo_none = {key: val for key, val in all_kwargs.items() if val is not None and key not in kwargs}
         cpy.update(new_args_wo_none)
         return ExperimentMetadata(**cpy)
