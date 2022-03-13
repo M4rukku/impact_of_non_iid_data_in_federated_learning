@@ -1,3 +1,5 @@
+import numpy
+
 DEFAULT_SEED: int = 0
 
 # 1. Set `PYTHONHASHSEED` environment variable at a fixed value
@@ -8,6 +10,7 @@ import tensorflow as tf
 def set_seeds(seed=DEFAULT_SEED):
     os.environ['PYTHONHASHSEED'] = str(seed)
     tf.keras.utils.set_random_seed(seed)
+    numpy.random.seed(DEFAULT_SEED)
 
 
 def set_global_determinism(seed=DEFAULT_SEED):
