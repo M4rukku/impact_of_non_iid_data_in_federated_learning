@@ -204,8 +204,11 @@ class SimulateExperiment:
                 extended_metadata_file = inner_experiment_dir / "experiment_metadata_file.json"
 
                 with extended_metadata_file.open("w") as f:
-                    dict_wo_floats = {k: (str(round(v, 2)) if isinstance(v, float) else v)
+                    def change_floats_to_str(dictionary):
+                        return {k: (str(round(v, 2)) if isinstance(v, float) else v)
                                       for (k, v) in extended_metadata_dict.items()}
+                    dict_wo_floats = change_floats_to_str(extended_metadata_dict)
+                    dict_wo_floats["optimizer_config"] = str(extended_metadata_dict["optimizer_config"])
                     json.dump(dict_wo_floats, f)
 
                 # Setup fit/evaluate config functions

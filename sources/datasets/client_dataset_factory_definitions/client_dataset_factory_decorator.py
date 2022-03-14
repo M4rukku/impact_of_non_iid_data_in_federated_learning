@@ -31,4 +31,4 @@ class DecoratedClientDatasetFactoryDecorator(ClientDatasetFactory):
         )
 
     def get_number_of_clients(self):
-        self.decorated_dataset_factory.get_number_of_clients()
+        return self.decorated_dataset_factory.get_number_of_clients()

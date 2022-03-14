@@ -44,9 +44,9 @@ class Cifar10LdaModelTemplate(ModelTemplate):
     def get_centralised_metrics(self) -> List[Union[str, tf.keras.metrics.Metric]]:
         return get_default_sparse_categorical_metrics(self.num_classes)
 
-    def get_optimizer(self, lr=0.001, model: Optional[tf.keras.models.Model] = None) \
+    def get_optimizer(self, lr=0.001, momentum=0.9, model: Optional[tf.keras.models.Model] = None) \
             -> tf.keras.optimizers.Optimizer:
         if self.optimizer is not None:
             return self.optimizer
         else:
-            return tf.keras.optimizers.SGD(learning_rate=lr, momentum=0.9)
+            return tf.keras.optimizers.SGD(learning_rate=lr, momentum=momentum)
