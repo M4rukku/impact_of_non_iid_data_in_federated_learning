@@ -11,7 +11,7 @@ import pickle
 from sources.dataset_utils.create_iid_dataset_utils import get_full_iid_dataset_filename
 from sources.dataset_utils.get_iid_dataset_utils import get_full_iid_dataset
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
-from sources.global_data_properties import DATASET_NAME_LIST
+from sources.global_data_properties import LEAF_DATASET_NAME_LIST
 
 
 def get_dataset_dist(data_dir, dataset_identifier):
@@ -112,7 +112,7 @@ if __name__ == '__main__':
                     'Ensure that you have created the full iid datasets via create_iid_datasets '
                     '--all before.')
 
-    dataset_identifiers = DATASET_NAME_LIST
+    dataset_identifiers = LEAF_DATASET_NAME_LIST
 
     for dataset_identifier in dataset_identifiers:
         if not (data_dir / get_full_iid_dataset_filename(dataset_identifier)).exists():

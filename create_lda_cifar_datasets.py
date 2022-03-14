@@ -11,25 +11,19 @@ from flwr.dataset.utils.common import create_lda_partitions
 from sources.dataset_utils.create_iid_dataset_utils import get_full_iid_dataset_filename, \
     get_default_iid_dataset_filename, get_fractional_iid_dataset_filename
 from sources.dataset_utils.create_lda_dataset_utils import get_random_id_splits, \
-    get_lda_dataset_name
+    get_lda_cifar10_dataset_name
 from sources.dataset_utils.dataset import Dataset
 from sources.flwr_parameters.set_random_seeds import set_seeds, DEFAULT_SEED
+from sources.global_data_properties import DEFAULT_CONCENTRATIONS_CIFAR10, TOTAL_IMAGES_CIFAR10, DEFAULT_PARTITIONS_CIFAR10, \
+    DEFAULT_TRAIN_SPLIT, DEFAULT_TEST_SPLIT, DEFAULT_VALIDATION_SPLIT, DEFAULT_IID_DATASET_SIZE_CIFAR10
 
 fst = itemgetter(0)
 snd = itemgetter(1)
 
 # Aims to implement https://arxiv.org/pdf/1909.06335.pdf
-DEFAULT_CONCENTRATIONS = [0.001, 0.5, 100.0]
-total_images = 60000
-default_num_partitions = 100
-default_images_per_client = total_images / default_num_partitions
+default_images_per_client = TOTAL_IMAGES_CIFAR10 / DEFAULT_PARTITIONS_CIFAR10
 
-default_train_split = 0.8
-default_test_split = 0.15
-default_validation_split = 0.05
 default_accept_imbalanced = True
-
-default_fraction_size = 0.005  # 300 images
 
 
 def create_iid_cifar10_dataset(iid_dataset_filepath: Path,
@@ -53,8 +47,8 @@ def create_iid_cifar10_dataset(iid_dataset_filepath: Path,
     dataset_selection_x = cifar10_x_array[dataset_index_selection]
     dataset_selection_y = cifar10_y_array[dataset_index_selection]
 
-    train_split, test_split = (int(default_train_split * dataset_size),
-                               int((default_train_split + default_test_split) * dataset_size))
+    train_split, test_split = (int(DEFAULT_TRAIN_SPLIT * dataset_size),
+                               int((DEFAULT_TRAIN_SPLIT + DEFAULT_TEST_SPLIT) * dataset_size))
 
     train_test_validation_dataset = Dataset(
         {"x": dataset_selection_x[:train_split], "y": dataset_selection_y[:train_split]},
@@ -73,7 +67,7 @@ if __name__ == '__main__':
         description=f'This tools creates client datasets from Cifar10 based on a latent dirichlet '
                     f'distribution. By default we will create 100 clients with 500 samples each. '
                     f'We choose the following concentration parameters for lda sampling: '
-                    f'{str(DEFAULT_CONCENTRATIONS)}. You can change the default behaviour by '
+                    f'{str(DEFAULT_CONCENTRATIONS_CIFAR10)}. You can change the default behaviour by '
                     f'manually entering the number of clients and/or cancentrations that will get '
                     f'assigned the total (60k) samples in Cifar10. Note that we use a 80/15/5 split'
                     f''
@@ -104,18 +98,18 @@ if __name__ == '__main__':
         f'--num_partitions',
         action='store',
         type=int,
-        default=default_num_partitions,
+        default=DEFAULT_PARTITIONS_CIFAR10,
         help=f'Define the number of clients to be generated from the cifar10 dataset. If not '
-             f'defined, will be set to default value ({str(default_num_partitions)}).')
+             f'defined, will be set to default value ({str(DEFAULT_PARTITIONS_CIFAR10)}).')
 
     dataset_identifier_parser.add_argument(
         f'--concentrations',
         action='store',
         type=float,
         nargs='+',
-        default=DEFAULT_CONCENTRATIONS,
+        default=DEFAULT_CONCENTRATIONS_CIFAR10,
         help=f'Define concentrations to be used in lda sampling. Can assign multiple values i.e. '
-             f'--conventrations 0.5 0.6 0.3. By default will be set to {str(DEFAULT_CONCENTRATIONS)}')
+             f'--conventrations 0.5 0.6 0.3. By default will be set to {str(DEFAULT_CONCENTRATIONS_CIFAR10)}')
 
     args = vars(dataset_identifier_parser.parse_args())
 
@@ -152,7 +146,7 @@ if __name__ == '__main__':
         # Create Default Split
         default_iid_dataset_identifier = get_default_iid_dataset_filename("cifar10")
         default_iid_dataset_file = data_dir / default_iid_dataset_identifier
-        create_iid_cifar10_dataset(default_iid_dataset_file, default_fraction_size, cifar10_numpy_x, cifar10_numpy_y)
+        create_iid_cifar10_dataset(default_iid_dataset_file, DEFAULT_IID_DATASET_SIZE_CIFAR10, cifar10_numpy_x, cifar10_numpy_y)
 
     # Create Fractional Splits
     for fraction in custom_iid_fractions:
@@ -163,7 +157,7 @@ if __name__ == '__main__':
     # Create IID Clients
     for concentration in concentrations:
         set_seeds()
-        base_dirname = get_lda_dataset_name(concentration, num_partitions)
+        base_dirname = get_lda_cifar10_dataset_name(concentration, num_partitions)
         base_dir = data_dir / base_dirname
 
         if base_dir.exists():
@@ -186,8 +180,8 @@ if __name__ == '__main__':
             data_length = len(y_data)
             train_idx, test_idx, val_idx = get_random_id_splits(
                 data_length,
-                default_test_split,
-                default_validation_split)
+                DEFAULT_TEST_SPLIT,
+                DEFAULT_VALIDATION_SPLIT)
 
             dataset_splits = {
                 "train": {"x": x_data[train_idx], "y": y_data[train_idx], "client_id": i},

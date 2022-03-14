@@ -5,16 +5,6 @@ import numpy as np
 from sources.dataset_utils.dataset import Dataset
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 
-DEFAULT_FEMNIST_DATASET_FRACTION: float = 0.05
-DEFAULT_CELEBA_DATASET_FRACTION: float = 0.05
-DEFAULT_SHAKESPEARE_DATASET_FRACTION: float = 0.05
-
-DATASET_NAME_FRACTION_DICT = {
-    "celeba": DEFAULT_CELEBA_DATASET_FRACTION,
-    "femnist": DEFAULT_FEMNIST_DATASET_FRACTION,
-    "shakespeare": DEFAULT_SHAKESPEARE_DATASET_FRACTION
-}
-
 
 def extract_data(dataset_path: Path):
     train_set = dataset_path / "train.pickle"
@@ -33,20 +23,22 @@ def extract_data(dataset_path: Path):
 
 def append_data(train_data, test_data, validation_data,
                 new_train_data, new_test_data, new_validation_data):
-    train_data["x"] = train_data["x"] + new_train_data["x"]
-    train_data["y"] = train_data["y"] + new_train_data["y"]
-    test_data["x"] = test_data["x"] + new_test_data["x"]
-    test_data["y"] = test_data["y"] + new_test_data["y"]
-    validation_data["x"] = validation_data["x"] + new_validation_data["x"]
-    validation_data["y"] = validation_data["y"] + new_validation_data["y"]
+    train_data["x"] = np.concatenate([train_data["x"], new_train_data["x"]])
+    train_data["y"] = np.concatenate([train_data["y"], new_train_data["y"]])
+    test_data["x"] = np.concatenate([test_data["x"], new_test_data["x"]])
+    test_data["y"] = np.concatenate([test_data["y"], new_test_data["y"]])
+    validation_data["x"] = np.concatenate([validation_data["x"], new_validation_data["x"]])
+    validation_data["y"] = np.concatenate([validation_data["y"], new_validation_data["y"]])
 
 
-def create_iid_dataset(base_data_dir: Path,
-                       dataset_identifier: str,
-                       fraction_to_extract: float,
-                       compiled_dataset_name: str = None) -> None:
+def create_iid_dataset_from_client_fraction(base_data_dir: Path,
+                                            dataset_identifier: str,
+                                            fraction_to_extract: float,
+                                            compiled_dataset_name: str = None,
+                                            only_create_and_use_training_data: str = False
+                                            ) -> None:
     dataset_dir = base_data_dir / dataset_identifier
-    dataset_files = np.array(list(dataset_dir.iterdir()))
+    dataset_files = np.array(list(filter(lambda file: file.is_dir(), dataset_dir.iterdir())))
     amt_files_to_extract = int(fraction_to_extract * len(dataset_files))
 
     rng = np.random.default_rng(DEFAULT_SEED)
@@ -55,13 +47,31 @@ def create_iid_dataset(base_data_dir: Path,
                                          replace=False)
 
     dataset_selection = dataset_files[dataset_index_selection]
-    train_test_validation_dataset = Dataset({"x": [], "y": []},
-                                            {"x": [], "y": []},
-                                            {"x": [], "y": []})
+
+    dataset = extract_data(dataset_selection[0])
+
+    def empty_x():
+        shape_x = dataset[0]["x"].shape
+        shape_x = (0, *(shape_x[1:]))
+        return np.empty(shape_x, dataset[0]["x"].dtype)
+
+    def empty_y():
+        shape_y = dataset[0]["y"].shape
+        shape_y = (0, *(shape_y[1:]))
+        return np.empty(shape_y, dataset[0]["y"].dtype)
+
+    train_test_validation_dataset = Dataset({"x": empty_x(), "y": empty_y()},
+                                            {"x": empty_x(), "y": empty_y()},
+                                            {"x": empty_x(), "y": empty_y()})
 
     for dataset in dataset_selection:
         extracted_data = extract_data(dataset)
-        append_data(*train_test_validation_dataset, *extracted_data)
+        if only_create_and_use_training_data:
+            append_data(*train_test_validation_dataset, extracted_data[0],
+                        {"x": empty_x(), "y": empty_y()},
+                        {"x": empty_x(), "y": empty_y()})
+        else:
+            append_data(*train_test_validation_dataset, *extracted_data)
 
     if compiled_dataset_name is None:
         iid_data_file = base_data_dir / \
@@ -73,8 +83,56 @@ def create_iid_dataset(base_data_dir: Path,
         pickle.dump(train_test_validation_dataset.to_tuple(), f)
 
 
+def subsample_full_iid_datasets(base_data_dir: Path,
+                                full_dataset: Dataset,
+                                fraction_to_extract: float,
+                                compiled_dataset_name: str,
+                                only_create_and_use_training_data: bool = False):
+    rng = np.random.default_rng(DEFAULT_SEED)
+    selection_train = rng.choice(len(full_dataset.train["x"]),
+                                 int(len(full_dataset.train["x"]) * fraction_to_extract),
+                                 replace=False)
+    selection_test = rng.choice(len(full_dataset.test["x"]),
+                                int(len(full_dataset.test["x"]) * fraction_to_extract),
+                                replace=False)
+    selection_validation = rng.choice(len(full_dataset.validation["x"]),
+                                      int(len(full_dataset.validation["x"]) * fraction_to_extract),
+                                      replace=False)
+
+    if only_create_and_use_training_data:
+        def empty_x():
+            shape_x = full_dataset.train["x"].shape
+            shape_x = (0, *(shape_x[1:]))
+            return np.empty(shape_x, full_dataset.train["x"].dtype)
+
+        def empty_y():
+            shape_y = full_dataset.train["y"].shape
+            shape_y = (0, *(shape_y[1:]))
+            return np.empty(shape_y, full_dataset.train["y"].dtype)
+
+        train_test_validation_dataset = Dataset({"x": full_dataset.train["x"][selection_train],
+                                                 "y": full_dataset.train["y"][selection_train]},
+                                                {"x": empty_x(), "y": empty_y()},
+                                                {"x": empty_x(), "y": empty_y()})
+    else:
+        train_test_validation_dataset = Dataset({"x": full_dataset.train["x"][selection_train],
+                                                 "y": full_dataset.train["y"][selection_train]},
+                                                {"x": full_dataset.test["x"][selection_test],
+                                                 "y": full_dataset.test["y"][selection_test]},
+                                                {"x": full_dataset.validation["x"][selection_validation],
+                                                 "y": full_dataset.validation["y"][selection_validation]})
+
+    dataset_file = base_data_dir / compiled_dataset_name
+    with dataset_file.open("wb") as f:
+        pickle.dump(train_test_validation_dataset.to_tuple(), f)
+
+
 def get_full_iid_dataset_filename(dataset_identifier: str) -> str:
     return dataset_identifier + "_full_iid_dataset.pickle"
+
+
+def get_globally_shared_iid_dataset_filename(dataset_identifier: str) -> str:
+    return dataset_identifier + "_globally_shared.pickle"
 
 
 def get_default_iid_dataset_filename(dataset_identifier: str) -> str:

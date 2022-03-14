@@ -104,10 +104,15 @@ class BaseClient(fl.client.NumPyClient):
         val_steps: int = config["val_steps"]
 
         self.model.set_weights(parameters)
+
+        data_x, data_y = np.array(self.dataset.validation_data_x), np.array(self.dataset.validation_data_y)
+        rng = np.random.default_rng()
+        indices = rng.choice(len(data_x), len(data_x), replace=False)
+
         with self.dataset:
             result_dict = \
-                self.model.evaluate(self.dataset.validation_data_x,
-                                    self.dataset.validation_data_y,
+                self.model.evaluate(data_x[indices],
+                                    data_y[indices],
                                     batch_size=batch_size,
                                     steps=val_steps,
                                     return_dict=True,
@@ -116,7 +121,7 @@ class BaseClient(fl.client.NumPyClient):
             data_len = len(self.dataset.validation_data_x)
 
         result = (result_dict["loss"],
-                int(min(data_len, batch_size *
-                    (val_steps if val_steps is not None
-                     else data_len / batch_size))), result_dict)
+                  int(min(data_len, batch_size *
+                          (val_steps if val_steps is not None
+                           else data_len / batch_size))), result_dict)
         return result

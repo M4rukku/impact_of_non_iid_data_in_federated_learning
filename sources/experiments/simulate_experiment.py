@@ -204,7 +204,9 @@ class SimulateExperiment:
                 extended_metadata_file = inner_experiment_dir / "experiment_metadata_file.json"
 
                 with extended_metadata_file.open("w") as f:
-                    json.dump(extended_metadata_dict, f)
+                    dict_wo_floats = {k: (str(round(v, 2)) if isinstance(v, float) else v)
+                                      for (k, v) in extended_metadata_dict.items()}
+                    json.dump(dict_wo_floats, f)
 
                 # Setup fit/evaluate config functions
                 SimulateExperiment._ensure_strategy_implements_basic_config_funcs(

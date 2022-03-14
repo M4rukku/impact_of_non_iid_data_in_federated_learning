@@ -23,5 +23,5 @@ def get_random_id_splits(total: int,
             indices[:split_val])
 
 
-def get_lda_dataset_name(concentration_: float, num_partitions_: int):
+def get_lda_cifar10_dataset_name(concentration_: float, num_partitions_: int):
     return f"cifar10_{str(num_partitions_)}p_{format(concentration_, '.3f')}c"

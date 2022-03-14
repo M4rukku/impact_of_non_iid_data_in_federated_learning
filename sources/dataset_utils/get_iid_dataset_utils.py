@@ -1,9 +1,10 @@
 import pickle
 from pathlib import Path
-from sources.global_data_properties import DATASET_NAME_LIST
+
+from sources.datasets.client_dataset_definitions.client_dataset_processors.client_dataset_processor import \
+    ClientDatasetProcessor
 from sources.dataset_utils.create_iid_dataset_utils import get_full_iid_dataset_filename, \
-    get_default_iid_dataset_filename, \
-    get_fractional_iid_dataset_filename
+    get_default_iid_dataset_filename, get_fractional_iid_dataset_filename, get_globally_shared_iid_dataset_filename
 from sources.dataset_utils.dataset import Dataset
 from sources.flwr_parameters.exception_definitions import DatasetNotFoundError
 
@@ -13,10 +14,6 @@ def get_data_dir():
 
 
 def _get_dataset(dataset_identifier: str, filename: str) -> Dataset:
-    if dataset_identifier not in DATASET_NAME_LIST:
-        raise DatasetNotFoundError(f"The Dataset defined by identifier {dataset_identifier} has "
-                                   f"not been registered in this simulation framework.")
-
     data_dir = get_data_dir()
     dataset_filepath = data_dir / filename
 
@@ -38,6 +35,11 @@ def get_default_iid_dataset(dataset_identifier: str) -> Dataset:
                         get_default_iid_dataset_filename(dataset_identifier))
 
 
+def get_globally_shared_iid_dataset(dataset_identifier: str) -> Dataset:
+    return _get_dataset(dataset_identifier,
+                        get_globally_shared_iid_dataset_filename(dataset_identifier))
+
+
 def get_fractional_iid_dataset(dataset_identifier: str, fraction: float) -> Dataset:
     return _get_dataset(dataset_identifier,
                         get_fractional_iid_dataset_filename(dataset_identifier, fraction))
@@ -48,3 +50,11 @@ def load_iid_dataset(data_dir: Path, filename: str) -> Dataset:
         data = pickle.load(f)
 
     return Dataset(*data)
+
+
+def preprocess_dataset(dataset: Dataset, cdp: ClientDatasetProcessor) -> Dataset:
+    return Dataset(
+        {"x": cdp.process_x(dataset.train["x"]), "y": cdp.process_y(dataset.train["y"])},
+        {"x": cdp.process_x(dataset.test["x"]), "y": cdp.process_y(dataset.test["y"])},
+        {"x": cdp.process_x(dataset.validation["x"]), "y": cdp.process_y(dataset.validation["y"])}
+    )

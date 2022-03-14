@@ -1,6 +1,6 @@
-from typing import Callable
+from typing import Callable, Optional
 import numpy
-from flwr.common import weights_to_parameters
+from flwr.common import weights_to_parameters, Parameters
 from flwr.server.strategy import FedAvg, Strategy, FedYogi, FedAdagrad, FedAdam
 from sources.experiments.experiment_metadata import ExperimentMetadata
 from sources.flwr_strategies_decorators.enable_full_evaluation_decorator import \
@@ -19,7 +19,8 @@ def get_fraction_fit_from_metadata(experiment_metadata: ExperimentMetadata):
 
 def full_eval_fed_avg_strategy_provider(
         eval_fn: Callable,
-        experiment_metadata: ExperimentMetadata
+        experiment_metadata: ExperimentMetadata,
+        initial_parameters: Optional[Parameters] = None
 ) -> Strategy:
     fraction_fit = get_fraction_fit_from_metadata(experiment_metadata)
 
@@ -27,7 +28,8 @@ def full_eval_fed_avg_strategy_provider(
         FedAvg(
             eval_fn=eval_fn,
             fraction_fit=fraction_fit,
-            fraction_eval=fraction_fit
+            fraction_eval=fraction_fit,
+            initial_parameters=initial_parameters
         )
     )
 
@@ -42,7 +44,7 @@ def full_eval_fed_adam_strategy_provider(
         eta_l: float = 1e-1,
         beta_1: float = 0.9,
         beta_2: float = 0.99,
-        tau: float = 1e-9
+        tau: float = 1e-3
 ) -> Strategy:
     fraction_fit = get_fraction_fit_from_metadata(experiment_metadata)
     initial_parameters = weights_to_parameters(initial_parameters)
@@ -70,7 +72,7 @@ def full_eval_fed_adagrad_strategy_provider(
         initial_parameters: numpy.array,
         eta: float = 1e-1,
         eta_l: float = 1e-1,
-        tau: float = 1e-9
+        tau: float = 1e-3
 ) -> Strategy:
     fraction_fit = get_fraction_fit_from_metadata(experiment_metadata)
     initial_parameters = weights_to_parameters(initial_parameters)
@@ -98,7 +100,7 @@ def full_eval_fed_yogi_strategy_provider(
         eta_l: float = 1e-1,
         beta_1: float = 0.9,
         beta_2: float = 0.99,
-        tau: float = 1e-9
+        tau: float = 1e-3
 ) -> Strategy:
     fraction_fit = get_fraction_fit_from_metadata(experiment_metadata)
     initial_parameters = weights_to_parameters(initial_parameters)
