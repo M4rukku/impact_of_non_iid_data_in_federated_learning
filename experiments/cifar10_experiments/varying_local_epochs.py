@@ -2,10 +2,11 @@ import functools
 from pathlib import Path
 
 import experiments.setup_system_paths as ssp
-from create_lda_cifar_datasets import DEFAULT_CONCENTRATIONS
 
 ssp.setup_system_paths()
 
+from sources.dataset_utils.create_lda_dataset_utils import get_lda_cifar10_dataset_name
+from sources.global_data_properties import DEFAULT_CONCENTRATIONS_CIFAR10
 from experiments.cifar10_experiments.cifar10_metadata_providers import \
     CIFAR10_BASE_METADATA_SYS_EXP_PROVIDER, VARYING_LOCAL_EPOCHS_EXP_PARAMETER_MAP
 from sources.datasets.cifar10_lda.cifar10_lda_client_dataset_factory import Cifar10LdaClientDatasetFactory
@@ -26,11 +27,11 @@ if __name__ == "__main__":
     base_dir = Path(__file__).parent.parent.parent
     root_data_dir = base_dir / "data"
 
-    for fraction in DEFAULT_CONCENTRATIONS:
+    for concentration in DEFAULT_CONCENTRATIONS_CIFAR10:
         model_template = Cifar10LdaModelTemplate(DEFAULT_SEED)
-        dataset_factory = Cifar10LdaClientDatasetFactory(root_data_dir, 100, fraction)
+        dataset_factory = Cifar10LdaClientDatasetFactory(root_data_dir, 100, concentration)
         total_clients = dataset_factory.get_number_of_clients()
-        central_dataset = get_default_iid_dataset("cifar10")
+        central_dataset = get_default_iid_dataset(get_lda_cifar10_dataset_name(concentration, 100))
 
         eval_fn = create_central_evaluation_function_from_dataset_processor(
             model_template,
@@ -46,11 +47,11 @@ if __name__ == "__main__":
                                               lambda d: strategy_provider,
                                               lambda d: model_template.get_optimizer(),
                                               CIFAR10_BASE_METADATA_SYS_EXP_PROVIDER,
-                                              lambda d: f"_c_{d['clients_per_round']}")
+                                              lambda d: f"_le_{d['local_epochs']}")
         pgr = pgmg.generate_grid_responses()
 
         SimulateExperiment.start_experiment(
-            f"Cifar10Lda_{fraction}_Varying_Local_Epochs",
+            f"Cifar10Lda_{concentration}_Varying_Local_Epochs",
             model_template,
             dataset_factory,
             strategy_provider=None,
