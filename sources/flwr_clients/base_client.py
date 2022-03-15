@@ -1,4 +1,5 @@
 import functools
+import logging
 import typing
 import flwr as fl
 import numpy as np
@@ -70,30 +71,29 @@ class BaseClient(fl.client.NumPyClient):
     def fit(self, parameters: np.array, config: FittingParameters):
         """Fit model and return new weights as well as number of training
         examples."""
-
         self.model.set_weights(parameters)
-
         batch_size: int = config["batch_size"]
         epochs: int = config["local_epochs"]
 
         # Train the model using hyperparameters from config
-        with self.dataset:
-            history = self.model.fit(
-                self.dataset.test_data_x,
-                self.dataset.test_data_y,
-                batch_size,
-                epochs,
-                shuffle=True,
-                validation_data=self.dataset.validation_data,
-                callbacks=self.fitting_callbacks,
-                verbose=1
-            )
-
-            num_examples_train = len(self.dataset.test_data_x)
+        try:
+            with self.dataset:
+                history = self.model.fit(
+                    self.dataset.test_data_x,
+                    self.dataset.test_data_y,
+                    batch_size,
+                    epochs,
+                    shuffle=True,
+                    validation_data=self.dataset.validation_data,
+                    callbacks=self.fitting_callbacks,
+                    verbose=1
+                )
+                num_examples_train = len(self.dataset.test_data_x)
+        except Exception as e:
+            logging.error(str(e))
 
         # Return updated model parameters and results
         parameters_prime = self.model.get_weights()
-
         return (parameters_prime,
                 num_examples_train,
                 {key: entry[0] for key, entry in history.history.items()})
@@ -105,11 +105,11 @@ class BaseClient(fl.client.NumPyClient):
 
         self.model.set_weights(parameters)
 
-        data_x, data_y = np.array(self.dataset.validation_data_x), np.array(self.dataset.validation_data_y)
-        rng = np.random.default_rng()
-        indices = rng.choice(len(data_x), len(data_x), replace=False)
-
         with self.dataset:
+            data_x, data_y = np.array(self.dataset.validation_data_x), np.array(self.dataset.validation_data_y)
+            rng = np.random.default_rng()
+            indices = rng.choice(len(data_x), len(data_x), replace=False)
+
             result_dict = \
                 self.model.evaluate(data_x[indices],
                                     data_y[indices],

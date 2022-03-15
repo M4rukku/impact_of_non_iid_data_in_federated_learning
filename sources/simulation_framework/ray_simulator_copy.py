@@ -64,7 +64,8 @@ def start_simulation(  # pylint: disable=too-many-arguments
         num_rounds: int = 1,
         strategy: Optional[Strategy] = None,
         ray_init_args: Optional[Dict[str, Any]] = None,
-        server: Optional[Server] = None
+        server: Optional[Server] = None,
+        ray_callbacks: Optional[List[Callable[[], None]]]=None
 ) -> None:
     """Start a Ray-based Flower simulation server.
 
@@ -146,6 +147,10 @@ def start_simulation(  # pylint: disable=too-many-arguments
         "Ray initialized with resources: %s",
         ray.cluster_resources(),
     )
+
+    if ray_callbacks is not None:
+        for callback in ray_callbacks:
+            callback()
 
     # Initialize server and server config
     config = {"num_rounds": num_rounds}

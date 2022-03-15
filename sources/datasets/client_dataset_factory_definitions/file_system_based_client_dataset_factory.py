@@ -27,4 +27,4 @@ class FileSystemBasedClientDatasetFactory(ClientDatasetFactory):
     @staticmethod
     def _number_of_files_in_dir(dir_path: Path):
         assert dir_path.is_dir()
-        return len(list(dir_path.iterdir()))
+        return len(list(filter(lambda f: f.is_dir(), dir_path.iterdir())))

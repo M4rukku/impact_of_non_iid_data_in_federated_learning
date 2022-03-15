@@ -7,7 +7,6 @@ ssp.setup_system_paths()
 
 from sources.dataset_utils.create_lda_dataset_utils import get_lda_cifar10_dataset_name
 from experiments.cifar10_experiments.cifar10_metadata_providers import CIFAR10_BASE_METADATA_OPT_EXP_PROVIDER
-from flwr.common import weights_to_parameters
 from sources.global_data_properties import DEFAULT_CONCENTRATIONS_CIFAR10
 from sources.datasets.cifar10_lda.cifar10_lda_client_dataset_factory import Cifar10LdaClientDatasetFactory
 from sources.datasets.cifar10_lda.cifar10_lda_client_dataset_processor import Cifar10LdaClientDatasetProcessor
@@ -43,7 +42,7 @@ if __name__ == "__main__":
             central_dataset,
             Cifar10LdaClientDatasetProcessor())
 
-        initial_parameters = weights_to_parameters(model_template.get_model().get_weights())
+        initial_parameters = model_template.get_model().get_weights()
 
         strategy_provider_fed_avg = functools.partial(
             full_eval_fed_avg_strategy_provider,

@@ -1,11 +1,11 @@
 import logging
 import traceback
-from typing import Optional
+from typing import Optional, List, Callable
 
 import flwr as fl
 import numpy as np
 import tensorflow as tf
-from flwr.server import SimpleClientManager, Server
+from flwr.server import Server
 
 from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import ClientDatasetFactory
 from sources.flwr_clients.base_client import BaseClient
@@ -32,6 +32,7 @@ class RayBasedSimulator(BaseSimulator):
                  seed: int = DEFAULT_SEED,
                  client_resources: ClientResources = None,
                  ray_init_args: RayInitArgs = DEFAULT_RAY_INIT_ARGS,
+                 ray_callbacks: Optional[List[Callable[[], None]]] = None,
                  server: Optional[Server] = None
                  ):
         super().__init__(simulation_parameters,
@@ -46,6 +47,7 @@ class RayBasedSimulator(BaseSimulator):
         self.client_resources = client_resources
         self.ray_init_args = ray_init_args
         self.server = server
+        self.ray_callbacks = ray_callbacks
 
     def start_simulation(self):
         client_fn = PickleableClientFunction(self.model_template,
@@ -71,7 +73,8 @@ class RayBasedSimulator(BaseSimulator):
                              num_rounds=num_rounds,
                              strategy=self.strategy,
                              ray_init_args=self.ray_init_args,
-                             server=self.server)
+                             server=self.server,
+                             ray_callbacks=self.ray_callbacks)
         except Exception as e:
             logging.error(
                 "Caught Exception after finishing Simulation - Caught the following error ")
@@ -88,8 +91,13 @@ class PickleableClientFunction:
         self.evaluation_callbacks = evaluation_callbacks
 
     def __call__(self, client_identifier: str):
-        return BaseClient(self.model_template,
-                          self.dataset_factory.create_dataset(client_identifier),
-                          self.metrics,
-                          self.fitting_callbacks,
-                          self.evaluation_callbacks)
+        try:
+            base_client = BaseClient(self.model_template,
+                                     self.dataset_factory.create_dataset(client_identifier),
+                                     self.metrics,
+                                     self.fitting_callbacks,
+                                     self.evaluation_callbacks)
+        except Exception as e:
+            logging.error(str(e))
+            base_client = None
+        return base_client

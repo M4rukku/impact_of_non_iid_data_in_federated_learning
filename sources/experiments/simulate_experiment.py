@@ -139,7 +139,8 @@ class SimulateExperiment:
             runs_per_experiment: int = DEFAULT_RUNS_PER_EXPERIMENT,
             centralised_evaluation=False,
             aggregated_evaluation=True,
-            rounds_between_centralised_evaluations=10
+            rounds_between_centralised_evaluations=10,
+            ray_callbacks: Optional[List[Callable[[], None]]] = None
     ):
 
         strategies_list_defined = True if strategy_provider_list is not None else False
@@ -257,7 +258,8 @@ class SimulateExperiment:
                     metrics,
                     client_resources=client_resources,
                     ray_init_args=ray_init_args,
-                    server=server)
+                    server=server,
+                    ray_callbacks = ray_callbacks)
 
                 simulator.start_simulation()
                 logging.info(f"Finished run {run + 1}/{runs_per_experiment} of experiment {i + 1}.")

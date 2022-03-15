@@ -14,7 +14,7 @@ EvalFunType = Callable[[List[numpy.ndarray]],
 
 class PickleableEvaluationFunction:
     def __init__(self, model, optimizer, loss, metrics, evaluation_x_data, evaluation_y_data):
-        make_keras_pickleable()
+        # make_keras_pickleable() Obsolete for Keras 2.3
         self.model = model
         self.optimizer = optimizer
         self.loss = loss
