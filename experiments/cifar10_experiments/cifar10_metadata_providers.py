@@ -3,12 +3,12 @@ from sources.simulation_framework.early_stopping_server import DEFAULT_NUM_ROUND
 
 CIFAR10_FIXED_METADATA_SYS_EXP = {
     "num_clients": 100,
-    "num_rounds": 2500,
+    "num_rounds": 1000,
     "clients_per_round": 10,
     "batch_size": 64,
     "local_epochs": 1,
     "val_steps": 1,
-    "target_accuracy": 0.7,
+    "target_accuracy": 0.6,
     "num_rounds_above_target": DEFAULT_NUM_ROUNDS_ABOVE_TARGET
 }
 CIFAR10_BASE_METADATA_SYS_EXP_PROVIDER = ExperimentMetadataProvider(CIFAR10_FIXED_METADATA_SYS_EXP)
@@ -21,7 +21,7 @@ VARYING_LOCAL_EPOCHS_EXP_PARAMETER_MAP = {"local_epochs": [1, 5, 10, 20]}
 # For Varying the Opimiser Experiments
 CIFAR10_FIXED_METADATA_OPT_EXP = {
     "num_clients": 100,
-    "num_rounds": 5000,
+    "num_rounds": 2500,
     "clients_per_round": 10,
     "batch_size": 20,
     "local_epochs": 1,
@@ -37,12 +37,12 @@ CIFAR10_BASE_METADATA_OPT_EXP_PROVIDER = ExperimentMetadataProvider(CIFAR10_FIXE
 # For Varying the Remaining Experiments - Small IID + Proximal Term
 CIFAR10_FIXED_METADATA_REM_EXP = {
     "num_clients": 100,
-    "num_rounds": 2500,
+    "num_rounds": 1000,
     "clients_per_round": 10,
     "batch_size": 10,
     "local_epochs": 1,
     "val_steps": 1,
-    "target_accuracy": 0.7,
+    "target_accuracy": 0.6,
     "num_rounds_above_target": DEFAULT_NUM_ROUNDS_ABOVE_TARGET
 }
 
