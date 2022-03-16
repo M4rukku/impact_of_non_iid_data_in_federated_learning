@@ -18,7 +18,7 @@ class BaseModelTemplateDecorator(ModelTemplate):
 
     def get_optimizer(self, lr=0.1, model: Optional[tf.keras.models.Model] = None) \
             -> tf.keras.optimizers.Optimizer:
-        return self.decorated_model_template.get_centralised_metrics()
+        return self.decorated_model_template.get_optimizer()
 
     def get_loss(self, model: Optional[tf.keras.models.Model] = None) -> tf.keras.losses.Loss:
         return self.decorated_model_template.get_loss()

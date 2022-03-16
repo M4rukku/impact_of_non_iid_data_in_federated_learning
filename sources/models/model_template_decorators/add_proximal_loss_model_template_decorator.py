@@ -11,7 +11,7 @@ class AddProximalLossModelTemplateDecorator(BaseModelTemplateDecorator):
 
     def __init__(self, decorated_model_template: ModelTemplate, mu: float = 0.2):
         super().__init__(decorated_model_template)
-        self.mu = tf.constant(mu, dType=tf.float32)
+        self.mu = tf.constant(mu, dtype=tf.float32)
 
     def get_loss(self, model: Optional[tf.keras.models.Model] = None) -> tf.keras.losses.Loss:
         if model is None:
