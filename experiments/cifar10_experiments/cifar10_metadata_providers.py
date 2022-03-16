@@ -1,4 +1,5 @@
 from sources.experiments.experiment_metadata_provider_utils import ExperimentMetadataProvider
+from sources.simulation_framework.early_stopping_server import DEFAULT_NUM_ROUNDS_ABOVE_TARGET
 
 CIFAR10_FIXED_METADATA_SYS_EXP = {
     "num_clients": 100,
@@ -8,7 +9,7 @@ CIFAR10_FIXED_METADATA_SYS_EXP = {
     "local_epochs": 1,
     "val_steps": 1,
     "target_accuracy": 0.7,
-    "num_rounds_above_target": 3
+    "num_rounds_above_target": DEFAULT_NUM_ROUNDS_ABOVE_TARGET
 }
 CIFAR10_BASE_METADATA_SYS_EXP_PROVIDER = ExperimentMetadataProvider(CIFAR10_FIXED_METADATA_SYS_EXP)
 
@@ -26,7 +27,7 @@ CIFAR10_FIXED_METADATA_OPT_EXP = {
     "local_epochs": 1,
     "val_steps": 1,
     "target_accuracy": 0.7,
-    "num_rounds_above_target": 3
+    "num_rounds_above_target": DEFAULT_NUM_ROUNDS_ABOVE_TARGET
 }
 
 CIFAR10_BASE_METADATA_OPT_EXP_PROVIDER = ExperimentMetadataProvider(CIFAR10_FIXED_METADATA_OPT_EXP)
@@ -42,7 +43,7 @@ CIFAR10_FIXED_METADATA_REM_EXP = {
     "local_epochs": 1,
     "val_steps": 1,
     "target_accuracy": 0.7,
-    "num_rounds_above_target": 3
+    "num_rounds_above_target": DEFAULT_NUM_ROUNDS_ABOVE_TARGET
 }
 
 CIFAR10_BASE_METADATA_REM_EXP_PROVIDER = ExperimentMetadataProvider(CIFAR10_FIXED_METADATA_REM_EXP)

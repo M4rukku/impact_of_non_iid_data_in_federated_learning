@@ -9,6 +9,8 @@ import timeit
 from logging import INFO
 from typing import Optional
 
+DEFAULT_NUM_ROUNDS_ABOVE_TARGET = 5
+
 
 class EarlyStoppingServer(Server):
 
@@ -16,13 +18,12 @@ class EarlyStoppingServer(Server):
                  client_manager: ClientManager,
                  strategy: Optional[Strategy],
                  target_accuracy: Optional[float] = None,
-                 num_rounds_above_target: int = 3
+                 num_rounds_above_target: int = DEFAULT_NUM_ROUNDS_ABOVE_TARGET
                  ):
         super().__init__(client_manager, strategy)
 
         self.target_accuracy = target_accuracy
         self.num_rounds_above_target = num_rounds_above_target
-        self.cur_num_rounds_above_target = 0
         self.early_stopping_enabled = self.target_accuracy is not None
 
     def fit(self, num_rounds: int) -> History:
@@ -84,31 +85,32 @@ class EarlyStoppingServer(Server):
             # Early Stopping on achieveing Target Accuracy for a small number of rounds
             if self.early_stopping_enabled:
                 if res_fed is not None:
-                    metrics_dict = res_fed[1]
-                    cur_accuracy = y if (y := metrics_dict["acc"]) is not None else metrics_dict["accuracy"]
+                    distributed_history_metrics = history.metrics_distributed
 
-                    if cur_accuracy is None:
+                    if "acc" in distributed_history_metrics:
+                        dist_accuracy_metric_list = distributed_history_metrics["acc"]
+                    elif "accuracy" in distributed_history_metrics:
+                        dist_accuracy_metric_list = distributed_history_metrics["accuracy"]
+                    else:
+                        dist_accuracy_metric_list = None
                         log(logging.WARNING, f"FL-Target Accuracy Check - Round {current_round} : A target accuracy of "
                                              f"{self.target_accuracy} has been set, but the evaluation "
                                              f"dictionary does not contain accuracy (keyed by acc or accuracy)")
-                        self.cur_num_rounds_above_target = 0
-                    else:
-                        if cur_accuracy >= self.target_accuracy:
-                            self.cur_num_rounds_above_target += 1
 
-                            if self.cur_num_rounds_above_target >= self.num_rounds_above_target:
+                    if dist_accuracy_metric_list is not None:
+                        if len(dist_accuracy_metric_list) > self.num_rounds_above_target:
+                            last_epoch_results = dist_accuracy_metric_list[-self.num_rounds_above_target:]
+                            last_epoch_accuracies = list(map(lambda p: p[1], last_epoch_results))
+                            if all(map(lambda v: v >= self.target_accuracy, last_epoch_accuracies)):
                                 log(logging.WARNING,
                                     f"FL - Round {current_round} : A target accuracy of "
                                     f"{self.target_accuracy} has been reached for {self.num_rounds_above_target} rounds"
                                     f" -- Stopping the Simulation early.")
                                 break
-                        else:
-                            self.cur_num_rounds_above_target = 0
                 else:
                     log(logging.WARNING, f"FL-Target Accuracy Check - Round {current_round} : A target accuracy of "
                                          f"{self.target_accuracy} has been set, but the result dictionary "
                                          f"is invalid (resfed is None)")
-                    self.cur_num_rounds_above_target = 0
 
         # Bookkeeping
         end_time = timeit.default_timer()

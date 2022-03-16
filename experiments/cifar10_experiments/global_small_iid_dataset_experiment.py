@@ -33,6 +33,7 @@ from sources.flwr_strategies.full_evaluation_strategy_providers import \
 from sources.experiments.simulate_experiment import SimulateExperiment
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 
+NUM_PRETRAIN_EPOCHS = 30
 
 def e(exp):
     return math.pow(10, exp)
@@ -43,7 +44,7 @@ def pretrain_model_weights(model_template, globally_shared_dataset, optimizer) -
     model.compile(optimizer,
                   model_template.get_loss(),
                   DEFAULT_METRICS)
-    model.fit(x=globally_shared_dataset.train["x"], y=globally_shared_dataset.train["y"], epochs=1)
+    model.fit(x=globally_shared_dataset.train["x"], y=globally_shared_dataset.train["y"], epochs=NUM_PRETRAIN_EPOCHS)
     return model.get_weights()
 
 

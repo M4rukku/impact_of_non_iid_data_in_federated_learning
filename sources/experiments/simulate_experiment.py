@@ -70,7 +70,7 @@ class SimulateExperiment:
             aggregated_evaluation: bool
     ):
         # Setup fit/evaluate config functions
-        if hasattr(strategy, "strategy"):
+        while hasattr(strategy, "strategy"):
             strategy = strategy.strategy
 
         def on_fit_config_fn(rnd: int):
@@ -246,7 +246,12 @@ class SimulateExperiment:
                 simulation_parameters = get_simulation_parameters_from_experiment_metadata(experiment_metadata)
                 server = None
                 if "target_accuracy" in simulation_parameters:
-                    server = EarlyStoppingServer(SimpleClientManager(), strategy_)
+                    simulation_parameters: EarlyStoppingSimulationParameters = simulation_parameters
+                    server = EarlyStoppingServer(SimpleClientManager(),
+                                                 strategy_,
+                                                 simulation_parameters["target_accuracy"],
+                                                 simulation_parameters["num_rounds_above_target"]
+                                                 )
 
                 simulator = RayBasedSimulator(
                     simulation_parameters,

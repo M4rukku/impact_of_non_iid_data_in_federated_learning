@@ -4,6 +4,7 @@ from typing import Union, Dict, Optional
 import tensorflow as tf
 
 from sources.experiments.experiment_metadata import ExperimentMetadata
+from sources.simulation_framework.early_stopping_server import DEFAULT_NUM_ROUNDS_ABOVE_TARGET
 
 
 @dataclass
@@ -18,7 +19,7 @@ class ExtendedExperimentMetadata:
     val_steps: int
     local_learning_rate: Union[float, None] = None
     target_accuracy: Optional[float] = None
-    num_rounds_above_target: int = 3
+    num_rounds_above_target: int = DEFAULT_NUM_ROUNDS_ABOVE_TARGET
     custom_suffix: Optional[str] = None
 
 

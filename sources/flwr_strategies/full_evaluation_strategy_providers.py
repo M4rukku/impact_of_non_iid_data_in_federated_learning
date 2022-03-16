@@ -5,6 +5,8 @@ from flwr.server.strategy import FedAvg, Strategy, FedYogi, FedAdagrad, FedAdam
 from sources.experiments.experiment_metadata import ExperimentMetadata
 from sources.flwr_strategies_decorators.enable_full_evaluation_decorator import \
     EnableFullEvaluationDecorator
+from sources.flwr_strategies_decorators.improve_aggregated_evaluation_decorator import \
+    ImproveAggregatedEvaluationDecorator
 
 
 def get_fraction_fit_from_metadata(experiment_metadata: ExperimentMetadata):
@@ -20,17 +22,22 @@ def get_fraction_fit_from_metadata(experiment_metadata: ExperimentMetadata):
 def full_eval_fed_avg_strategy_provider(
         eval_fn: Callable,
         experiment_metadata: ExperimentMetadata,
-        initial_parameters: Optional[Parameters] = None
+        initial_parameters: Optional[Parameters] = None,
+        accept_failures=True
 ) -> Strategy:
     fraction_fit = get_fraction_fit_from_metadata(experiment_metadata)
 
-    strategy = EnableFullEvaluationDecorator(
-        FedAvg(
-            eval_fn=eval_fn,
-            fraction_fit=fraction_fit,
-            fraction_eval=fraction_fit,
-            initial_parameters=initial_parameters
-        )
+    strategy = ImproveAggregatedEvaluationDecorator(
+        EnableFullEvaluationDecorator(
+            FedAvg(
+                eval_fn=eval_fn,
+                fraction_fit=fraction_fit,
+                fraction_eval=fraction_fit,
+                initial_parameters=initial_parameters,
+                accept_failures=accept_failures
+            )
+        ),
+        accept_failures=accept_failures
     )
 
     return strategy
@@ -44,23 +51,28 @@ def full_eval_fed_adam_strategy_provider(
         eta_l: float = 1e-1,
         beta_1: float = 0.9,
         beta_2: float = 0.99,
-        tau: float = 1e-3
+        tau: float = 1e-3,
+        accept_failures=True
 ) -> Strategy:
     fraction_fit = get_fraction_fit_from_metadata(experiment_metadata)
     initial_parameters = weights_to_parameters(initial_parameters)
 
-    strategy = EnableFullEvaluationDecorator(
-        FedAdam(
-            eval_fn=eval_fn,
-            fraction_fit=fraction_fit,
-            fraction_eval=fraction_fit,
-            eta=eta,
-            eta_l=eta_l,
-            tau=tau,
-            beta_1=beta_1,
-            beta_2=beta_2,
-            initial_parameters=initial_parameters
-        )
+    strategy = ImproveAggregatedEvaluationDecorator(
+        EnableFullEvaluationDecorator(
+            FedAdam(
+                eval_fn=eval_fn,
+                fraction_fit=fraction_fit,
+                fraction_eval=fraction_fit,
+                eta=eta,
+                eta_l=eta_l,
+                tau=tau,
+                beta_1=beta_1,
+                beta_2=beta_2,
+                initial_parameters=initial_parameters,
+                accept_failures=accept_failures
+            )
+        ),
+        accept_failures=accept_failures
     )
 
     return strategy
@@ -72,21 +84,27 @@ def full_eval_fed_adagrad_strategy_provider(
         initial_parameters: numpy.array,
         eta: float = 1e-1,
         eta_l: float = 1e-1,
-        tau: float = 1e-3
+        tau: float = 1e-3,
+        accept_failures=True
+
 ) -> Strategy:
     fraction_fit = get_fraction_fit_from_metadata(experiment_metadata)
     initial_parameters = weights_to_parameters(initial_parameters)
 
-    strategy = EnableFullEvaluationDecorator(
-        FedAdagrad(
-            eval_fn=eval_fn,
-            fraction_fit=fraction_fit,
-            fraction_eval=fraction_fit,
-            eta=eta,
-            eta_l=eta_l,
-            tau=tau,
-            initial_parameters=initial_parameters
-        )
+    strategy = ImproveAggregatedEvaluationDecorator(
+        EnableFullEvaluationDecorator(
+            FedAdagrad(
+                eval_fn=eval_fn,
+                fraction_fit=fraction_fit,
+                fraction_eval=fraction_fit,
+                eta=eta,
+                eta_l=eta_l,
+                tau=tau,
+                initial_parameters=initial_parameters,
+                accept_failures=accept_failures
+            )
+        ),
+        accept_failures=accept_failures
     )
 
     return strategy
@@ -100,23 +118,28 @@ def full_eval_fed_yogi_strategy_provider(
         eta_l: float = 1e-1,
         beta_1: float = 0.9,
         beta_2: float = 0.99,
-        tau: float = 1e-3
+        tau: float = 1e-3,
+        accept_failures=True
 ) -> Strategy:
     fraction_fit = get_fraction_fit_from_metadata(experiment_metadata)
     initial_parameters = weights_to_parameters(initial_parameters)
 
-    strategy = EnableFullEvaluationDecorator(
-        FedYogi(
-            eval_fn=eval_fn,
-            fraction_fit=fraction_fit,
-            fraction_eval=fraction_fit,
-            eta=eta,
-            eta_l=eta_l,
-            tau=tau,
-            beta_1=beta_1,
-            beta_2=beta_2,
-            initial_parameters=initial_parameters
-        )
+    strategy = ImproveAggregatedEvaluationDecorator(
+        EnableFullEvaluationDecorator(
+            FedYogi(
+                eval_fn=eval_fn,
+                fraction_fit=fraction_fit,
+                fraction_eval=fraction_fit,
+                eta=eta,
+                eta_l=eta_l,
+                tau=tau,
+                beta_1=beta_1,
+                beta_2=beta_2,
+                initial_parameters=initial_parameters,
+                accept_failures=accept_failures
+            )
+        ),
+        accept_failures=accept_failures
     )
 
     return strategy
