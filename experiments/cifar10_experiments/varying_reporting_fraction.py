@@ -2,6 +2,8 @@ import functools
 from pathlib import Path
 
 import experiments.setup_system_paths as ssp
+from sources.dataset_utils.create_lda_dataset_utils import get_lda_cifar10_dataset_name
+
 ssp.setup_system_paths()
 
 from sources.global_data_properties import DEFAULT_CONCENTRATIONS_CIFAR10
@@ -25,9 +27,9 @@ if __name__ == "__main__":
     base_dir = Path(__file__).parent.parent.parent
     root_data_dir = base_dir / "data"
 
-    for fraction in DEFAULT_CONCENTRATIONS_CIFAR10:
+    for concentration in DEFAULT_CONCENTRATIONS_CIFAR10:
         model_template = Cifar10LdaModelTemplate(DEFAULT_SEED)
-        dataset_factory = Cifar10LdaClientDatasetFactory(root_data_dir, 100, fraction)
+        dataset_factory = Cifar10LdaClientDatasetFactory(root_data_dir, 100, concentration)
         total_clients = dataset_factory.get_number_of_clients()
         central_dataset = get_default_iid_dataset(get_lda_cifar10_dataset_name(concentration, 100))
 
@@ -49,7 +51,7 @@ if __name__ == "__main__":
         pgr = pgmg.generate_grid_responses()
 
         SimulateExperiment.start_experiment(
-            f"Cifar10Lda_{fraction}_Varying_Clients_Per_Round",
+            f"Cifar10Lda_{concentration}_Varying_Clients_Per_Round",
             model_template,
             dataset_factory,
             strategy_provider=None,

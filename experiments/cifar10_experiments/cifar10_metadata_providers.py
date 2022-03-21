@@ -3,7 +3,7 @@ from sources.simulation_framework.early_stopping_server import DEFAULT_NUM_ROUND
 
 CIFAR10_FIXED_METADATA_SYS_EXP = {
     "num_clients": 100,
-    "num_rounds": 1000,
+    "num_rounds": 500,
     "clients_per_round": 10,
     "batch_size": 64,
     "local_epochs": 1,
@@ -21,7 +21,7 @@ VARYING_LOCAL_EPOCHS_EXP_PARAMETER_MAP = {"local_epochs": [1, 5, 10, 20]}
 # For Varying the Opimiser Experiments
 CIFAR10_FIXED_METADATA_OPT_EXP = {
     "num_clients": 100,
-    "num_rounds": 2500,
+    "num_rounds": 750,
     "clients_per_round": 10,
     "batch_size": 20,
     "local_epochs": 1,
@@ -37,7 +37,7 @@ CIFAR10_BASE_METADATA_OPT_EXP_PROVIDER = ExperimentMetadataProvider(CIFAR10_FIXE
 # For Varying the Remaining Experiments - Small IID + Proximal Term
 CIFAR10_FIXED_METADATA_REM_EXP = {
     "num_clients": 100,
-    "num_rounds": 1000,
+    "num_rounds": 500,
     "clients_per_round": 10,
     "batch_size": 10,
     "local_epochs": 1,

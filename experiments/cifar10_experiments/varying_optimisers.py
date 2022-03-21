@@ -48,7 +48,7 @@ if __name__ == "__main__":
             full_eval_fed_avg_strategy_provider,
             eval_fn
         )
-        optimizer_fed_avg = model_template.get_optimizer(e(-1/2))
+        optimizer_fed_avg = model_template.get_optimizer(e(-1))
 
         strategy_provider_fed_adam = functools.partial(
             full_eval_fed_adam_strategy_provider,
