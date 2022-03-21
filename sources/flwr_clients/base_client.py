@@ -14,15 +14,21 @@ from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 
 
+def initialise_model(self, parameters=None):
+    self.model = self.model_template.get_model()
+    if parameters is not None:
+        self.model.set_weights(parameters)
+    self.optimizer = self.model_template.get_optimizer(model=self.model)
+    self.loss = self.model_template.get_loss(model=self.model)
+    self.model.compile(self.optimizer, self.loss, self.metrics)
+    self.model_initialised = True
+
+
 def lazy_client_initializer(func):
     @functools.wraps(func)
     def wrapper_decorator(self, *args, **kwargs):
         if not self.model_initialised:
-            self.model = self.model_template.get_model()
-            self.optimizer = self.model_template.get_optimizer(model=self.model)
-            self.loss = self.model_template.get_loss(model=self.model)
-            self.model.compile(self.optimizer, self.loss, self.metrics)
-            self.model_initialised = True
+            initialise_model(self)
 
         value = func(self, *args, **kwargs)
         return value
@@ -67,11 +73,10 @@ class BaseClient(fl.client.NumPyClient):
             """)
         return config
 
-    @lazy_client_initializer
     def fit(self, parameters: np.array, config: FittingParameters):
         """Fit model and return new weights as well as number of training
         examples."""
-        self.model.set_weights(parameters)
+        initialise_model(self, parameters)
         batch_size: int = config["batch_size"]
         epochs: int = config["local_epochs"]
 
@@ -98,15 +103,15 @@ class BaseClient(fl.client.NumPyClient):
                 num_examples_train,
                 {key: entry[0] for key, entry in history.history.items()})
 
-    @lazy_client_initializer
     def evaluate(self, parameters, config: FederatedEvaluationParameters):
         batch_size: int = config["batch_size"]
         val_steps: int = config["val_steps"]
 
-        self.model.set_weights(parameters)
+        initialise_model(self, parameters)
 
         with self.dataset:
-            data_x, data_y = np.array(self.dataset.validation_data_x), np.array(self.dataset.validation_data_y)
+            data_x, data_y = np.array(self.dataset.validation_data_x), np.array(
+                self.dataset.validation_data_y)
             rng = np.random.default_rng()
             indices = rng.choice(len(data_x), len(data_x), replace=False)
 

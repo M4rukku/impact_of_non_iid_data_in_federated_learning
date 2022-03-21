@@ -6,7 +6,7 @@ class ProximalLossDecorator(tf.keras.losses.Loss):
     def __init__(self,
                  keras_model_reference: tf.keras.models.Model,
                  decorated_loss: tf.keras.losses.Loss,
-                 mu: tf.constant = tf.constant(0.2, dtype=tf.float32)
+                 mu: tf.constant = tf.constant(1.0, dtype=tf.float32)
                  ):
         super().__init__(name=f"proximal_loss_{decorated_loss.name}")
         self.decorated_loss = decorated_loss

@@ -9,7 +9,7 @@ from sources.models.model_template_decorators.base_model_template_decorator impo
 
 class AddProximalLossModelTemplateDecorator(BaseModelTemplateDecorator):
 
-    def __init__(self, decorated_model_template: ModelTemplate, mu: float = 0.2):
+    def __init__(self, decorated_model_template: ModelTemplate, mu: float = 1.0):
         super().__init__(decorated_model_template)
         self.mu = tf.constant(mu, dtype=tf.float32)
 
