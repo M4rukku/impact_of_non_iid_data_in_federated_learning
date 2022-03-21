@@ -1,6 +1,7 @@
 import dataclasses
 import json
 import logging
+import math
 
 import flwr
 import tensorflow as tf
@@ -33,6 +34,16 @@ from sources.models.model_template import ModelTemplate
 from sources.simulation_framework.early_stopping_server import EarlyStoppingServer
 from sources.simulation_framework.ray_based_simulator import RayBasedSimulator
 
+def round_to_two_nonzero_digits(n):
+    if n == 0:
+        return 0
+    sgn = -1 if n < 0 else 1
+    scale = int(-math.floor(math.log10(abs(n))))
+    if scale <= 0:
+        scale = 1
+    factor = 10**(scale+1)
+    return sgn*math.floor(abs(n)*factor)/factor
+
 
 def create_dirname_from_extended_metadata(experiment_metadata: ExtendedExperimentMetadata,
                                           exp: int):
@@ -43,7 +54,7 @@ def create_dirname_from_extended_metadata(experiment_metadata: ExtendedExperimen
         return (
                 f"{experiment_metadata.strategy_name}" +
                 f"_{experiment_metadata.optimizer_config['name']}" +
-                f"_lr{experiment_metadata.optimizer_config['learning_rate']}" +
+                f"_lr{round_to_two_nonzero_digits(experiment_metadata.optimizer_config['learning_rate'])}" +
                 f"_nr{experiment_metadata.num_rounds}" +
                 f"_nc{experiment_metadata.num_clients}" +
                 f"_le{experiment_metadata.local_epochs}_i{exp}" +
