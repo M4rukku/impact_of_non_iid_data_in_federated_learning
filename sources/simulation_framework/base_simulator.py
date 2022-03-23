@@ -24,7 +24,8 @@ class BaseSimulator(ABC):
                  fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
                  evaluation_callbacks: list[tf.keras.callbacks.Callback] = None,
                  metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
-                 seed: int = DEFAULT_SEED):
+                 seed: int = DEFAULT_SEED,
+                 **kwargs):
         # make_keras_pickleable() Obsolete since Keras 2.3
 
         self.simulation_parameters: SimulationParameters = simulation_parameters
