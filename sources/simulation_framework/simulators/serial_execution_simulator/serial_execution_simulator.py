@@ -11,7 +11,7 @@ from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.flwr_parameters.simulation_parameters import SimulationParameters
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
-from sources.simulation_framework.base_simulator import BaseSimulator
+from sources.simulation_framework.simulators.base_simulator import BaseSimulator
 from sources.simulation_framework.simulators.pickleable_client_function import PickleableClientFunction
 from sources.simulation_framework.simulators.serial_execution_simulator.start_serial_execution import start_serial_simulation
 

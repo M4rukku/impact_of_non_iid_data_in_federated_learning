@@ -3,9 +3,9 @@ from multiprocessing.context import Process
 
 import numpy as np
 
-from sources.simulation_framework.base_simulator import BaseSimulator
-from sources.simulation_framework.start_client import start_client
-from sources.simulation_framework.start_server import start_server
+from sources.simulation_framework.simulators.base_simulator import BaseSimulator
+from sources.simulation_framework.simulators.multiprocessing_simulator.start_client import start_client
+from sources.simulation_framework.simulators.multiprocessing_simulator.start_server import start_server
 
 
 class MultiprocessingBasedSimulator(BaseSimulator):

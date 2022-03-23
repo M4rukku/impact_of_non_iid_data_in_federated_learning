@@ -27,8 +27,6 @@ from flwr.server.app import _fl, _init_defaults
 from flwr.server.strategy import Strategy
 from flwr.simulation.ray_transport.ray_client_proxy import RayClientProxy
 
-from sources.flwr_parameters.simulation_parameters import SimulationParameters
-
 INVALID_ARGUMENTS_START_SIMULATION = """
 INVALID ARGUMENTS ERROR
 
