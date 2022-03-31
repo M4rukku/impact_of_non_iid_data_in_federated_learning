@@ -6,12 +6,13 @@ import math
 import flwr
 import tensorflow as tf
 from pathlib import Path
-from typing import List, Callable, Optional
+from typing import List, Callable, Optional, Type, Dict
 
 from flwr.server import SimpleClientManager
 from flwr.server.strategy import Strategy
 
-from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import ClientDatasetFactory
+from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import \
+    ClientDatasetFactory
 from sources.experiments.average_experiment_runs import average_experiment_runs
 from sources.experiments.experiment_metadata import ExperimentMetadata, \
     get_simulation_parameters_from_experiment_metadata
@@ -20,8 +21,7 @@ from sources.experiments.extended_experiment_metadata import create_extended_exp
 from sources.flwr_parameters.exception_definitions import \
     ExperimentParameterListsHaveUnequalLengths, NoStrategyProviderError
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED, set_global_determinism
-from sources.flwr_parameters.simulation_parameters import RayInitArgs, ClientResources, \
-    DEFAULT_RAY_INIT_ARGS, DEFAULT_RUNS_PER_EXPERIMENT, EarlyStoppingSimulationParameters
+from sources.flwr_parameters.simulation_parameters import DEFAULT_RUNS_PER_EXPERIMENT, EarlyStoppingSimulationParameters
 from sources.flwr_strategies_decorators.base_strategy_decorator import get_name_of_strategy
 from sources.flwr_strategies_decorators.central_evaluation_logging_decorator import \
     CentralEvaluationLoggingDecorator
@@ -32,7 +32,10 @@ from sources.flwr_strategies_decorators.model_logging_strategy_decorator import 
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 from sources.simulation_framework.early_stopping_server import EarlyStoppingServer
-from sources.simulation_framework.ray_based_simulator import RayBasedSimulator
+from sources.simulation_framework.simulators.base_simulator import BaseSimulator
+from sources.simulation_framework.simulators.ray_based_simulator.ray_based_simulator import \
+    RayBasedSimulator, default_ray_args
+
 
 def round_to_two_nonzero_digits(n):
     if n == 0:
@@ -41,8 +44,8 @@ def round_to_two_nonzero_digits(n):
     scale = int(-math.floor(math.log10(abs(n))))
     if scale <= 0:
         scale = 1
-    factor = 10**(scale+1)
-    return sgn*math.floor(abs(n)*factor)/factor
+    factor = 10 ** (scale + 1)
+    return sgn * math.floor(abs(n) * factor) / factor
 
 
 def create_dirname_from_extended_metadata(experiment_metadata: ExtendedExperimentMetadata,
@@ -136,11 +139,7 @@ class SimulateExperiment:
             dataset_factory: ClientDatasetFactory,
             strategy_provider: Optional[Callable[[ExperimentMetadata], Strategy]],
             experiment_metadata_list: List[ExperimentMetadata],
-
             base_dir: Path,
-            ray_init_args: RayInitArgs = DEFAULT_RAY_INIT_ARGS,
-            client_resources: ClientResources = None,
-
             strategy_provider_list: Optional[List[Callable[[ExperimentMetadata], Strategy]]] = None,
             optimizer_list: List[tf.keras.optimizers.Optimizer] = None,
             fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
@@ -151,9 +150,14 @@ class SimulateExperiment:
             centralised_evaluation=False,
             aggregated_evaluation=True,
             rounds_between_centralised_evaluations=10,
-            ray_callbacks: Optional[List[Callable[[], None]]] = None
+            simulator_provider: Type[BaseSimulator] = RayBasedSimulator,
+            simulator_args=None,
+            **kwargs
     ):
+        if simulator_args is None:
+            simulator_args = default_ray_args
 
+        logging.basicConfig(level=logging.INFO)
         strategies_list_defined = True if strategy_provider_list is not None else False
         optimizer_list_defined = True if optimizer_list is not None else False
         length = len(experiment_metadata_list)
@@ -218,9 +222,11 @@ class SimulateExperiment:
                 with extended_metadata_file.open("w") as f:
                     def change_floats_to_str(dictionary):
                         return {k: (str(round(v, 2)) if isinstance(v, float) else v)
-                                      for (k, v) in extended_metadata_dict.items()}
+                                for (k, v) in extended_metadata_dict.items()}
+
                     dict_wo_floats = change_floats_to_str(extended_metadata_dict)
-                    dict_wo_floats["optimizer_config"] = str(extended_metadata_dict["optimizer_config"])
+                    dict_wo_floats["optimizer_config"] = str(
+                        extended_metadata_dict["optimizer_config"])
                     json.dump(dict_wo_floats, f)
 
                 # Setup fit/evaluate config functions
@@ -254,28 +260,28 @@ class SimulateExperiment:
                     )
 
                 # Start Simulation
-                simulation_parameters = get_simulation_parameters_from_experiment_metadata(experiment_metadata)
+                simulation_parameters = get_simulation_parameters_from_experiment_metadata(
+                    experiment_metadata)
                 server = None
-                if "target_accuracy" in simulation_parameters:
-                    simulation_parameters: EarlyStoppingSimulationParameters = simulation_parameters
-                    server = EarlyStoppingServer(SimpleClientManager(),
-                                                 strategy_,
-                                                 simulation_parameters["target_accuracy"],
-                                                 simulation_parameters["num_rounds_above_target"]
-                                                 )
+                # if "target_accuracy" in simulation_parameters:
+                #     simulation_parameters: EarlyStoppingSimulationParameters = simulation_parameters
+                #     server = EarlyStoppingServer(SimpleClientManager(),
+                #                                  strategy_,
+                #                                  simulation_parameters["target_accuracy"],
+                #                                  simulation_parameters["num_rounds_above_target"]
+                #                                  )
 
-                simulator = RayBasedSimulator(
+                simulator = simulator_provider(
                     simulation_parameters,
                     strategy_,
                     model_template,
                     dataset_factory,
-                    fitting_callbacks,
-                    evaluation_callbacks,
-                    metrics,
-                    client_resources=client_resources,
-                    ray_init_args=ray_init_args,
-                    server=server,
-                    ray_callbacks = ray_callbacks)
+                    fitting_callbacks=fitting_callbacks,
+                    evaluation_callbacks=evaluation_callbacks,
+                    metrics=metrics,
+                    **simulator_args,
+                    **kwargs,
+                    server=server)
 
                 simulator.start_simulation()
                 logging.info(f"Finished run {run + 1}/{runs_per_experiment} of experiment {i + 1}.")
