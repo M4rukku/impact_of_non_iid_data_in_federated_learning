@@ -11,9 +11,8 @@ from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.flwr_parameters.simulation_parameters import SimulationParameters
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
+from sources.simulation_framework.simulators.base_client_provider import BaseClientProvider
 from sources.simulation_framework.simulators.base_simulator import BaseSimulator
-from sources.simulation_framework.simulators.pickleable_base_client_provider import \
-    PickleableBaseClientProvider
 from sources.simulation_framework.simulators.serial_execution_simulator.start_serial_execution import \
     start_serial_simulation
 
@@ -25,19 +24,17 @@ class SerialExecutionSimulator(BaseSimulator):
                  strategy: fl.server.strategy.Strategy,
                  model_template: ModelTemplate,
                  dataset_factory: ClientDatasetFactory,
-                 default_global_model: tf.keras.models.Model = None,
-                 fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
-                 evaluation_callbacks: list[tf.keras.callbacks.Callback] = None,
+                 client_provider: BaseClientProvider,
                  metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
                  seed: int = DEFAULT_SEED,
+                 default_global_model: tf.keras.models.Model = None,
                  **kwargs
                  ):
         super().__init__(simulation_parameters,
                          strategy,
                          model_template,
                          dataset_factory,
-                         fitting_callbacks,
-                         evaluation_callbacks,
+                         client_provider,
                          metrics,
                          seed,
                          **kwargs)
@@ -46,13 +43,12 @@ class SerialExecutionSimulator(BaseSimulator):
             if default_global_model is None else default_global_model
 
     def start_simulation(self):
-        client_fn = PickleableBaseClientProvider(
-            self.model_template,
-            self.dataset_factory,
-            self.metrics,
-            self.fitting_callbacks,
-            self.evaluation_callbacks
-        )
+        if "target_accuracy" in self.simulation_parameters and \
+                self.simulation_parameters["target_accuracy"] is not None:
+            logging.warning(
+                "It appears like you wanted to use early stopping in combination with a target "
+                "accuracy. Sadly, the SerialExecutionSimulator class does not yet "
+                "support early stopping.")
 
         num_rounds = self.simulation_parameters["num_rounds"]
         num_clients = self.simulation_parameters["num_clients"]
@@ -65,7 +61,7 @@ class SerialExecutionSimulator(BaseSimulator):
 
         try:
             # Temporarily use a local copy of the ray based simulator
-            start_serial_simulation(client_fn=client_fn,
+            start_serial_simulation(client_fn=self.client_provider,
                                     clients_ids=clients_ids,
                                     num_rounds=num_rounds,
                                     strategy=self.strategy)

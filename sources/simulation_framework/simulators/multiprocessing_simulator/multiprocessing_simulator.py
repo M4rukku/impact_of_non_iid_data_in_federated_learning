@@ -32,12 +32,8 @@ class MultiprocessingBasedSimulator(BaseSimulator):
                 size=self.simulation_parameters["num_clients"],
                 replace=False):
             client_process = Process(target=start_client,
-                                     args=(self.model_template,
-                                           self.dataset_factory,
-                                           client_identifier,
-                                           self.metrics,
-                                           self.fitting_callbacks,
-                                           self.evaluation_callbacks),
+                                     args=(self.client_provider,
+                                           client_identifier),
                                      daemon=True)
             client_process.start()
             processes.append(client_process)

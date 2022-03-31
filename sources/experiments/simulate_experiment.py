@@ -6,9 +6,8 @@ import math
 import flwr
 import tensorflow as tf
 from pathlib import Path
-from typing import List, Callable, Optional, Type, Dict
+from typing import List, Callable, Optional, Type
 
-from flwr.server import SimpleClientManager
 from flwr.server.strategy import Strategy
 
 from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import \
@@ -31,7 +30,6 @@ from sources.flwr_strategies_decorators.model_logging_strategy_decorator import 
     ModelLoggingStrategyDecorator
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
-from sources.simulation_framework.early_stopping_server import EarlyStoppingServer
 from sources.simulation_framework.simulators.base_simulator import BaseSimulator
 from sources.simulation_framework.simulators.ray_based_simulator.ray_based_simulator import \
     RayBasedSimulator, default_ray_args
@@ -137,15 +135,14 @@ class SimulateExperiment:
             experiment_name: str,
             model_template: ModelTemplate,
             dataset_factory: ClientDatasetFactory,
-            strategy_provider: Optional[Callable[[ExperimentMetadata], Strategy]],
-            experiment_metadata_list: List[ExperimentMetadata],
             base_dir: Path,
+            experiment_metadata_list: List[ExperimentMetadata],
             strategy_provider_list: Optional[List[Callable[[ExperimentMetadata], Strategy]]] = None,
+            strategy_provider: Optional[Callable[[ExperimentMetadata], Strategy]] = None,
             optimizer_list: List[tf.keras.optimizers.Optimizer] = None,
-            fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
-            evaluation_callbacks: list[tf.keras.callbacks.Callback] = None,
             metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
             seed: int = DEFAULT_SEED,
+
             runs_per_experiment: int = DEFAULT_RUNS_PER_EXPERIMENT,
             centralised_evaluation=False,
             aggregated_evaluation=True,
@@ -263,21 +260,12 @@ class SimulateExperiment:
                 simulation_parameters = get_simulation_parameters_from_experiment_metadata(
                     experiment_metadata)
                 server = None
-                # if "target_accuracy" in simulation_parameters:
-                #     simulation_parameters: EarlyStoppingSimulationParameters = simulation_parameters
-                #     server = EarlyStoppingServer(SimpleClientManager(),
-                #                                  strategy_,
-                #                                  simulation_parameters["target_accuracy"],
-                #                                  simulation_parameters["num_rounds_above_target"]
-                #                                  )
 
                 simulator = simulator_provider(
                     simulation_parameters,
                     strategy_,
                     model_template,
                     dataset_factory,
-                    fitting_callbacks=fitting_callbacks,
-                    evaluation_callbacks=evaluation_callbacks,
                     metrics=metrics,
                     **simulator_args,
                     **kwargs,

@@ -5,17 +5,20 @@ from typing import Optional, List, Callable, TypedDict
 import flwr as fl
 import numpy as np
 import tensorflow as tf
-from flwr.server import Server
+from flwr.server import Server, SimpleClientManager
 
-from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import ClientDatasetFactory
+from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import \
+    ClientDatasetFactory
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.flwr_parameters.simulation_parameters import SimulationParameters, \
-    RayInitArgs, ClientResources, DEFAULT_RAY_INIT_ARGS
+    RayInitArgs, ClientResources, DEFAULT_RAY_INIT_ARGS, EarlyStoppingSimulationParameters
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
+from sources.simulation_framework.early_stopping_server import EarlyStoppingServer
+from sources.simulation_framework.simulators.base_client_provider import BaseClientProvider
 from sources.simulation_framework.simulators.base_simulator import BaseSimulator
-from sources.simulation_framework.simulators.pickleable_base_client_provider import PickleableBaseClientProvider
-from sources.simulation_framework.simulators.ray_based_simulator.ray_simulate import start_simulation
+from sources.simulation_framework.simulators.ray_based_simulator.ray_simulate import \
+    start_simulation
 
 
 class RayBasedSimulator(BaseSimulator):
@@ -25,11 +28,10 @@ class RayBasedSimulator(BaseSimulator):
                  strategy: fl.server.strategy.Strategy,
                  model_template: ModelTemplate,
                  dataset_factory: ClientDatasetFactory,
-                 fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
-                 evaluation_callbacks: list[tf.keras.callbacks.Callback] = None,
+                 client_provider: BaseClientProvider,
                  metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
                  seed: int = DEFAULT_SEED,
-                 client_resources: ClientResources = {"num_gpus": 1, "num_cpus": 1},
+                 client_resources=None,
                  ray_init_args: RayInitArgs = DEFAULT_RAY_INIT_ARGS,
                  ray_callbacks: Optional[List[Callable[[], None]]] = None,
                  server: Optional[Server] = None,
@@ -39,24 +41,28 @@ class RayBasedSimulator(BaseSimulator):
                          strategy,
                          model_template,
                          dataset_factory,
-                         fitting_callbacks,
-                         evaluation_callbacks,
+                         client_provider,
                          metrics,
                          seed,
                          **kwargs)
 
+        if client_resources is None:
+            client_resources = {"num_gpus": 1, "num_cpus": 1}
         self.client_resources = client_resources
         self.ray_init_args = ray_init_args
         self.server = server
         self.ray_callbacks = ray_callbacks
 
-    def start_simulation(self):
-        client_fn = PickleableBaseClientProvider(self.model_template,
-                                                 self.dataset_factory,
-                                                 self.metrics,
-                                                 self.fitting_callbacks,
-                                                 self.evaluation_callbacks)
+        if "target_accuracy" in simulation_parameters and \
+                simulation_parameters["target_accuracy"] is not None:
+            simulation_parameters: EarlyStoppingSimulationParameters = simulation_parameters
+            self.server = EarlyStoppingServer(SimpleClientManager(),
+                                              strategy,
+                                              simulation_parameters["target_accuracy"],
+                                              simulation_parameters["num_rounds_above_target"]
+                                              )
 
+    def start_simulation(self):
         num_rounds = self.simulation_parameters["num_rounds"]
         num_clients = self.simulation_parameters["num_clients"]
 
@@ -68,7 +74,7 @@ class RayBasedSimulator(BaseSimulator):
 
         try:
             # Temporarily use a local copy of the ray based simulator
-            start_simulation(client_fn=client_fn,
+            start_simulation(client_fn=self.client_provider,
                              clients_ids=clients_ids,
                              client_resources=self.client_resources,
                              num_rounds=num_rounds,
@@ -88,6 +94,7 @@ class DefaultRayArgumentDict(TypedDict):
     ray_callbacks: Optional[List[Callable[[], None]]]
 
 
+# noinspection PyTypeChecker
 default_ray_args: DefaultRayArgumentDict = {
     "ray_callbacks": None,
     "ray_init_args": DEFAULT_RAY_INIT_ARGS,

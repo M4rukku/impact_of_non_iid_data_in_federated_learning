@@ -1,15 +1,18 @@
+import logging
 import os
 from abc import abstractmethod, ABC
 
 import flwr as fl
 import tensorflow as tf
 
-from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import ClientDatasetFactory
+from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import \
+    ClientDatasetFactory
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.flwr_parameters.simulation_parameters import SimulationParameters
 from sources.metrics.default_metrics import DEFAULT_METRICS
-from sources.models.make_keras_pickleable import make_keras_pickleable
 from sources.models.model_template import ModelTemplate
+from sources.simulation_framework.simulators.base_client_provider import BaseClientProvider
+from sources.simulation_framework.simulators.keras_client_provider import KerasClientProvider
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
@@ -21,26 +24,42 @@ class BaseSimulator(ABC):
                  strategy: fl.server.strategy.Strategy,
                  model_template: ModelTemplate,
                  dataset_factory: ClientDatasetFactory,
-                 fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
-                 evaluation_callbacks: list[tf.keras.callbacks.Callback] = None,
+                 client_provider: BaseClientProvider,
                  metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
                  seed: int = DEFAULT_SEED,
                  **kwargs):
-        # make_keras_pickleable() Obsolete since Keras 2.3
-
         self.simulation_parameters: SimulationParameters = simulation_parameters
         self.strategy: fl.server.strategy.Strategy = strategy
         self.model_template: ModelTemplate = model_template
         self.dataset_factory: ClientDatasetFactory = dataset_factory
-        self.fitting_callbacks: list[
-            tf.keras.callbacks.Callback] = fitting_callbacks
-        self.evaluation_callbacks: list[
-            tf.keras.callbacks.Callback] = evaluation_callbacks
         self.metrics: list[tf.keras.metrics.Metric] = metrics
         self.seed = seed
+
+        if client_provider is None:
+            logging.warning("BaseClientProvider passed to BaseSimulator is None - Setting it to "
+                            "KerasClient by default. If this is not what you expected, "
+                            "please specify the behaviour by passing the base_client_provider as "
+                            "kwarg")
+            # Ensuring Backwards Compatibility - Can be deleted once my project is done
+            if "fitting_callbacks" in kwargs:
+                fitting_callbacks = kwargs["fitting_callbacks"]
+            else:
+                fitting_callbacks = None
+            if "evaluation_callbacks" in kwargs:
+                evaluation_callbacks = kwargs["evaluation_callbacks"]
+            else:
+                evaluation_callbacks = None
+
+            self.client_provider = KerasClientProvider(
+                model_template=self.model_template,
+                dataset_factory=self.dataset_factory,
+                metrics=self.metrics,
+                fitting_callbacks=fitting_callbacks,
+                evaluation_callbacks=evaluation_callbacks
+            )
+        else:
+            self.client_provider = client_provider
 
     @abstractmethod
     def start_simulation(self):
         pass
-
-

@@ -36,7 +36,7 @@ def lazy_client_initializer(func):
     return wrapper_decorator
 
 
-class BaseClient(fl.client.NumPyClient):
+class KerasClient(fl.client.NumPyClient):
 
     def __init__(self,
                  model_template: ModelTemplate,
