@@ -5,7 +5,6 @@ import tensorflow as tf
 
 from sources.dataset_utils.dataset import Dataset
 from sources.datasets.client_dataset_definitions.client_dataset_processors.client_dataset_processor import ClientDatasetProcessor
-from sources.models.make_keras_pickleable import make_keras_pickleable
 from sources.models.model_template import ModelTemplate
 
 EvalFunType = Callable[[List[numpy.ndarray]],
