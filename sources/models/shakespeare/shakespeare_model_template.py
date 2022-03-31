@@ -3,14 +3,14 @@ from typing import List, Union, Optional
 
 from sources.global_data_properties import LEAF_CHARACTERS
 from sources.metrics.default_metrics_tf import get_default_categorical_metrics_tf
-from sources.models.model_template import ModelTemplate
+from sources.models.keras_model_template import KerasModelTemplate
 
 SHAKESPEARE_SEQ_LEN: int = 80
 SHAKESPEARE_HIDDEN_SIZE: int = 256
 SHAKESPEARE_EMBEDDING_DIM: int = 8
 
 
-class ShakespeareModelTemplate(ModelTemplate):
+class ShakespeareKerasModelTemplate(KerasModelTemplate):
 
     def __init__(self, seed,
                  alphabet=LEAF_CHARACTERS,
@@ -24,7 +24,7 @@ class ShakespeareModelTemplate(ModelTemplate):
         self.embedding_dim = embedding_dim
         self.alphabet = alphabet
 
-        super(ShakespeareModelTemplate, self).__init__(seed, loss, len(self.alphabet))
+        super(ShakespeareKerasModelTemplate, self).__init__(seed, loss, len(self.alphabet))
 
     def get_model(self) -> tf.keras.Model:
         inputs = tf.keras.Input(shape=self.seq_length, dtype=tf.int32)

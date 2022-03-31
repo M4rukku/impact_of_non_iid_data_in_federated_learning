@@ -7,10 +7,10 @@ import tensorflow as tf
 
 from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import \
     ClientDatasetFactory
+from sources.models.base_model_template import BaseModelTemplate
 from sources.utils.set_random_seeds import DEFAULT_SEED
 from sources.utils.simulation_parameters import SimulationParameters
 from sources.metrics.default_metrics_tf import DEFAULT_METRICS
-from sources.models.model_template import ModelTemplate
 from sources.simulators.base_client_provider import BaseClientProvider
 from sources.simulators.keras_client_provider import KerasClientProvider
 
@@ -22,7 +22,7 @@ class BaseSimulator(ABC):
     def __init__(self,
                  simulation_parameters: SimulationParameters,
                  strategy: fl.server.strategy.Strategy,
-                 model_template: ModelTemplate,
+                 model_template: BaseModelTemplate,
                  dataset_factory: ClientDatasetFactory,
                  client_provider: BaseClientProvider,
                  metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
@@ -30,7 +30,7 @@ class BaseSimulator(ABC):
                  **kwargs):
         self.simulation_parameters: SimulationParameters = simulation_parameters
         self.strategy: fl.server.strategy.Strategy = strategy
-        self.model_template: ModelTemplate = model_template
+        self.model_template: BaseModelTemplate = model_template
         self.dataset_factory: ClientDatasetFactory = dataset_factory
         self.metrics: list[tf.keras.metrics.Metric] = metrics
         self.seed = seed

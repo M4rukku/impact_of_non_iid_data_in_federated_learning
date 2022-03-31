@@ -1,6 +1,6 @@
 import dataclasses
 from dataclasses import dataclass
-from typing import Union, Dict, Optional
+from typing import Union, Dict, Optional, Any
 import tensorflow as tf
 
 from sources.experiments.experiment_metadata import ExperimentMetadata
@@ -10,7 +10,7 @@ from sources.flwr.flwr_servers.early_stopping_server import DEFAULT_NUM_ROUNDS_A
 @dataclass
 class ExtendedExperimentMetadata:
     strategy_name: str
-    optimizer_config: Dict
+    optimizer_config: Union[str, Dict[str, Any]]
     clients_per_round: Union[float, int]
     num_clients: int
     num_rounds: int
@@ -26,12 +26,19 @@ class ExtendedExperimentMetadata:
 def create_extended_experiment_metadata(
         experiment_metadata: ExperimentMetadata,
         strategy_name: str,
-        optimizer: tf.keras.optimizers.Optimizer):
-    lr = optimizer.__dict__["learning_rate"] if "learning_rate" in optimizer.__dict__ else None
+        optimizer_config: Union[str, Dict[str, Any]],
+        optimizer=None):
+
+    if optimizer is not None:
+        lr = optimizer.__dict__["learning_rate"] if "learning_rate" in optimizer.__dict__ else None
+        if lr is None and isinstance(optimizer_config, dict):
+            lr = optimizer_config["learning_rate"] if "learning_rate" in optimizer_config else None
+    else:
+        lr = None
 
     return ExtendedExperimentMetadata(
         strategy_name=strategy_name,
-        optimizer_config=optimizer.get_config(),
+        optimizer_config=optimizer_config,
         local_learning_rate=lr,
         **dataclasses.asdict(experiment_metadata)
     )

@@ -15,24 +15,25 @@ from sources.datasets.client_dataset_factory_definitions.client_dataset_factory 
 from sources.experiments.average_experiment_runs import average_experiment_runs
 from sources.experiments.experiment_metadata import ExperimentMetadata, \
     get_simulation_parameters_from_experiment_metadata
-from sources.experiments.extended_experiment_metadata import create_extended_experiment_metadata, \
+from sources.experiments.extended_experiment_metadata import \
+    create_extended_experiment_metadata, \
     ExtendedExperimentMetadata
+from sources.models.base_model_template import BaseModelTemplate
 from sources.utils.exception_definitions import \
     ExperimentParameterListsHaveUnequalLengths, NoStrategyProviderError
 from sources.utils.set_random_seeds import DEFAULT_SEED, set_global_determinism
 from sources.utils.simulation_parameters import DEFAULT_RUNS_PER_EXPERIMENT
-from sources.flwr.flwr_strategies_decorators import get_name_of_strategy
+from sources.flwr.flwr_strategies_decorators.base_strategy_decorator import get_name_of_strategy
 from sources.flwr.flwr_strategies_decorators.central_evaluation_logging_decorator import \
     CentralEvaluationLoggingDecorator
 from sources.flwr.flwr_strategies_decorators.evaluation_metrics_logging_strategy_decorator import \
     EvaluationMetricsLoggingStrategyDecorator
-from sources.flwr.flwr_strategies_decorators import \
+from sources.flwr.flwr_strategies_decorators.model_logging_strategy_decorator import \
     ModelLoggingStrategyDecorator
 from sources.metrics.default_metrics_tf import DEFAULT_METRICS
-from sources.models.model_template import ModelTemplate
-from sources.simulators import BaseSimulator
-from sources.simulators import \
-    RayBasedSimulator, default_ray_args
+from sources.simulators.base_simulator import BaseSimulator
+from sources.simulators.ray_based_simulator.ray_based_simulator import RayBasedSimulator, \
+    default_ray_args
 
 
 def round_to_two_nonzero_digits(n):
@@ -51,7 +52,7 @@ def create_dirname_from_extended_metadata(experiment_metadata: ExtendedExperimen
     custom_suffix = experiment_metadata.custom_suffix \
         if experiment_metadata.custom_suffix is not None else ""
 
-    if "learning_rate" in experiment_metadata.optimizer_config:
+    if experiment_metadata.local_learning_rate is not None:
         return (
                 f"{experiment_metadata.strategy_name}" +
                 f"_{experiment_metadata.optimizer_config['name']}" +
@@ -133,7 +134,7 @@ class SimulateExperiment:
     @staticmethod
     def start_experiment(
             experiment_name: str,
-            model_template: ModelTemplate,
+            model_template: BaseModelTemplate,
             dataset_factory: ClientDatasetFactory,
             base_dir: Path,
             experiment_metadata_list: List[ExperimentMetadata],
@@ -195,9 +196,11 @@ class SimulateExperiment:
                     model_template.set_optimizer(optimizer_list[i])
 
                 strategy_name = get_name_of_strategy(strategy_)
-                extended_metadata = create_extended_experiment_metadata(experiment_metadata,
-                                                                        strategy_name,
-                                                                        model_template.get_optimizer())
+                extended_metadata = \
+                    create_extended_experiment_metadata(experiment_metadata,
+                                                        strategy_name,
+                                                        model_template.get_optimizer_config(),
+                                                        model_template.get_optimizer())
 
                 # Setup Directory Structure
                 dirname = create_dirname_from_extended_metadata(extended_metadata, i)

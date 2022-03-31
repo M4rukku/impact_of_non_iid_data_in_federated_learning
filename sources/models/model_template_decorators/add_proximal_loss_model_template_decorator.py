@@ -2,14 +2,14 @@ from typing import Optional
 
 import tensorflow as tf
 from sources.models.loss_decorators.proximal_loss_decorator import ProximalLossDecorator
-from sources.models.model_template import ModelTemplate
+from sources.models.keras_model_template import KerasModelTemplate
 from sources.models.model_template_decorators.base_model_template_decorator import \
-    BaseModelTemplateDecorator
+    BaseKerasModelTemplateDecorator
 
 
-class AddProximalLossModelTemplateDecorator(BaseModelTemplateDecorator):
+class AddProximalLossModelTemplateDecorator(BaseKerasModelTemplateDecorator):
 
-    def __init__(self, decorated_model_template: ModelTemplate, mu: float = 1.0):
+    def __init__(self, decorated_model_template: KerasModelTemplate, mu: float = 1.0):
         super().__init__(decorated_model_template)
         self.mu = tf.constant(mu, dtype=tf.float32)
 

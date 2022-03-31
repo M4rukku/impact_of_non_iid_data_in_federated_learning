@@ -3,15 +3,15 @@ import tensorflow as tf
 
 from sources.global_data_properties import CELEBA_IMAGE_SIZE, CELEBA_CLASSES
 from sources.metrics.default_metrics_tf import get_default_sparse_categorical_metrics_tf
-from sources.models.model_template import ModelTemplate
+from sources.models.keras_model_template import KerasModelTemplate
 
 
-class CelebaModelTemplate(ModelTemplate):
+class CelebaKerasModelTemplate(KerasModelTemplate):
 
     def __init__(self, seed, num_classes=CELEBA_CLASSES,
                  loss=tf.keras.losses.SparseCategoricalCrossentropy()):
 
-        super(CelebaModelTemplate, self).__init__(seed, loss, num_classes)
+        super(CelebaKerasModelTemplate, self).__init__(seed, loss, num_classes)
 
     def get_model(self) -> tf.keras.Model:
         model = tf.keras.Sequential()

@@ -14,15 +14,15 @@ from typing import List, Union, Optional
 from sources.global_data_properties import CIFAR_10_CLASSES, CIFAR_10_IMAGE_SIZE, \
     CIFAR_10_IMAGE_DIMENSIONS
 from sources.metrics.default_metrics_tf import get_default_sparse_categorical_metrics_tf
-from sources.models.model_template import ModelTemplate
+from sources.models.keras_model_template import KerasModelTemplate
 
 
-class Cifar10LdaModelTemplate(ModelTemplate):
+class Cifar10LdaKerasModelTemplate(KerasModelTemplate):
 
     def __init__(self, seed, num_classes=CIFAR_10_CLASSES,
                  loss=tf.keras.losses.SparseCategoricalCrossentropy()):
 
-        super(Cifar10LdaModelTemplate, self).__init__(seed, loss, num_classes)
+        super(Cifar10LdaKerasModelTemplate, self).__init__(seed, loss, num_classes)
 
     def get_model(self) -> tf.keras.Model:
         model = tf.keras.Sequential()

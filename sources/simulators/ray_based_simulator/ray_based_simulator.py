@@ -13,7 +13,7 @@ from sources.utils.set_random_seeds import DEFAULT_SEED
 from sources.utils.simulation_parameters import SimulationParameters, \
     RayInitArgs, ClientResources, DEFAULT_RAY_INIT_ARGS, EarlyStoppingSimulationParameters
 from sources.metrics.default_metrics_tf import DEFAULT_METRICS
-from sources.models.model_template import ModelTemplate
+from sources.models.keras_model_template import KerasModelTemplate
 from sources.flwr.flwr_servers.early_stopping_server import EarlyStoppingServer
 from sources.simulators.base_client_provider import BaseClientProvider
 from sources.simulators.base_simulator import BaseSimulator
@@ -26,7 +26,7 @@ class RayBasedSimulator(BaseSimulator):
     def __init__(self,
                  simulation_parameters: SimulationParameters,
                  strategy: fl.server.strategy.Strategy,
-                 model_template: ModelTemplate,
+                 model_template: KerasModelTemplate,
                  dataset_factory: ClientDatasetFactory,
                  client_provider: BaseClientProvider,
                  metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,

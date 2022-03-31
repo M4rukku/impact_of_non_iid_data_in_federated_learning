@@ -11,7 +11,7 @@ from sources.utils.client_parameters import \
     FederatedEvaluationParameters, FittingParameters
 from sources.utils.exception_definitions import ConfigContainsUnknownPropertyError
 from sources.metrics.default_metrics_tf import DEFAULT_METRICS
-from sources.models.model_template import ModelTemplate
+from sources.models.keras_model_template import KerasModelTemplate
 
 
 def initialise_model(self, parameters=None):
@@ -39,7 +39,7 @@ def lazy_client_initializer(func):
 class KerasClient(fl.client.NumPyClient):
 
     def __init__(self,
-                 model_template: ModelTemplate,
+                 model_template: KerasModelTemplate,
                  dataset: ClientDataset,
                  metrics=DEFAULT_METRICS,
                  fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
@@ -47,7 +47,7 @@ class KerasClient(fl.client.NumPyClient):
                  ):
         # set_global_determinism(DEFAULT_SEED)
         tf.keras.backend.clear_session()
-        self.model_template: ModelTemplate = model_template
+        self.model_template: KerasModelTemplate = model_template
         self.dataset = dataset
         self.fitting_callbacks = fitting_callbacks
         self.evaluation_callbacks = evaluation_callbacks

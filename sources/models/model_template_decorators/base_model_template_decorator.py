@@ -2,11 +2,11 @@ from typing import List, Union, Optional
 
 import tensorflow as tf
 
-from sources.models.model_template import ModelTemplate
+from sources.models.keras_model_template import KerasModelTemplate
 
 
-class BaseModelTemplateDecorator(ModelTemplate):
-    def __init__(self, model_template: ModelTemplate):
+class BaseKerasModelTemplateDecorator(KerasModelTemplate):
+    def __init__(self, model_template: KerasModelTemplate):
         super().__init__(model_template.seed, model_template.loss, model_template.num_classes)
         self.decorated_model_template = model_template
 

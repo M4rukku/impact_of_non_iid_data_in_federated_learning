@@ -1,10 +1,10 @@
 import tensorflow as tf
 import tensorflow_addons as tfa
 from sources.global_data_properties import CELEBA_IMAGE_SIZE
-from sources.models.celeba.celeba_model_template import CelebaModelTemplate
+from sources.models.celeba.celeba_model_template import CelebaKerasModelTemplate
 
 
-class CelebaModelTemplateGroupNormalization(CelebaModelTemplate):
+class CelebaModelTemplateGroupNormalization(CelebaKerasModelTemplate):
 
     def __init__(self, seed, group_size: int = 2):
         super().__init__(seed)

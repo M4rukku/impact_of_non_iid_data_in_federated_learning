@@ -10,7 +10,7 @@ from sources.datasets.client_dataset_factory_definitions.client_dataset_factory 
 from sources.utils.set_random_seeds import DEFAULT_SEED
 from sources.utils.simulation_parameters import SimulationParameters
 from sources.metrics.default_metrics_tf import DEFAULT_METRICS
-from sources.models.model_template import ModelTemplate
+from sources.models.keras_model_template import KerasModelTemplate
 from sources.simulators.base_client_provider import BaseClientProvider
 from sources.simulators.base_simulator import BaseSimulator
 from sources.simulators.serial_execution_simulator.start_serial_execution import \
@@ -22,7 +22,7 @@ class SerialExecutionSimulator(BaseSimulator):
     def __init__(self,
                  simulation_parameters: SimulationParameters,
                  strategy: fl.server.strategy.Strategy,
-                 model_template: ModelTemplate,
+                 model_template: KerasModelTemplate,
                  dataset_factory: ClientDatasetFactory,
                  client_provider: BaseClientProvider,
                  metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,

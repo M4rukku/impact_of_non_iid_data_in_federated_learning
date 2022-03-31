@@ -1,12 +1,13 @@
 """Interfaces for ClientModel and ServerModel."""
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import List, Union, Optional
-
 import tensorflow as tf
 
+from sources.models.base_model_template import BaseModelTemplate
 
-class ModelTemplate(ABC):
+
+class KerasModelTemplate(BaseModelTemplate):
     def __init__(self, seed, loss, num_classes=None):
         self.seed = seed
         self.num_classes = num_classes
@@ -32,3 +33,7 @@ class ModelTemplate(ABC):
 
     def set_optimizer(self, optimizer: tf.keras.optimizers.Optimizer):
         self.optimizer = optimizer
+
+    def get_optimizer_config(self) -> str:
+        opt = self.get_optimizer()
+        return opt.get_config()

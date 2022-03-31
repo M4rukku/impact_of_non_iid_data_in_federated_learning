@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from sources.utils.dataset import Dataset
 from sources.datasets.client_dataset_definitions.client_dataset_processors.client_dataset_processor import ClientDatasetProcessor
-from sources.models.model_template import ModelTemplate
+from sources.models.keras_model_template import KerasModelTemplate
 
 EvalFunType = Callable[[List[numpy.ndarray]],
                        Optional[Tuple[float, Dict[str, Union[bool, bytes, float, int, str]]]]]
@@ -37,7 +37,7 @@ class PickleableKerasCentralEvaluationFunction:
         return results["loss"], results
 
 
-def create_central_evaluation_function_keras(model_template: ModelTemplate,
+def create_central_evaluation_function_keras(model_template: KerasModelTemplate,
                                              evaluation_x_data: List[any],
                                              evaluation_y_data: List[any],
                                              optimizer: Optional[tf.keras.optimizers.Optimizer] = None
@@ -54,7 +54,7 @@ def create_central_evaluation_function_keras(model_template: ModelTemplate,
 
 
 def create_central_evaluation_function_from_dataset_processor_keras(
-        model_template: ModelTemplate,
+        model_template: KerasModelTemplate,
         dataset: Dataset,
         client_dataset_processor: ClientDatasetProcessor,
         optimizer: Optional[
