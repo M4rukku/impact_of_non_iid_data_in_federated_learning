@@ -23,11 +23,11 @@ class SerialExecutionServer(Server):
             rnd=rnd, parameters=self.parameters, client_manager=self._client_manager
         )
         if not client_instructions:
-            log(INFO, "evaluate_round: no clients selected, cancel")
+            log(INFO, f"evaluate_round {rnd}: no clients selected, cancel")
             return None
         log(
-            DEBUG,
-            "evaluate_round: strategy sampled %s clients (out of %s)",
+            INFO,
+            f"evaluate_round {rnd}: strategy sampled %s clients (out of %s)",
             len(client_instructions),
             self._client_manager.num_available(),
         )
@@ -35,7 +35,7 @@ class SerialExecutionServer(Server):
         # Collect `evaluate` results from all clients participating in this round
         results, failures = evaluate_clients(client_instructions)
         log(
-            DEBUG,
+            INFO,
             "evaluate_round received %s results and %s failures",
             len(results),
             len(failures),
@@ -74,11 +74,11 @@ class SerialExecutionServer(Server):
         )
 
         if not client_instructions:
-            log(INFO, "fit_round: no clients selected, cancel")
+            log(INFO, f"fit_round {rnd}: no clients selected, cancel")
             return None
         log(
-            DEBUG,
-            "fit_round: strategy sampled %s clients (out of %s)",
+            INFO,
+            f"fit_round {rnd}: strategy sampled %s clients (out of %s)",
             len(client_instructions),
             self._client_manager.num_available(),
         )
@@ -86,8 +86,8 @@ class SerialExecutionServer(Server):
         # Collect `fit` results from all clients participating in this round
         results, failures = fit_clients(client_instructions)
         log(
-            DEBUG,
-            "fit_round received %s results and %s failures",
+            INFO,
+            f"fit_round {rnd} received %s results and %s failures",
             len(results),
             len(failures),
         )

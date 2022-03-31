@@ -12,8 +12,10 @@ from sources.flwr_parameters.simulation_parameters import SimulationParameters
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 from sources.simulation_framework.simulators.base_simulator import BaseSimulator
-from sources.simulation_framework.simulators.pickleable_client_function import PickleableClientFunction
-from sources.simulation_framework.simulators.serial_execution_simulator.start_serial_execution import start_serial_simulation
+from sources.simulation_framework.simulators.pickleable_base_client_provider import \
+    PickleableBaseClientProvider
+from sources.simulation_framework.simulators.serial_execution_simulator.start_serial_execution import \
+    start_serial_simulation
 
 
 class SerialExecutionSimulator(BaseSimulator):
@@ -23,6 +25,7 @@ class SerialExecutionSimulator(BaseSimulator):
                  strategy: fl.server.strategy.Strategy,
                  model_template: ModelTemplate,
                  dataset_factory: ClientDatasetFactory,
+                 default_global_model: tf.keras.models.Model = None,
                  fitting_callbacks: list[tf.keras.callbacks.Callback] = None,
                  evaluation_callbacks: list[tf.keras.callbacks.Callback] = None,
                  metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
@@ -39,12 +42,17 @@ class SerialExecutionSimulator(BaseSimulator):
                          seed,
                          **kwargs)
 
+        self.global_model = model_template.get_model() \
+            if default_global_model is None else default_global_model
+
     def start_simulation(self):
-        client_fn = PickleableClientFunction(self.model_template,
-                                             self.dataset_factory,
-                                             self.metrics,
-                                             self.fitting_callbacks,
-                                             self.evaluation_callbacks)
+        client_fn = PickleableBaseClientProvider(
+            self.model_template,
+            self.dataset_factory,
+            self.metrics,
+            self.fitting_callbacks,
+            self.evaluation_callbacks
+        )
 
         num_rounds = self.simulation_parameters["num_rounds"]
         num_clients = self.simulation_parameters["num_clients"]

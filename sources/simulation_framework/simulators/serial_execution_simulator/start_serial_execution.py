@@ -8,10 +8,12 @@ from sources.simulation_framework.simulators.serial_execution_simulator.serial_e
 from sources.simulation_framework.simulators.serial_execution_simulator.serial_execution_server import SerialExecutionServer
 
 
-def start_serial_simulation(client_fn, clients_ids, num_rounds, strategy, server):
+def start_serial_simulation(client_fn, clients_ids, num_rounds, strategy):
     # Initialize server and server config
     config = {"num_rounds": num_rounds}
-    initialized_server, initialized_config = SerialExecutionServer(SimpleClientManager(), strategy)
+    initialized_server, initialized_config = \
+        (SerialExecutionServer(SimpleClientManager(), strategy), config)
+
     logging.log(
         logging.INFO,
         "Starting Flower simulation running: %s",
