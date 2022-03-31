@@ -11,7 +11,7 @@ EvalFunType = Callable[[List[numpy.ndarray]],
                        Optional[Tuple[float, Dict[str, Union[bool, bytes, float, int, str]]]]]
 
 
-class PickleableEvaluationFunction:
+class PickleableKerasCentralEvaluationFunction:
     def __init__(self, model, optimizer, loss, metrics, evaluation_x_data, evaluation_y_data):
         # make_keras_pickleable() Obsolete for Keras 2.3
         self.model = model
@@ -37,14 +37,14 @@ class PickleableEvaluationFunction:
         return results["loss"], results
 
 
-def create_central_evaluation_function(model_template: ModelTemplate,
-                                       evaluation_x_data: List[any],
-                                       evaluation_y_data: List[any],
-                                       optimizer: Optional[tf.keras.optimizers.Optimizer] = None
-                                       ) -> EvalFunType:
+def create_central_evaluation_function_keras(model_template: ModelTemplate,
+                                             evaluation_x_data: List[any],
+                                             evaluation_y_data: List[any],
+                                             optimizer: Optional[tf.keras.optimizers.Optimizer] = None
+                                             ) -> EvalFunType:
 
     model = model_template.get_model()
-    return __create_central_evaluation_function(
+    return __create_central_evaluation_function_keras(
         model,
         model_template.get_optimizer(model=model) if optimizer is None else optimizer,
         model_template.get_loss(model),
@@ -53,26 +53,26 @@ def create_central_evaluation_function(model_template: ModelTemplate,
         evaluation_y_data)
 
 
-def create_central_evaluation_function_from_dataset_processor(
+def create_central_evaluation_function_from_dataset_processor_keras(
         model_template: ModelTemplate,
         dataset: Dataset,
         client_dataset_processor: ClientDatasetProcessor,
         optimizer: Optional[
             tf.keras.optimizers.Optimizer] = None
 ) -> EvalFunType:
-    return create_central_evaluation_function(
+    return create_central_evaluation_function_keras(
         model_template,
         client_dataset_processor.process_x(dataset.validation["x"]),
         client_dataset_processor.process_y(dataset.validation["y"]),
         optimizer)
 
 
-def __create_central_evaluation_function(model: tf.keras.Model,
-                                         optimizer: Optional[tf.keras.optimizers.Optimizer],
-                                         loss: tf.keras.losses.Loss,
-                                         metrics: List[Union[str, tf.keras.metrics.Metric]],
-                                         evaluation_x_data: List[any],
-                                         evaluation_y_data: List[any]
-                                         ) -> EvalFunType:
-    return PickleableEvaluationFunction(model, optimizer, loss, metrics, evaluation_x_data,
-                                        evaluation_y_data)
+def __create_central_evaluation_function_keras(model: tf.keras.Model,
+                                               optimizer: Optional[tf.keras.optimizers.Optimizer],
+                                               loss: tf.keras.losses.Loss,
+                                               metrics: List[Union[str, tf.keras.metrics.Metric]],
+                                               evaluation_x_data: List[any],
+                                               evaluation_y_data: List[any]
+                                               ) -> EvalFunType:
+    return PickleableKerasCentralEvaluationFunction(model, optimizer, loss, metrics, evaluation_x_data,
+                                                    evaluation_y_data)

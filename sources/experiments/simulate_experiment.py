@@ -28,7 +28,7 @@ from sources.flwr.flwr_strategies_decorators.evaluation_metrics_logging_strategy
     EvaluationMetricsLoggingStrategyDecorator
 from sources.flwr.flwr_strategies_decorators import \
     ModelLoggingStrategyDecorator
-from sources.metrics.default_metrics import DEFAULT_METRICS
+from sources.metrics.default_metrics_tf import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 from sources.simulators import BaseSimulator
 from sources.simulators import \

@@ -2,7 +2,7 @@ import tensorflow as tf
 from typing import List, Union, Optional
 
 from sources.global_data_properties import FEMNIST_IMAGE_SIZE, FEMNIST_CLASSES
-from sources.metrics.default_metrics import get_default_sparse_categorical_metrics
+from sources.metrics.default_metrics_tf import get_default_sparse_categorical_metrics_tf
 from sources.models.model_template import ModelTemplate
 
 
@@ -35,7 +35,7 @@ class FemnistModelTemplate(ModelTemplate):
         return model
 
     def get_centralised_metrics(self) -> List[Union[str, tf.keras.metrics.Metric]]:
-        return get_default_sparse_categorical_metrics(self.num_classes)
+        return get_default_sparse_categorical_metrics_tf(self.num_classes)
 
     def get_optimizer(self, lr=0.001, model: Optional[tf.keras.models.Model] = None) \
             -> tf.keras.optimizers.Optimizer:

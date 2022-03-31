@@ -2,7 +2,7 @@ from typing import List, Union, Optional
 import tensorflow as tf
 
 from sources.global_data_properties import CELEBA_IMAGE_SIZE, CELEBA_CLASSES
-from sources.metrics.default_metrics import get_default_sparse_categorical_metrics
+from sources.metrics.default_metrics_tf import get_default_sparse_categorical_metrics_tf
 from sources.models.model_template import ModelTemplate
 
 
@@ -36,7 +36,7 @@ class CelebaModelTemplate(ModelTemplate):
         return model
 
     def get_centralised_metrics(self) -> List[Union[str, tf.keras.metrics.Metric]]:
-        return get_default_sparse_categorical_metrics(self.num_classes)
+        return get_default_sparse_categorical_metrics_tf(self.num_classes)
 
     def get_optimizer(self, lr=0.1, model: Optional[tf.keras.models.Model] = None) -> tf.keras.optimizers.Optimizer:
         if self.optimizer is not None:

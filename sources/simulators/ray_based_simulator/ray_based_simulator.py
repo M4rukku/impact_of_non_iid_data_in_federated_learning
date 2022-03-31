@@ -12,7 +12,7 @@ from sources.datasets.client_dataset_factory_definitions.client_dataset_factory 
 from sources.utils.set_random_seeds import DEFAULT_SEED
 from sources.utils.simulation_parameters import SimulationParameters, \
     RayInitArgs, ClientResources, DEFAULT_RAY_INIT_ARGS, EarlyStoppingSimulationParameters
-from sources.metrics.default_metrics import DEFAULT_METRICS
+from sources.metrics.default_metrics_tf import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 from sources.flwr.flwr_servers.early_stopping_server import EarlyStoppingServer
 from sources.simulators.base_client_provider import BaseClientProvider

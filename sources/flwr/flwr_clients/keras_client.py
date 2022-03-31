@@ -10,7 +10,7 @@ from sources.datasets.client_dataset_definitions.client_dataset import ClientDat
 from sources.utils.client_parameters import \
     FederatedEvaluationParameters, FittingParameters
 from sources.utils.exception_definitions import ConfigContainsUnknownPropertyError
-from sources.metrics.default_metrics import DEFAULT_METRICS
+from sources.metrics.default_metrics_tf import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 
 

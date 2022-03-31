@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 
-class SparseMetricDecorator(tf.keras.metrics.Metric):
+class SparseMetricDecoratorTensorflow(tf.keras.metrics.Metric):
     def __init__(self, metric: tf.keras.metrics.Metric):
         self.metric = metric
         self.num_classes = metric.num_classes

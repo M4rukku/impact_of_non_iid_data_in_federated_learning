@@ -9,7 +9,7 @@ from sources.datasets.client_dataset_factory_definitions.client_dataset_factory 
     ClientDatasetFactory
 from sources.utils.set_random_seeds import DEFAULT_SEED
 from sources.utils.simulation_parameters import SimulationParameters
-from sources.metrics.default_metrics import DEFAULT_METRICS
+from sources.metrics.default_metrics_tf import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 from sources.simulators.base_client_provider import BaseClientProvider
 from sources.simulators.keras_client_provider import KerasClientProvider
