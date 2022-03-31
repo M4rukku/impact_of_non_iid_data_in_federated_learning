@@ -84,16 +84,16 @@ class BaseClient(fl.client.NumPyClient):
         try:
             with self.dataset:
                 history = self.model.fit(
-                    self.dataset.test_data_x,
-                    self.dataset.test_data_y,
+                    self.dataset.training_data_x,
+                    self.dataset.training_data_y,
                     batch_size,
                     epochs,
                     shuffle=True,
-                    validation_data=self.dataset.validation_data,
+                    validation_data=self.dataset.test_data,
                     callbacks=self.fitting_callbacks,
                     verbose=1
                 )
-                num_examples_train = len(self.dataset.test_data_x)
+                num_examples_train = len(self.dataset.training_data_x)
         except Exception as e:
             logging.error(str(e))
 
