@@ -43,7 +43,7 @@ class ShakespeareModelTemplate(ModelTemplate):
     def get_centralised_metrics(self) -> List[Union[str, tf.keras.metrics.Metric]]:
         return get_default_categorical_metrics(self.num_classes)
 
-    def get_optimizer(self, lr=0.01, model: Optional[tf.keras.models.Model] = None) \
+    def get_optimizer(self, lr=1.0, model: Optional[tf.keras.models.Model] = None) \
             -> tf.keras.optimizers.Optimizer:
         if self.optimizer is not None:
             return self.optimizer
