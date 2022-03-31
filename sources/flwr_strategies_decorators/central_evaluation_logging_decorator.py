@@ -6,7 +6,7 @@ from flwr.common import Parameters, Scalar, EvaluateIns
 from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 
-from sources.flwr_parameters.saving_parameters import pickle_parameters_to_file, \
+from sources.flwr_strategies_decorators.saving_strategy_decorators_utils import pickle_parameters_to_file, \
     create_round_based_centralised_evaluation_metrics_filename
 from sources.flwr_strategies_decorators.base_strategy_decorator import BaseStrategyDecorator
 
