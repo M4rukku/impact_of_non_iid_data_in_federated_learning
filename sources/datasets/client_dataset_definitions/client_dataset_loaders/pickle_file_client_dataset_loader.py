@@ -1,7 +1,6 @@
+import logging
+import pickle
 from pathlib import Path
-
-import pandas as pd
-
 from sources.dataset_utils.unmodifyable_attributes_trait import UnmodifiableAttributes
 from sources.datasets.client_dataset_definitions.client_dataset_loaders.client_dataset_loader import ClientDatasetLoader, DatasetComponents, \
     MinimalDataset
@@ -36,5 +35,11 @@ class PickleFileClientDatasetLoader(ClientDatasetLoader, UnmodifiableAttributes)
         else:
             raise RuntimeError(f"Loading Dataset is impossible since case {dataset_component} "
                                f"has not been implemented in PickleFileClientDatasetLoader")
+        try:
+            with dataset_path.open("rb") as f:
+                dataset = pickle.load(f)
+        except BaseException as e:
+            logging.error(f"Failed to load the following dataset: {dataset_path}")
+            logging.error(e.__repr__())
 
-        return pd.read_pickle(dataset_path)
+        return dataset
