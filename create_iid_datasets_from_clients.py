@@ -4,11 +4,12 @@ from pathlib import Path
 
 from sources.dataset_utils.get_iid_dataset_utils import get_full_iid_dataset
 from sources.global_data_properties import DATASET_NAME_DEFAULT_FRACTION_DICT, \
-    DATASET_NAME_GLOBAL_SHARED_FRACTION_DICT, CLIENT_DATASETS_NAME_LIST
+    DATASET_NAME_GLOBAL_SHARED_FRACTION_DICT, CLIENT_DATASETS_NAME_LIST, CLIENT_SUBSET_TO_CONSIDER
 from sources.dataset_utils.create_iid_dataset_utils import create_iid_dataset_from_client_fraction, \
     get_default_iid_dataset_filename, \
     get_fractional_iid_dataset_filename, \
-    get_full_iid_dataset_filename, subsample_full_iid_datasets, get_globally_shared_iid_dataset_filename
+    get_full_iid_dataset_filename, subsample_full_iid_datasets, \
+    get_globally_shared_iid_dataset_filename
 
 if __name__ == '__main__':
     sys.path.append(str(Path(__file__).resolve().parents[0]))
@@ -33,7 +34,7 @@ if __name__ == '__main__':
     for dataset_identifier in dataset_identifiers:
         dataset_identifier_parser.add_argument(
             f'--{dataset_identifier.lower()}_global_shared',
-            action='store',
+            action='store_true',
             help=f'Creates a non-iid {dataset_identifier} dataset using the default fraction '
                  f'for the globally shared datasets.')
 
@@ -66,8 +67,9 @@ if __name__ == '__main__':
 
     if not data_dir.exists() or not (data_dir / "celeba").exists() \
             or not (data_dir / "femnist").exists() or not (data_dir / "shakespeare").exists():
-        print("Data for LEAF has not yet been downloaded. Please execute the initialise_datasets script "
-              "first. Skipping these Datasets.")
+        print(
+            "Data for LEAF has not yet been downloaded. Please execute the initialise_datasets script "
+            "first. Skipping these Datasets.")
 
     datasets = dataset_identifiers
 
@@ -80,7 +82,10 @@ if __name__ == '__main__':
                 data_dir,
                 dataset_identifier,
                 1.0,
-                iid_filename
+                iid_filename,
+                max_client_identifier=CLIENT_SUBSET_TO_CONSIDER[dataset_identifier]
+                if dataset_identifier in CLIENT_SUBSET_TO_CONSIDER
+                else CLIENT_SUBSET_TO_CONSIDER["default"]
             )
             print(f"Done: Finished creating Full IID Dataset for {dataset_identifier}")
 

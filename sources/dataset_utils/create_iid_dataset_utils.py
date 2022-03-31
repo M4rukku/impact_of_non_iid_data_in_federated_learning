@@ -1,5 +1,7 @@
 import pickle
 from pathlib import Path
+from typing import Optional
+
 import numpy as np
 
 from sources.dataset_utils.dataset import Dataset
@@ -46,18 +48,22 @@ def dataset_to_numpy_arrays(dataset: Dataset) -> Dataset:
         {"x": np.array(dataset.validation["x"]), "y": np.array(dataset.validation["y"])},
     )
 
+
 def create_iid_dataset_from_client_fraction(base_data_dir: Path,
                                             dataset_identifier: str,
                                             fraction_to_extract: float,
                                             compiled_dataset_name: str = None,
-                                            only_create_and_use_training_data: str = False
+                                            only_create_and_use_training_data: str = False,
+                                            max_client_identifier: Optional[int] = None
                                             ) -> None:
     dataset_dir = base_data_dir / dataset_identifier
     dataset_files = np.array(list(filter(lambda file: file.is_dir(), dataset_dir.iterdir())))
-    amt_files_to_extract = int(fraction_to_extract * len(dataset_files))
+    num_clients_to_consider: int = len(dataset_files) if max_client_identifier is None \
+        else min(max_client_identifier, len(dataset_files))
+    amt_files_to_extract = int(fraction_to_extract * num_clients_to_consider)
 
     rng = np.random.default_rng(DEFAULT_SEED)
-    dataset_index_selection = rng.choice(len(dataset_files),
+    dataset_index_selection = rng.choice(num_clients_to_consider,
                                          amt_files_to_extract,
                                          replace=False)
 
