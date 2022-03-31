@@ -14,7 +14,7 @@ from sources.flwr_parameters.simulation_parameters import SimulationParameters, 
     RayInitArgs, ClientResources, DEFAULT_RAY_INIT_ARGS, EarlyStoppingSimulationParameters
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
-from sources.simulation_framework.early_stopping_server import EarlyStoppingServer
+from sources.flwr.flwr_servers.early_stopping_server import EarlyStoppingServer
 from sources.simulation_framework.simulators.base_client_provider import BaseClientProvider
 from sources.simulation_framework.simulators.base_simulator import BaseSimulator
 from sources.simulation_framework.simulators.ray_based_simulator.ray_simulate import \

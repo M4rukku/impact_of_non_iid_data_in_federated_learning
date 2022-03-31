@@ -5,9 +5,9 @@ import flwr.server.strategy
 from flwr.common import Parameters, Scalar, FitRes, Weights
 from flwr.server.client_proxy import ClientProxy
 
-from sources.flwr_strategies_decorators.saving_strategy_decorators_utils import \
+from sources.flwr.flwr_strategies_decorators.saving_strategy_decorators_utils import \
     create_round_based_model_saving_filename, npz_parameters_to_file
-from sources.flwr_strategies_decorators.base_strategy_decorator import \
+from sources.flwr.flwr_strategies_decorators.base_strategy_decorator import \
     BaseStrategyDecorator
 
 

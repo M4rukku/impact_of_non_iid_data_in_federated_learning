@@ -4,7 +4,7 @@ from flwr.common import Parameters, EvaluateIns
 from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 
-from sources.flwr_strategies_decorators.base_strategy_decorator import BaseStrategyDecorator
+from sources.flwr.flwr_strategies_decorators.base_strategy_decorator import BaseStrategyDecorator
 
 
 class EnableFullEvaluationDecorator(BaseStrategyDecorator):

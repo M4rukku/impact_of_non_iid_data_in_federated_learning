@@ -6,7 +6,7 @@ from flwr.common import EvaluateRes, Scalar
 from flwr.server.client_proxy import ClientProxy
 from flwr.server.strategy.aggregate import weighted_loss_avg
 
-from sources.flwr_strategies_decorators.base_strategy_decorator import BaseStrategyDecorator
+from sources.flwr.flwr_strategies_decorators.base_strategy_decorator import BaseStrategyDecorator
 
 WeightedDictList = List[Tuple[int, Dict[str, Scalar]]]
 NumericDict = Dict[str, Union[float, int, complex]]

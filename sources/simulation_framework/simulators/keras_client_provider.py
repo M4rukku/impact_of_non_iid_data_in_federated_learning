@@ -1,6 +1,6 @@
 import logging
 
-from sources.flwr_clients.keras_client import KerasClient
+from sources.flwr.flwr_clients import KerasClient
 from sources.simulation_framework.simulators.base_client_provider import BaseClientProvider
 
 

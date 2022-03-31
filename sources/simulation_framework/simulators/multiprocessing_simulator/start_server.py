@@ -3,7 +3,7 @@ from flwr.server import SimpleClientManager
 
 from sources.flwr_parameters.simulation_parameters import SimulationParameters, \
     DEFAULT_SERVER_ADDRESS, EarlyStoppingSimulationParameters
-from sources.simulation_framework.early_stopping_server import EarlyStoppingServer
+from sources.flwr.flwr_servers.early_stopping_server import EarlyStoppingServer
 
 
 def start_server(strategy: fl.server.strategy.Strategy,

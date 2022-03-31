@@ -6,7 +6,7 @@ from flwr.common import Parameters, Scalar, EvaluateRes, EvaluateIns, FitRes, We
 from flwr.server.client_manager import ClientManager
 from flwr.server.client_proxy import ClientProxy
 
-from sources.flwr_strategies_decorators.base_strategy_decorator import BaseStrategyDecorator
+from sources.flwr.flwr_strategies_decorators.base_strategy_decorator import BaseStrategyDecorator
 
 
 class StrategyLoggingDecorator(BaseStrategyDecorator):

@@ -20,13 +20,13 @@ from sources.experiments.extended_experiment_metadata import create_extended_exp
 from sources.flwr_parameters.exception_definitions import \
     ExperimentParameterListsHaveUnequalLengths, NoStrategyProviderError
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED, set_global_determinism
-from sources.flwr_parameters.simulation_parameters import DEFAULT_RUNS_PER_EXPERIMENT, EarlyStoppingSimulationParameters
-from sources.flwr_strategies_decorators.base_strategy_decorator import get_name_of_strategy
-from sources.flwr_strategies_decorators.central_evaluation_logging_decorator import \
+from sources.flwr_parameters.simulation_parameters import DEFAULT_RUNS_PER_EXPERIMENT
+from sources.flwr.flwr_strategies_decorators import get_name_of_strategy
+from sources.flwr.flwr_strategies_decorators.central_evaluation_logging_decorator import \
     CentralEvaluationLoggingDecorator
-from sources.flwr_strategies_decorators.evaluation_metrics_logging_strategy_decorator import \
+from sources.flwr.flwr_strategies_decorators.evaluation_metrics_logging_strategy_decorator import \
     EvaluationMetricsLoggingStrategyDecorator
-from sources.flwr_strategies_decorators.model_logging_strategy_decorator import \
+from sources.flwr.flwr_strategies_decorators import \
     ModelLoggingStrategyDecorator
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate

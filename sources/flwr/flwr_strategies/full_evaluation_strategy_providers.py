@@ -3,9 +3,9 @@ import numpy
 from flwr.common import weights_to_parameters, Parameters
 from flwr.server.strategy import FedAvg, Strategy, FedYogi, FedAdagrad, FedAdam
 from sources.experiments.experiment_metadata import ExperimentMetadata
-from sources.flwr_strategies_decorators.enable_full_evaluation_decorator import \
+from sources.flwr.flwr_strategies_decorators.enable_full_evaluation_decorator import \
     EnableFullEvaluationDecorator
-from sources.flwr_strategies_decorators.improve_aggregated_evaluation_decorator import \
+from sources.flwr.flwr_strategies_decorators.improve_aggregated_evaluation_decorator import \
     ImproveAggregatedEvaluationDecorator
 
 

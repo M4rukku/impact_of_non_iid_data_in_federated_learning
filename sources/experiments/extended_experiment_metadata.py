@@ -4,7 +4,7 @@ from typing import Union, Dict, Optional
 import tensorflow as tf
 
 from sources.experiments.experiment_metadata import ExperimentMetadata
-from sources.simulation_framework.early_stopping_server import DEFAULT_NUM_ROUNDS_ABOVE_TARGET
+from sources.flwr.flwr_servers.early_stopping_server import DEFAULT_NUM_ROUNDS_ABOVE_TARGET
 
 
 @dataclass
