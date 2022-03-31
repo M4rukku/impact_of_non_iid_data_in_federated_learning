@@ -13,7 +13,7 @@ from sources.dataset_creation_utils.create_iid_dataset_utils import get_full_iid
 from sources.dataset_creation_utils.create_lda_dataset_utils import get_random_id_splits, \
     get_lda_cifar10_dataset_name
 from sources.utils.dataset import Dataset
-from sources.flwr_parameters.set_random_seeds import set_seeds, DEFAULT_SEED
+from sources.utils.set_random_seeds import set_seeds, DEFAULT_SEED
 from sources.global_data_properties import DEFAULT_CONCENTRATIONS_CIFAR10, TOTAL_IMAGES_CIFAR10, DEFAULT_PARTITIONS_CIFAR10, \
     DEFAULT_TRAIN_SPLIT, DEFAULT_TEST_SPLIT, DEFAULT_VALIDATION_SPLIT, DEFAULT_IID_DATASET_SIZE_CIFAR10
 

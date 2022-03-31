@@ -6,7 +6,7 @@ from sources.datasets.client_dataset_definitions.client_dataset_processors.clien
 from sources.dataset_creation_utils.create_iid_dataset_utils import get_full_iid_dataset_filename, \
     get_default_iid_dataset_filename, get_fractional_iid_dataset_filename, get_globally_shared_iid_dataset_filename
 from sources.utils.dataset import Dataset
-from sources.flwr_parameters.exception_definitions import DatasetNotFoundError
+from sources.utils.exception_definitions import DatasetNotFoundError
 
 
 def get_data_dir():

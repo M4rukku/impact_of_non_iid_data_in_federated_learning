@@ -4,7 +4,7 @@ from abc import ABC
 
 from sources.datasets.client_dataset_definitions.client_dataset_loaders.client_dataset_loader import ClientDatasetLoader, DatasetComponents
 from sources.datasets.client_dataset_definitions.client_dataset_processors.client_dataset_processor import ClientDatasetProcessor
-from sources.flwr_parameters.exception_definitions import OutsideOfContextError
+from sources.utils.exception_definitions import OutsideOfContextError
 
 
 def throw_error_outside_context(func):

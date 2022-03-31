@@ -7,9 +7,9 @@ import tensorflow as tf
 from flwr.common import Config, Properties
 
 from sources.datasets.client_dataset_definitions.client_dataset import ClientDataset
-from sources.flwr_parameters.client_parameters import \
+from sources.utils.client_parameters import \
     FederatedEvaluationParameters, FittingParameters
-from sources.flwr_parameters.exception_definitions import ConfigContainsUnknownPropertyError
+from sources.utils.exception_definitions import ConfigContainsUnknownPropertyError
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 

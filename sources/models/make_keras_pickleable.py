@@ -9,7 +9,7 @@ import tensorflow as tf
 from tensorflow.python.keras.layers import deserialize, serialize
 from tensorflow.python.keras.saving import saving_utils
 
-from sources.flwr_parameters.set_random_seeds import set_seeds
+from sources.utils.set_random_seeds import set_seeds
 
 
 def unpack_optimizer(optimizer_config, optimizer_weights):

@@ -3,9 +3,9 @@ import logging
 from flwr.server import SimpleClientManager
 from flwr.server.app import _fl
 
-from sources.simulation_framework.simulators.serial_execution_simulator.serial_execution_client_proxy import \
+from sources.simulators.serial_execution_simulator.serial_execution_client_proxy import \
     SerialExecutionClientProxy
-from sources.simulation_framework.simulators.serial_execution_simulator.serial_execution_server import SerialExecutionServer
+from sources.simulators.serial_execution_simulator.serial_execution_server import SerialExecutionServer
 
 
 def start_serial_simulation(client_fn, clients_ids, num_rounds, strategy):

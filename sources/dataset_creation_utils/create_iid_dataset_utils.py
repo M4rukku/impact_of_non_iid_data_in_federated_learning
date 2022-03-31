@@ -5,7 +5,7 @@ from typing import Optional
 import numpy as np
 
 from sources.utils.dataset import Dataset
-from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
+from sources.utils.set_random_seeds import DEFAULT_SEED
 
 
 def extract_data(dataset_path: Path):

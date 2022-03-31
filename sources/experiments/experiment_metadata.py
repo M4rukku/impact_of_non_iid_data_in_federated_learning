@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Union, Optional
-from sources.flwr_parameters.simulation_parameters import SimulationParameters, EarlyStoppingSimulationParameters
+from sources.utils.simulation_parameters import SimulationParameters, EarlyStoppingSimulationParameters
 from sources.flwr.flwr_servers.early_stopping_server import DEFAULT_NUM_ROUNDS_ABOVE_TARGET
 
 

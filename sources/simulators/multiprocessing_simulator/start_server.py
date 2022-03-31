@@ -1,7 +1,7 @@
 import flwr as fl
 from flwr.server import SimpleClientManager
 
-from sources.flwr_parameters.simulation_parameters import SimulationParameters, \
+from sources.utils.simulation_parameters import SimulationParameters, \
     DEFAULT_SERVER_ADDRESS, EarlyStoppingSimulationParameters
 from sources.flwr.flwr_servers.early_stopping_server import EarlyStoppingServer
 
