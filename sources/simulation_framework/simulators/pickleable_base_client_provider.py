@@ -3,7 +3,7 @@ import logging
 from sources.flwr_clients.base_client import BaseClient
 
 
-class PickleableClientFunction:
+class PickleableBaseClientProvider:
     def __init__(self, model_template, dataset_factory, metrics,
                  fitting_callbacks, evaluation_callbacks):
         self.model_template = model_template

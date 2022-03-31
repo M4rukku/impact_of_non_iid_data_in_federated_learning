@@ -1,6 +1,6 @@
 import logging
 import traceback
-from typing import Optional, List, Callable
+from typing import Optional, List, Callable, TypedDict
 
 import flwr as fl
 import numpy as np
@@ -14,7 +14,7 @@ from sources.flwr_parameters.simulation_parameters import SimulationParameters, 
 from sources.metrics.default_metrics import DEFAULT_METRICS
 from sources.models.model_template import ModelTemplate
 from sources.simulation_framework.simulators.base_simulator import BaseSimulator
-from sources.simulation_framework.simulators.pickleable_client_function import PickleableClientFunction
+from sources.simulation_framework.simulators.pickleable_base_client_provider import PickleableBaseClientProvider
 from sources.simulation_framework.simulators.ray_based_simulator.ray_simulate import start_simulation
 
 
@@ -29,7 +29,7 @@ class RayBasedSimulator(BaseSimulator):
                  evaluation_callbacks: list[tf.keras.callbacks.Callback] = None,
                  metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
                  seed: int = DEFAULT_SEED,
-                 client_resources: ClientResources = {"num_cpus": 1, "num_cpus": 1},
+                 client_resources: ClientResources = {"num_gpus": 1, "num_cpus": 1},
                  ray_init_args: RayInitArgs = DEFAULT_RAY_INIT_ARGS,
                  ray_callbacks: Optional[List[Callable[[], None]]] = None,
                  server: Optional[Server] = None,
@@ -51,11 +51,11 @@ class RayBasedSimulator(BaseSimulator):
         self.ray_callbacks = ray_callbacks
 
     def start_simulation(self):
-        client_fn = PickleableClientFunction(self.model_template,
-                                             self.dataset_factory,
-                                             self.metrics,
-                                             self.fitting_callbacks,
-                                             self.evaluation_callbacks)
+        client_fn = PickleableBaseClientProvider(self.model_template,
+                                                 self.dataset_factory,
+                                                 self.metrics,
+                                                 self.fitting_callbacks,
+                                                 self.evaluation_callbacks)
 
         num_rounds = self.simulation_parameters["num_rounds"]
         num_clients = self.simulation_parameters["num_clients"]
@@ -80,3 +80,16 @@ class RayBasedSimulator(BaseSimulator):
             logging.error(
                 "Caught Exception after finishing Simulation - Caught the following error ")
             traceback.print_exception(type(e), e, e.__traceback__)
+
+
+class DefaultRayArgumentDict(TypedDict):
+    client_resources: ClientResources
+    ray_init_args: RayInitArgs
+    ray_callbacks: Optional[List[Callable[[], None]]]
+
+
+default_ray_args: DefaultRayArgumentDict = {
+    "ray_callbacks": None,
+    "ray_init_args": DEFAULT_RAY_INIT_ARGS,
+    "client_resources": {"num_gpus": 1, "num_cpus": 1}
+}
