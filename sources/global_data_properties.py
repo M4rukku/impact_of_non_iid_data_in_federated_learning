@@ -1,5 +1,5 @@
 # CELEBA
-from sources.dataset_utils.create_lda_dataset_utils import get_lda_cifar10_dataset_name
+from sources.dataset_creation_utils.create_lda_dataset_utils import get_lda_cifar10_dataset_name
 
 CELEBA_IMAGE_SIZE = 84
 CELEBA_CLASSES = 2

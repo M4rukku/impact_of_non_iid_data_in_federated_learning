@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from sources.dataset_utils.create_lda_dataset_utils import get_lda_cifar10_dataset_name
+from sources.dataset_creation_utils.create_lda_dataset_utils import get_lda_cifar10_dataset_name
 from sources.datasets.cifar10_lda.cifar10_lda_client_dataset_processor import \
     Cifar10LdaClientDatasetProcessor
 from sources.datasets.client_dataset_definitions.client_dataset import ClientDataset

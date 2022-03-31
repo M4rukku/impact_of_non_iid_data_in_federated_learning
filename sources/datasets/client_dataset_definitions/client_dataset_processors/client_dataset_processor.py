@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from sources.dataset_utils.unmodifyable_attributes_trait import UnmodifiableAttributes
+from sources.utils.unmodifyable_attributes_trait import UnmodifiableAttributes
 
 
 class ClientDatasetProcessor(ABC, UnmodifiableAttributes):

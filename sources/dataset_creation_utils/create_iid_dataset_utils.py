@@ -4,7 +4,7 @@ from typing import Optional
 
 import numpy as np
 
-from sources.dataset_utils.dataset import Dataset
+from sources.utils.dataset import Dataset
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 
 

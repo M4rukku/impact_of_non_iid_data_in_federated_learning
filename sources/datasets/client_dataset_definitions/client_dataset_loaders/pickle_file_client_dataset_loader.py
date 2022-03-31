@@ -1,7 +1,7 @@
 import logging
 import pickle
 from pathlib import Path
-from sources.dataset_utils.unmodifyable_attributes_trait import UnmodifiableAttributes
+from sources.utils.unmodifyable_attributes_trait import UnmodifiableAttributes
 from sources.datasets.client_dataset_definitions.client_dataset_loaders.client_dataset_loader import ClientDatasetLoader, DatasetComponents, \
     MinimalDataset
 

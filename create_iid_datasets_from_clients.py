@@ -2,10 +2,10 @@ import argparse
 import sys
 from pathlib import Path
 
-from sources.dataset_utils.get_iid_dataset_utils import get_full_iid_dataset
+from sources.dataset_creation_utils.get_iid_dataset_utils import get_full_iid_dataset
 from sources.global_data_properties import DATASET_NAME_DEFAULT_FRACTION_DICT, \
     DATASET_NAME_GLOBAL_SHARED_FRACTION_DICT, CLIENT_DATASETS_NAME_LIST, CLIENT_SUBSET_TO_CONSIDER
-from sources.dataset_utils.create_iid_dataset_utils import create_iid_dataset_from_client_fraction, \
+from sources.dataset_creation_utils.create_iid_dataset_utils import create_iid_dataset_from_client_fraction, \
     get_default_iid_dataset_filename, \
     get_fractional_iid_dataset_filename, \
     get_full_iid_dataset_filename, subsample_full_iid_datasets, \

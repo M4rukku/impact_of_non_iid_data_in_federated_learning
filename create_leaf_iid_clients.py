@@ -8,8 +8,8 @@ import PIL
 import numpy as np
 import pickle
 
-from sources.dataset_utils.create_iid_dataset_utils import get_full_iid_dataset_filename
-from sources.dataset_utils.get_iid_dataset_utils import get_full_iid_dataset
+from sources.dataset_creation_utils.create_iid_dataset_utils import get_full_iid_dataset_filename
+from sources.dataset_creation_utils.get_iid_dataset_utils import get_full_iid_dataset
 from sources.flwr_parameters.set_random_seeds import DEFAULT_SEED
 from sources.global_data_properties import LEAF_DATASET_NAME_LIST
 

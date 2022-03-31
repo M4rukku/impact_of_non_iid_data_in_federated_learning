@@ -8,11 +8,11 @@ import tensorflow_datasets as tfds
 import numpy as np
 from flwr.dataset.utils.common import create_lda_partitions
 
-from sources.dataset_utils.create_iid_dataset_utils import get_full_iid_dataset_filename, \
+from sources.dataset_creation_utils.create_iid_dataset_utils import get_full_iid_dataset_filename, \
     get_default_iid_dataset_filename, get_fractional_iid_dataset_filename
-from sources.dataset_utils.create_lda_dataset_utils import get_random_id_splits, \
+from sources.dataset_creation_utils.create_lda_dataset_utils import get_random_id_splits, \
     get_lda_cifar10_dataset_name
-from sources.dataset_utils.dataset import Dataset
+from sources.utils.dataset import Dataset
 from sources.flwr_parameters.set_random_seeds import set_seeds, DEFAULT_SEED
 from sources.global_data_properties import DEFAULT_CONCENTRATIONS_CIFAR10, TOTAL_IMAGES_CIFAR10, DEFAULT_PARTITIONS_CIFAR10, \
     DEFAULT_TRAIN_SPLIT, DEFAULT_TEST_SPLIT, DEFAULT_VALIDATION_SPLIT, DEFAULT_IID_DATASET_SIZE_CIFAR10

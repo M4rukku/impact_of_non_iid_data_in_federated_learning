@@ -3,7 +3,7 @@ from typing import Optional, Tuple, Dict, Union, List, Callable
 import numpy
 import tensorflow as tf
 
-from sources.dataset_utils.dataset import Dataset
+from sources.utils.dataset import Dataset
 from sources.datasets.client_dataset_definitions.client_dataset_processors.client_dataset_processor import ClientDatasetProcessor
 from sources.models.model_template import ModelTemplate
 

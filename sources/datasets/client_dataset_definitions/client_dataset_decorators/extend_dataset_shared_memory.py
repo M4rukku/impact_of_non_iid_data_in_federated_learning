@@ -2,7 +2,7 @@ from typing import Tuple
 
 import numpy as np
 
-from sources.dataset_utils.dataset import Dataset
+from sources.utils.dataset import Dataset
 from sources.datasets.client_dataset_definitions.client_dataset_decorators.base_client_dataset_decorator import \
     BaseClientDatasetDecorator
 from sources.datasets.client_dataset_definitions.client_dataset import ClientDataset
