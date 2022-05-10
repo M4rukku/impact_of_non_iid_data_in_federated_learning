@@ -12,7 +12,8 @@ class ExtendDatasetSharedMemory(BaseClientDatasetDecorator):
     # Since this class creates deterministic datasets (as in global data will always be before client data,
     # need to ensure that we shuffle the data during fitting (see BaseClient)
 
-    def __init__(self, client_dataset: ClientDataset,
+    def __init__(self,
+                 client_dataset: ClientDataset,
                  subset_size: Tuple[int, int, int],
                  shared_dataset: Dataset
                  ):
@@ -27,8 +28,12 @@ class ExtendDatasetSharedMemory(BaseClientDatasetDecorator):
         rng = np.random.default_rng()
         self.selection_train = rng.choice(self.shared_dataset_size[0], subset_size[0],
                                           replace=False)
-        self.selection_test = rng.choice(self.shared_dataset_size[1], subset_size[1], replace=False)
-        self.selection_val = rng.choice(self.shared_dataset_size[2], subset_size[2], replace=False)
+        self.selection_test = rng.choice(self.shared_dataset_size[1], subset_size[1],
+                                         replace=False)
+        self.selection_val = rng.choice(self.shared_dataset_size[2], subset_size[2],
+                                        replace=False)
+
+
 
     @property
     def training_data_x(self):
