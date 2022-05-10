@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from experiments.leaf_experiment_metadata_providers import \
+from experiments.verification_experiments.leaf_experiment_metadata_providers import \
     celeba_small_experiment_metadata_provider, celeba_medium_experiment_metadata_provider, \
     celeba_large_experiment_metadata_provider, femnist_small_experiment_metadata_provider, \
     femnist_medium_experiment_metadata_provider, femnist_large_experiment_metadata_provider, \
