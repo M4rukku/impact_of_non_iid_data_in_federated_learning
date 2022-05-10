@@ -1,7 +1,7 @@
 """Interfaces for ClientModel and ServerModel."""
 
 from abc import abstractmethod
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Dict, Any
 import tensorflow as tf
 
 from sources.models.base_model_template import BaseModelTemplate
@@ -34,6 +34,6 @@ class KerasModelTemplate(BaseModelTemplate):
     def set_optimizer(self, optimizer: tf.keras.optimizers.Optimizer):
         self.optimizer = optimizer
 
-    def get_optimizer_config(self) -> str:
+    def get_optimizer_config(self) -> Dict[str, Any]:
         opt = self.get_optimizer()
         return opt.get_config()

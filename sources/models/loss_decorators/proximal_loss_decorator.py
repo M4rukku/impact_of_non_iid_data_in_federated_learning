@@ -1,3 +1,5 @@
+import logging
+
 import tensorflow as tf
 from typing import List
 
@@ -30,6 +32,8 @@ class ProximalLossDecorator(tf.keras.losses.Loss):
             self.keras_model_reference.trainable_weights,
             self.initial_weight_tensor
         )
+        tf.print(f"Proximal Term is given by {proximal_term.numpy()}")
         fedprox_loss = orig_loss + proximal_term
-
+        tf.print(f"Orig Loss is given by {orig_loss[0]}")
+        tf.print(f"Fedprox Loss is given by {fedprox_loss[0]}")
         return fedprox_loss

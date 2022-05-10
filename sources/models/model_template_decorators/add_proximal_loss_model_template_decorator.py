@@ -3,7 +3,7 @@ from typing import Optional
 import tensorflow as tf
 from sources.models.loss_decorators.proximal_loss_decorator import ProximalLossDecorator
 from sources.models.keras_model_template import KerasModelTemplate
-from sources.models.model_template_decorators.base_model_template_decorator import \
+from sources.models.model_template_decorators.base_keras_model_template_decorator import \
     BaseKerasModelTemplateDecorator
 
 

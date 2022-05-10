@@ -37,7 +37,7 @@ class FemnistKerasModelTemplate(KerasModelTemplate):
     def get_centralised_metrics(self) -> List[Union[str, tf.keras.metrics.Metric]]:
         return get_default_sparse_categorical_metrics_tf(self.num_classes)
 
-    def get_optimizer(self, lr=0.001, model: Optional[tf.keras.models.Model] = None) \
+    def get_optimizer(self, lr=0.1, model: Optional[tf.keras.models.Model] = None) \
             -> tf.keras.optimizers.Optimizer:
         if self.optimizer is not None:
             return self.optimizer

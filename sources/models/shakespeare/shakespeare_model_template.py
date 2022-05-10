@@ -31,11 +31,14 @@ class ShakespeareKerasModelTemplate(KerasModelTemplate):
 
         embedding = tf.keras.layers.Embedding(len(self.alphabet), self.embedding_dim)(inputs)
 
-        rnn_cells = [tf.keras.layers.LSTMCell(self.n_hidden) for _ in range(2)]
-        stacked_lstm = tf.keras.layers.StackedRNNCells(rnn_cells)
-        lstm_layer = tf.keras.layers.RNN(stacked_lstm)(embedding)
+        # rnn_cells = [tf.keras.layers.LSTMCell(self.n_hidden) for _ in range(2)]
+        # stacked_lstm = tf.keras.layers.StackedRNNCells(rnn_cells)
+        # lstm_layer = tf.keras.layers.RNN(stacked_lstm)(embedding)
 
-        dense = tf.keras.layers.Dense(units=len(self.alphabet))(lstm_layer)
+        lstm1 = tf.keras.layers.LSTM(self.n_hidden, return_sequences=True)(embedding)
+        lstm2 = tf.keras.layers.LSTM(self.n_hidden, return_sequences=False)(lstm1)
+
+        dense = tf.keras.layers.Dense(units=len(self.alphabet))(lstm2)
         softmax = tf.keras.layers.Softmax()(dense)
 
         return tf.keras.Model(inputs=inputs, outputs=softmax)
