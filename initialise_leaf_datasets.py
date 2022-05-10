@@ -123,7 +123,7 @@ if __name__ == '__main__':
         print("Processing Celeba Dataset")
 
         download_celeba_dataset()
-        subprocess.call(str(( loader_dir / "celeba" / "create_datasets_and_splits.sh").resolve()),
+        subprocess.call(str((loader_dir / "celeba" / "create_datasets_and_splits.sh").resolve()),
                         stdout=sys.stdout, shell=True, env=os.environ)
 
         print("Finished processing Celeba Dataset")

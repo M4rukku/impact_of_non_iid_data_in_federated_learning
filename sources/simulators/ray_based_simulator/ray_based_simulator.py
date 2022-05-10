@@ -4,7 +4,6 @@ from typing import Optional, List, Callable, TypedDict
 
 import flwr as fl
 import numpy as np
-import tensorflow as tf
 from flwr.server import Server, SimpleClientManager
 
 from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import \
@@ -12,7 +11,6 @@ from sources.datasets.client_dataset_factory_definitions.client_dataset_factory 
 from sources.utils.set_random_seeds import DEFAULT_SEED
 from sources.utils.simulation_parameters import SimulationParameters, \
     RayInitArgs, ClientResources, DEFAULT_RAY_INIT_ARGS, EarlyStoppingSimulationParameters
-from sources.metrics.default_metrics_tf import DEFAULT_METRICS
 from sources.models.keras_model_template import KerasModelTemplate
 from sources.flwr.flwr_servers.early_stopping_server import EarlyStoppingServer
 from sources.simulators.base_client_provider import BaseClientProvider
@@ -28,8 +26,7 @@ class RayBasedSimulator(BaseSimulator):
                  strategy: fl.server.strategy.Strategy,
                  model_template: KerasModelTemplate,
                  dataset_factory: ClientDatasetFactory,
-                 client_provider: BaseClientProvider,
-                 metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
+                 client_provider: BaseClientProvider = None,
                  seed: int = DEFAULT_SEED,
                  client_resources=None,
                  ray_init_args: RayInitArgs = DEFAULT_RAY_INIT_ARGS,
@@ -42,7 +39,6 @@ class RayBasedSimulator(BaseSimulator):
                          model_template,
                          dataset_factory,
                          client_provider,
-                         metrics,
                          seed,
                          **kwargs)
 

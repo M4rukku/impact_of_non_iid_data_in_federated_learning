@@ -3,13 +3,11 @@ import traceback
 
 import flwr as fl
 import numpy as np
-import tensorflow as tf
 
 from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import \
     ClientDatasetFactory
 from sources.utils.set_random_seeds import DEFAULT_SEED
 from sources.utils.simulation_parameters import SimulationParameters
-from sources.metrics.default_metrics_tf import DEFAULT_METRICS
 from sources.models.keras_model_template import KerasModelTemplate
 from sources.simulators.base_client_provider import BaseClientProvider
 from sources.simulators.base_simulator import BaseSimulator
@@ -24,10 +22,8 @@ class SerialExecutionSimulator(BaseSimulator):
                  strategy: fl.server.strategy.Strategy,
                  model_template: KerasModelTemplate,
                  dataset_factory: ClientDatasetFactory,
-                 client_provider: BaseClientProvider,
-                 metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
+                 client_provider: BaseClientProvider = None,
                  seed: int = DEFAULT_SEED,
-                 default_global_model: tf.keras.models.Model = None,
                  **kwargs
                  ):
         super().__init__(simulation_parameters,
@@ -35,12 +31,8 @@ class SerialExecutionSimulator(BaseSimulator):
                          model_template,
                          dataset_factory,
                          client_provider,
-                         metrics,
                          seed,
                          **kwargs)
-
-        self.global_model = model_template.get_model() \
-            if default_global_model is None else default_global_model
 
     def start_simulation(self):
         if "target_accuracy" in self.simulation_parameters and \

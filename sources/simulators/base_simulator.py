@@ -3,7 +3,6 @@ import os
 from abc import abstractmethod, ABC
 
 import flwr as fl
-import tensorflow as tf
 
 from sources.datasets.client_dataset_factory_definitions.client_dataset_factory import \
     ClientDatasetFactory
@@ -24,15 +23,13 @@ class BaseSimulator(ABC):
                  strategy: fl.server.strategy.Strategy,
                  model_template: BaseModelTemplate,
                  dataset_factory: ClientDatasetFactory,
-                 client_provider: BaseClientProvider,
-                 metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
+                 client_provider: BaseClientProvider = None,
                  seed: int = DEFAULT_SEED,
                  **kwargs):
         self.simulation_parameters: SimulationParameters = simulation_parameters
         self.strategy: fl.server.strategy.Strategy = strategy
         self.model_template: BaseModelTemplate = model_template
         self.dataset_factory: ClientDatasetFactory = dataset_factory
-        self.metrics: list[tf.keras.metrics.Metric] = metrics
         self.seed = seed
 
         if client_provider is None:
@@ -53,7 +50,7 @@ class BaseSimulator(ABC):
             self.client_provider = KerasClientProvider(
                 model_template=self.model_template,
                 dataset_factory=self.dataset_factory,
-                metrics=self.metrics,
+                metrics=DEFAULT_METRICS,
                 fitting_callbacks=fitting_callbacks,
                 evaluation_callbacks=evaluation_callbacks
             )

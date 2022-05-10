@@ -1,3 +1,4 @@
+from datetime import datetime
 from logging import log, INFO, DEBUG, WARNING
 from typing import Optional, Tuple, Dict, Union, List
 
@@ -7,6 +8,8 @@ from flwr.server import Server
 from flwr.server.client_proxy import ClientProxy
 from flwr.server.server import EvaluateResultsAndFailures, DEPRECATION_WARNING_EVALUATE_ROUND, \
     FitResultsAndFailures, DEPRECATION_WARNING_FIT_ROUND
+
+from sources.utils.exception_definitions import AllClientLossesDivergedError, LossDivergedError
 
 
 class SerialExecutionServer(Server):
@@ -27,7 +30,8 @@ class SerialExecutionServer(Server):
             return None
         log(
             INFO,
-            f"evaluate_round {rnd}: strategy sampled %s clients (out of %s)",
+            f"evaluate_round {rnd}: Time {datetime.now().time()}: strategy sampled %s clients ("
+            f"out of %s)",
             len(client_instructions),
             self._client_manager.num_available(),
         )
@@ -36,7 +40,7 @@ class SerialExecutionServer(Server):
         results, failures = evaluate_clients(client_instructions)
         log(
             INFO,
-            "evaluate_round received %s results and %s failures",
+            "evaluate_round {rnd}: Time {datetime.now().time()}: received %s results and %s failures",
             len(results),
             len(failures),
         )
@@ -74,11 +78,11 @@ class SerialExecutionServer(Server):
         )
 
         if not client_instructions:
-            log(INFO, f"fit_round {rnd}: no clients selected, cancel")
+            log(INFO, f"fit_round {rnd}: Time {datetime.now().time()}: no clients selected, cancel")
             return None
         log(
             INFO,
-            f"fit_round {rnd}: strategy sampled %s clients (out of %s)",
+            f"fit_round {rnd}: Time {datetime.now().time()}: strategy sampled %s clients (out of %s)",
             len(client_instructions),
             self._client_manager.num_available(),
         )
@@ -87,10 +91,21 @@ class SerialExecutionServer(Server):
         results, failures = fit_clients(client_instructions)
         log(
             INFO,
-            f"fit_round {rnd} received %s results and %s failures",
+            f"fit_round {rnd}: Time {datetime.now().time()}: received %s results and %s failures",
             len(results),
             len(failures),
         )
+
+        if len(results) == 0:
+            all_clients_diverged = True
+            for failure in failures:
+                failure: BaseException = failure
+                if not isinstance(failure, LossDivergedError):
+                    all_clients_diverged = False
+                    break
+            if all_clients_diverged:
+                raise AllClientLossesDivergedError("AllClientLossesDivergedError - Stopping "
+                                                   "Execution of Run")
 
         # Aggregate training results
         aggregated_result: Union[
