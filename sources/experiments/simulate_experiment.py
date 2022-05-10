@@ -1,3 +1,4 @@
+import copy
 import dataclasses
 import json
 import logging
@@ -19,6 +20,8 @@ from sources.experiments.extended_experiment_metadata import \
     create_extended_experiment_metadata, \
     ExtendedExperimentMetadata
 from sources.models.base_model_template import BaseModelTemplate
+from sources.simulators.ray_based_simulator.ray_based_simulator import default_ray_args
+from sources.simulators.serial_execution_simulator import SerialExecutionSimulator
 from sources.utils.exception_definitions import \
     ExperimentParameterListsHaveUnequalLengths, NoStrategyProviderError
 from sources.utils.set_random_seeds import DEFAULT_SEED, set_global_determinism
@@ -30,10 +33,7 @@ from sources.flwr.flwr_strategies_decorators.evaluation_metrics_logging_strategy
     EvaluationMetricsLoggingStrategyDecorator
 from sources.flwr.flwr_strategies_decorators.model_logging_strategy_decorator import \
     ModelLoggingStrategyDecorator
-from sources.metrics.default_metrics_tf import DEFAULT_METRICS
 from sources.simulators.base_simulator import BaseSimulator
-from sources.simulators.ray_based_simulator.ray_based_simulator import RayBasedSimulator, \
-    default_ray_args
 
 
 def round_to_two_nonzero_digits(n):
@@ -141,14 +141,13 @@ class SimulateExperiment:
             strategy_provider_list: Optional[List[Callable[[ExperimentMetadata], Strategy]]] = None,
             strategy_provider: Optional[Callable[[ExperimentMetadata], Strategy]] = None,
             optimizer_list: List[tf.keras.optimizers.Optimizer] = None,
-            metrics: list[tf.keras.metrics.Metric] = DEFAULT_METRICS,
             seed: int = DEFAULT_SEED,
 
             runs_per_experiment: int = DEFAULT_RUNS_PER_EXPERIMENT,
             centralised_evaluation=False,
             aggregated_evaluation=True,
             rounds_between_centralised_evaluations=10,
-            simulator_provider: Type[BaseSimulator] = RayBasedSimulator,
+            simulator_provider: Type[BaseSimulator] = SerialExecutionSimulator,
             simulator_args=None,
             **kwargs
     ):
@@ -182,25 +181,28 @@ class SimulateExperiment:
                     f"Executing run {run + 1}/{runs_per_experiment} of experiment {i + 1}.")
                 # Setup base experiment/strategy/optimizer data
                 experiment_metadata = experiment_metadata_list[i]
+                model_template_ = copy.deepcopy(model_template)
 
                 if strategy_provider is not None:
                     logging.info("Using Global Strategy for Providing Strategies")
-                    strategy_ = strategy_provider(experiment_metadata)
+                    sp = copy.deepcopy(strategy_provider)
+                    strategy_ = sp(experiment_metadata)
                 elif strategies_list_defined:
                     logging.info("Using Strategy List for providing strategies")
-                    strategy_ = (strategy_provider_list[i])(experiment_metadata=experiment_metadata)
+                    sp = copy.deepcopy(strategy_provider_list[i])
+                    strategy_ = sp(experiment_metadata)
                 else:
                     raise NoStrategyProviderError("No Strategy Provider Defined")
 
                 if optimizer_list_defined:
-                    model_template.set_optimizer(optimizer_list[i])
+                    model_template_.set_optimizer(copy.deepcopy(optimizer_list[i]))
 
                 strategy_name = get_name_of_strategy(strategy_)
                 extended_metadata = \
                     create_extended_experiment_metadata(experiment_metadata,
                                                         strategy_name,
-                                                        model_template.get_optimizer_config(),
-                                                        model_template.get_optimizer())
+                                                        model_template_.get_optimizer_config(),
+                                                        model_template_.get_optimizer())
 
                 # Setup Directory Structure
                 dirname = create_dirname_from_extended_metadata(extended_metadata, i)
@@ -262,17 +264,15 @@ class SimulateExperiment:
                 # Start Simulation
                 simulation_parameters = get_simulation_parameters_from_experiment_metadata(
                     experiment_metadata)
-                server = None
+
 
                 simulator = simulator_provider(
                     simulation_parameters,
                     strategy_,
-                    model_template,
+                    model_template_,
                     dataset_factory,
-                    metrics=metrics,
-                    **simulator_args,
-                    **kwargs,
-                    server=server)
+                    **copy.deepcopy(simulator_args),
+                    **kwargs)
 
                 simulator.start_simulation()
                 logging.info(f"Finished run {run + 1}/{runs_per_experiment} of experiment {i + 1}.")

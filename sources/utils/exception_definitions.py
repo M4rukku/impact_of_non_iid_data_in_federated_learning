@@ -16,3 +16,15 @@ class DatasetNotFoundError(Exception):
 
 class NoStrategyProviderError(Exception):
     pass
+
+
+class LossNotDefinedError(Exception):
+    pass
+
+
+class LossDivergedError(Exception):
+    pass
+
+
+class AllClientLossesDivergedError(Exception):
+    pass

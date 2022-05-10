@@ -23,7 +23,10 @@ def full_eval_fed_avg_strategy_provider(
         eval_fn: Callable,
         experiment_metadata: ExperimentMetadata,
         initial_parameters: Optional[Parameters] = None,
-        accept_failures=True
+        accept_failures=True,
+        min_fit_clients: int = 1,
+        min_eval_clients: int = 1,
+        **kwargs
 ) -> Strategy:
     fraction_fit = get_fraction_fit_from_metadata(experiment_metadata)
 
@@ -34,7 +37,10 @@ def full_eval_fed_avg_strategy_provider(
                 fraction_fit=fraction_fit,
                 fraction_eval=fraction_fit,
                 initial_parameters=initial_parameters,
-                accept_failures=accept_failures
+                accept_failures=accept_failures,
+                min_fit_clients=min_fit_clients,
+                min_eval_clients=min_eval_clients,
+                **kwargs
             )
         ),
         accept_failures=accept_failures
@@ -52,7 +58,10 @@ def full_eval_fed_adam_strategy_provider(
         beta_1: float = 0.9,
         beta_2: float = 0.99,
         tau: float = 1e-3,
-        accept_failures=True
+        accept_failures=True,
+        min_fit_clients: int = 1,
+        min_eval_clients: int = 1,
+        **kwargs
 ) -> Strategy:
     fraction_fit = get_fraction_fit_from_metadata(experiment_metadata)
     initial_parameters = weights_to_parameters(initial_parameters)
@@ -69,7 +78,10 @@ def full_eval_fed_adam_strategy_provider(
                 beta_1=beta_1,
                 beta_2=beta_2,
                 initial_parameters=initial_parameters,
-                accept_failures=accept_failures
+                accept_failures=accept_failures,
+                min_fit_clients=min_fit_clients,
+                min_eval_clients=min_eval_clients,
+                **kwargs
             )
         ),
         accept_failures=accept_failures
@@ -85,7 +97,10 @@ def full_eval_fed_adagrad_strategy_provider(
         eta: float = 1e-1,
         eta_l: float = 1e-1,
         tau: float = 1e-3,
-        accept_failures=True
+        accept_failures=True,
+        min_fit_clients: int = 1,
+        min_eval_clients: int = 1,
+        **kwargs
 
 ) -> Strategy:
     fraction_fit = get_fraction_fit_from_metadata(experiment_metadata)
@@ -101,7 +116,10 @@ def full_eval_fed_adagrad_strategy_provider(
                 eta_l=eta_l,
                 tau=tau,
                 initial_parameters=initial_parameters,
-                accept_failures=accept_failures
+                accept_failures=accept_failures,
+                min_fit_clients=min_fit_clients,
+                min_eval_clients=min_eval_clients,
+                **kwargs
             )
         ),
         accept_failures=accept_failures
@@ -119,7 +137,10 @@ def full_eval_fed_yogi_strategy_provider(
         beta_1: float = 0.9,
         beta_2: float = 0.99,
         tau: float = 1e-3,
-        accept_failures=True
+        accept_failures=True,
+        min_fit_clients: int = 1,
+        min_eval_clients: int = 1,
+        **kwargs
 ) -> Strategy:
     fraction_fit = get_fraction_fit_from_metadata(experiment_metadata)
     initial_parameters = weights_to_parameters(initial_parameters)
@@ -136,7 +157,10 @@ def full_eval_fed_yogi_strategy_provider(
                 beta_1=beta_1,
                 beta_2=beta_2,
                 initial_parameters=initial_parameters,
-                accept_failures=accept_failures
+                accept_failures=accept_failures,
+                min_fit_clients=min_fit_clients,
+                min_eval_clients=min_eval_clients,
+                **kwargs
             )
         ),
         accept_failures=accept_failures

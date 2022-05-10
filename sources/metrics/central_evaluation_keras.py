@@ -1,10 +1,12 @@
+import copy
 import logging
 from typing import Optional, Tuple, Dict, Union, List, Callable
 import numpy
 import tensorflow as tf
 
 from sources.utils.dataset import Dataset
-from sources.datasets.client_dataset_definitions.client_dataset_processors.client_dataset_processor import ClientDatasetProcessor
+from sources.datasets.client_dataset_definitions.client_dataset_processors.client_dataset_processor import \
+    ClientDatasetProcessor
 from sources.models.keras_model_template import KerasModelTemplate
 
 EvalFunType = Callable[[List[numpy.ndarray]],
@@ -12,12 +14,14 @@ EvalFunType = Callable[[List[numpy.ndarray]],
 
 
 class PickleableKerasCentralEvaluationFunction:
-    def __init__(self, model, optimizer, loss, metrics, evaluation_x_data, evaluation_y_data):
+    def __init__(self, model_template, optimizer, loss, metrics, evaluation_x_data,
+                 evaluation_y_data):
         # make_keras_pickleable() Obsolete for Keras 2.3
-        self.model = model
+        self.model_template = model_template
         self.optimizer = optimizer
         self.loss = loss
         self.metrics = metrics
+
         self.evaluation_x_data = evaluation_x_data
         self.evaluation_y_data = evaluation_y_data
 
@@ -26,13 +30,18 @@ class PickleableKerasCentralEvaluationFunction:
         # set_global_determinism()
         logging.warning("Starting Centralised Evaluation")
 
-        self.model.compile(optimizer=self.optimizer,
-                           loss=self.loss,
-                           metrics=self.metrics)
+        model = self.model_template.get_model()
+        optimizer_ = copy.deepcopy(self.optimizer)
+        loss_ = copy.deepcopy(self.loss)
+        metrics_ = copy.deepcopy(self.metrics)
 
-        self.model.set_weights(results)
-        results = self.model.evaluate(x=self.evaluation_x_data, y=self.evaluation_y_data,
-                                      return_dict=True)
+        model.compile(optimizer=optimizer_,
+                      loss=loss_,
+                      metrics=metrics_)
+
+        model.set_weights(results)
+        results = model.evaluate(x=self.evaluation_x_data, y=self.evaluation_y_data,
+                                 return_dict=True)
         logging.warning(f"Finished Centralised Evaluation with result {results.items()}")
         return results["loss"], results
 
@@ -40,14 +49,13 @@ class PickleableKerasCentralEvaluationFunction:
 def create_central_evaluation_function_keras(model_template: KerasModelTemplate,
                                              evaluation_x_data: List[any],
                                              evaluation_y_data: List[any],
-                                             optimizer: Optional[tf.keras.optimizers.Optimizer] = None
+                                             optimizer: Optional[
+                                                 tf.keras.optimizers.Optimizer] = None
                                              ) -> EvalFunType:
-
-    model = model_template.get_model()
     return __create_central_evaluation_function_keras(
-        model,
-        model_template.get_optimizer(model=model) if optimizer is None else optimizer,
-        model_template.get_loss(model),
+        model_template,
+        model_template.get_optimizer() if optimizer is None else optimizer,
+        model_template.get_loss(),
         model_template.get_centralised_metrics(),
         evaluation_x_data,
         evaluation_y_data)
@@ -67,12 +75,20 @@ def create_central_evaluation_function_from_dataset_processor_keras(
         optimizer)
 
 
-def __create_central_evaluation_function_keras(model: tf.keras.Model,
+def __create_central_evaluation_function_keras(model_template: KerasModelTemplate,
                                                optimizer: Optional[tf.keras.optimizers.Optimizer],
                                                loss: tf.keras.losses.Loss,
                                                metrics: List[Union[str, tf.keras.metrics.Metric]],
                                                evaluation_x_data: List[any],
                                                evaluation_y_data: List[any]
                                                ) -> EvalFunType:
-    return PickleableKerasCentralEvaluationFunction(model, optimizer, loss, metrics, evaluation_x_data,
+    model_template_ = copy.deepcopy(model_template)
+    optimizer_ = copy.deepcopy(optimizer)
+    loss_ = copy.deepcopy(loss)
+    metrics_ = copy.deepcopy(metrics)
+    return PickleableKerasCentralEvaluationFunction(model_template_,
+                                                    optimizer_,
+                                                    loss_,
+                                                    metrics_,
+                                                    evaluation_x_data,
                                                     evaluation_y_data)
