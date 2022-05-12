@@ -19,8 +19,8 @@ def load_metrics(filepath: Path):
     return data
 
 
-def get_metrics_for_individual_run(content_root, path_to_run, multiplicator_centralised=10):
-    data_folder = content_root / path_to_run / "metrics"
+def get_metrics_for_individual_run_from_path(run_dir, multiplicator_centralised=10):
+    data_folder = run_dir / "metrics"
 
     centralised_evaluation_metrics_filter = \
         lambda w: w.stem.startswith("centralised_evaluation_metrics")
@@ -49,6 +49,11 @@ def get_metrics_for_individual_run(content_root, path_to_run, multiplicator_cent
                           for id in aggregated_evaluation_metrics[0].keys()}
 
     return centralised_metrics, aggregated_metrics
+
+
+def get_metrics_for_individual_run(content_root, path_to_run, multiplicator_centralised=10):
+    return get_metrics_for_individual_run_from_path(content_root / path_to_run,
+                                                    multiplicator_centralised)
 
 
 def get_averaged_metrics_of_run(path_to_experiment: Path, multiplicator_centralised=5):
@@ -199,7 +204,7 @@ def plot_all_experiments_in_folder(content_dir: Path,
                                    exclude_from_run_predicate_fun_by_name=None,
                                    win=1,
                                    legend_pos="lower right",
-                                   title_fontdict = {"fontsize": 14}
+                                   title_fontdict={"fontsize": 14}
                                    ):
     metadata, centralised_metrics, aggregated_metrics = \
         get_all_experiments_in_folder(content_dir, multiplicator_centralised)
