@@ -94,4 +94,4 @@ def femnist_fedadam():
         aggregated_evaluation=True,
         rounds_between_centralised_evaluations=10,
         simulator_provider=SerialExecutionSimulator,
-        simulator_args={"default_global_model": initial_model})
+        simulator_args={})

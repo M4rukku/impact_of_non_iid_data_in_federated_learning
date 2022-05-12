@@ -101,7 +101,7 @@ def femnist_fedopt():
         optimizer_list=optimizers_list,
         experiment_metadata_list=experiment_metadata_list,
         base_dir=base_dir,
-        runs_per_experiment=1,
+        runs_per_experiment=2,
         centralised_evaluation=True,
         aggregated_evaluation=True,
         rounds_between_centralised_evaluations=10,

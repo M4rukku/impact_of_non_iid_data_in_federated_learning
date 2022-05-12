@@ -2,22 +2,12 @@ import functools
 import math
 from pathlib import Path
 
-import os
-
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
 from experiments.shakespeare_experiments.shakespeare_metadata_providers import \
     SHAKESPEARE_BASE_METADATA_REM_EXP_PROVIDER
-from sources.datasets.client_dataset_definitions.client_dataset_decorators.limit_dataset_size_decorator import \
-    LimitDatasetSizeDecorator
-from sources.datasets.client_dataset_factory_definitions.client_dataset_factory_decorator import \
-    DecoratedClientDatasetFactoryDecorator
 from sources.datasets.shakespeare.shakespeare_client_dataset_factory import \
     ShakespeareClientDatasetFactory
 from sources.datasets.shakespeare.shakespeare_client_dataset_processor import \
     ShakespeareClientDatasetProcessor
-from sources.global_data_properties import MAX_DATA_TRAIN_SHAKESPEARE, MAX_DATA_VAL_SHAKESPEARE, \
-    MAX_DATA_TEST_SHAKESPEARE
 from sources.models.shakespeare.shakespeare_model_template import ShakespeareKerasModelTemplate
 
 from sources.simulators.serial_execution_simulator import \
@@ -77,7 +67,7 @@ def shakespeare_fedprox():
                 custom_suffix=f"_mu_{mu}"
             )],
             base_dir=base_dir,
-            runs_per_experiment=1,
+            runs_per_experiment=2,
             centralised_evaluation=True,
             aggregated_evaluation=True,
             rounds_between_centralised_evaluations=2,

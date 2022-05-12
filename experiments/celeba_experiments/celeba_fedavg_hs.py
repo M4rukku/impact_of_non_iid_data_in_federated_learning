@@ -3,7 +3,7 @@ import math
 from pathlib import Path
 
 from experiments.celeba_experiments.celeba_metadata_providers import \
-    CELEBA_BASE_METADATA_OPT_EXP_PROVIDER
+    CELEBA_BASE_METADATA_OPT_EXP_PROVIDER, CELEBA_BASE_METADATA_HYPERPARAMETER_SEARCH_PROVIDER
 from sources.datasets.celeba.celeba_client_dataset_factory import CelebaClientDatasetFactory
 from sources.datasets.celeba.celeba_client_dataset_processor import CelebaClientDatasetProcessor
 from sources.models.celeba.celeba_model_template import CelebaKerasModelTemplate
@@ -40,7 +40,7 @@ def celeba_fedavg():
     initial_model = model_template.get_model()
     initial_parameters = initial_model.get_weights()
 
-    local_learning_rates = [e(-2.0), e(-3.0)]
+    local_learning_rates = [e(-3.0), e(-2.0), e(-1.0), e(0.0)]
 
     fed_avg = functools.partial(
         full_eval_fed_avg_strategy_provider,
@@ -49,19 +49,19 @@ def celeba_fedavg():
     )
 
     SimulateExperiment.start_experiment(
-        f"Celeba_Fedavg1",
+        f"Celeba_Fedavg",
         model_template,
         dataset_factory,
         strategy_provider=None,
         strategy_provider_list=[fed_avg for _ in local_learning_rates],
         optimizer_list=[model_template.get_optimizer(lr) for lr in local_learning_rates],
         experiment_metadata_list=[
-            CELEBA_BASE_METADATA_OPT_EXP_PROVIDER()
+            CELEBA_BASE_METADATA_HYPERPARAMETER_SEARCH_PROVIDER()
             for _ in local_learning_rates],
         base_dir=base_dir,
-        runs_per_experiment=1,
+        runs_per_experiment=5,
         centralised_evaluation=True,
         aggregated_evaluation=True,
         rounds_between_centralised_evaluations=10,
         simulator_provider=SerialExecutionSimulator,
-        simulator_args={"default_global_model": initial_model})
+        simulator_args={})

@@ -31,7 +31,7 @@ def run_cifar10_fedavg():
     base_dir = Path(__file__).parent.parent.parent
     root_data_dir = base_dir / "data"
 
-    for concentration in DEFAULT_CONCENTRATIONS_CIFAR10[1:]:
+    for concentration in [DEFAULT_CONCENTRATIONS_CIFAR10[1]]:
         model_template = Cifar10LdaKerasModelTemplate(DEFAULT_SEED)
         dataset_factory = Cifar10LdaClientDatasetFactory(root_data_dir, 100, concentration)
         central_dataset = get_default_iid_dataset(get_lda_cifar10_dataset_name(concentration, 100))
@@ -52,17 +52,17 @@ def run_cifar10_fedavg():
         )
 
         SimulateExperiment.start_experiment(
-            f"Cifar10_Lda_{concentration}_Fedavg_HS",
+            f"Cifar10_Lda_{concentration}_Fedavg",
             model_template,
             dataset_factory,
             strategy_provider=None,
-            strategy_provider_list=[fed_avg, fed_avg, fed_avg],
+            strategy_provider_list=[fed_avg for lr in local_learning_rates],
             optimizer_list=[model_template.get_optimizer(lr) for lr in local_learning_rates],
-            experiment_metadata_list=[CIFAR10_BASE_METADATA_SYS_EXP_PROVIDER(),
-                                      CIFAR10_BASE_METADATA_SYS_EXP_PROVIDER(),
-                                      CIFAR10_BASE_METADATA_SYS_EXP_PROVIDER()],
+            experiment_metadata_list=[CIFAR10_BASE_METADATA_SYS_EXP_PROVIDER(num_rounds=200) for lr
+                                      in
+                                      local_learning_rates],
             base_dir=base_dir,
-            runs_per_experiment=1,
+            runs_per_experiment=2,
             centralised_evaluation=True,
             aggregated_evaluation=True,
             rounds_between_centralised_evaluations=10,
