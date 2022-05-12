@@ -2,16 +2,22 @@ This file contains licenses for code snippets used in my research:
 
 ACKNOWLEDGEMENT 1: Leaf (TalwalkarLab)
 
-Content Copied: Baseline Models, Data and some Utility Functions
+BSD 2-Clause License, Copyright (c) 2018, TalwalkarLab All rights reserved.
 
-BSD 2-Clause License
+Cloned their Git Repository to use their tools.
 
-Copyright (c) 2018, TalwalkarLab All rights reserved.
+ACKNOWLEDGEMENT 2: Flower (Adap)
 
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+Apache License, Version 2.0, January 2004
+I have modified some of their source code / taken inspiration from it. These files have a separate
+license statement on top.
 
-Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+---------------------------------------------------------------------
+ACKNOWLEDGEMENT 3: Python and associated STL tools
 
-Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+PSF License, 2001
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+Other, implicitly used libraries and their licenses can be found in the requirements.txt file. All
+used libraries have open source licenses.
+Licenses used include: BSD (Keras, Numpy), MIT (Scikit Learn),  Apache (Tensorflow)...
+I do not distribute or directly modify any code used in these packages.
